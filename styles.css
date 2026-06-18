@@ -1,0 +1,295 @@
+:root {
+  --bone: #f6f5f2;         /* clean warm white paper */
+  --bone-soft: #fafafa;
+  --ink: #16160f;
+  --ink-soft: #76766c;
+  --rowan: #b4482f;        /* muted clay, used sparingly */
+  --line: rgba(22, 22, 15, 0.12);
+
+  --serif: "Fraunces", Georgia, serif;
+  --sans: "Inter", system-ui, sans-serif;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --pad: clamp(1.25rem, 4vw, 3.25rem);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bone);
+  color: var(--ink);
+  min-height: 100svh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------- WebGL + texture layers ---------- */
+#scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+}
+
+/* Texture overlays removed for a clean, minimal white surface. */
+.grain, .vignette { display: none; }
+
+/* Paper fades back in toward the foot of the page so the contour field
+   recedes to clean white and the footer copy always stays crisp. */
+body::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 42vh;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    var(--bone) 0%,
+    var(--bone) 22%,
+    rgba(246, 245, 242, 0) 100%
+  );
+}
+
+/* ---------- Preloader ---------- */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--bone);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--pad);
+  gap: 1.25rem;
+}
+.loader__inner {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.loader__mark {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.1rem, 2.4vw, 1.6rem);
+  letter-spacing: 0.01em;
+}
+.loader__count {
+  font-family: var(--serif);
+  font-size: clamp(3.5rem, 16vw, 11rem);
+  font-weight: 300;
+  line-height: 0.8;
+  font-feature-settings: "tnum";
+}
+.loader__pct { font-size: 0.32em; vertical-align: super; margin-left: 0.1em; }
+.loader__bar {
+  height: 1px;
+  width: 100%;
+  background: var(--line);
+  overflow: hidden;
+}
+.loader__bar span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--ink);
+  transform-origin: left;
+}
+
+/* ---------- Page layout ---------- */
+.page {
+  position: relative;
+  z-index: 2;
+  min-height: 100svh;
+  padding: var(--pad);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: clamp(2rem, 5vh, 3rem);
+}
+
+/* Topbar */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.topbar__brand .mark { font-weight: 500; letter-spacing: 0.16em; }
+.topbar__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  color: var(--ink-soft);
+}
+.topbar__meta .dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--rowan);
+  display: inline-block;
+}
+@media (max-width: 540px) {
+  .topbar { font-size: 0.62rem; letter-spacing: 0.14em; }
+  .topbar__meta { gap: 0.55rem; }
+}
+
+/* Hero */
+.hero {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2.6vh, 1.75rem);
+  max-width: 100%;
+}
+.hero__eyebrow {
+  font-size: 0.74rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.hero__title {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(3.6rem, 13.5vw, 12rem);
+  line-height: 0.9;
+  letter-spacing: -0.025em;
+}
+.hero__title em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--ink);
+}
+.hero__title .line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.06em; /* breathing room so the mask never clips glyphs */
+}
+.hero__title .line__inner {
+  display: block;
+  white-space: nowrap;
+  will-change: transform;
+}
+.hero__lede {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(1.05rem, 2.6vw, 1.6rem);
+  color: var(--ink-soft);
+  max-width: 22ch;
+}
+
+/* Footer */
+.footer {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: clamp(1.5rem, 5vw, 5rem);
+  align-items: end;
+  padding-top: clamp(1.5rem, 4vh, 2.5rem);
+  border-top: 1px solid var(--line);
+}
+.footer__statement p {
+  font-size: clamp(0.86rem, 1.5vw, 1rem);
+  line-height: 1.6;
+  max-width: 46ch;
+  color: var(--ink-soft);
+}
+.footer__signup {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  align-items: flex-start;
+}
+.footer__note {
+  font-family: var(--serif);
+  font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+  line-height: 1.5;
+  max-width: 30ch;
+}
+
+/* Signup */
+.signup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 360px;
+  flex-wrap: wrap;
+}
+.signup__input {
+  flex: 1 1 160px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--ink);
+  padding: 0.55rem 0.1rem;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.4s var(--ease);
+}
+.signup__input::placeholder { color: var(--ink-soft); opacity: 0.7; }
+.signup__input:focus { border-color: var(--rowan); }
+
+.signup__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--ink);
+  color: var(--bone);
+  border: none;
+  padding: 0.62rem 1.1rem;
+  border-radius: 100px;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  transition: background 0.45s var(--ease), color 0.45s var(--ease);
+}
+.signup__btn svg { transition: transform 0.45s var(--ease); }
+.signup__btn:hover { background: var(--rowan); }
+.signup__btn:hover svg { transform: translateX(3px); }
+.signup__btn:focus-visible { outline: 2px solid var(--rowan); outline-offset: 3px; }
+
+.signup__ok {
+  flex-basis: 100%;
+  font-size: 0.78rem;
+  color: var(--rowan);
+  min-height: 1em;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+}
+.signup__ok.show { opacity: 1; transform: none; }
+
+@media (max-width: 720px) {
+  .footer {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .hero { max-width: none; }
+}
+
+/* ---------- Reveal init state ---------- */
+/* JS hides these on boot (js-ready); without JS everything stays visible. */
+.js-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .grain { animation: none; }
+  .js-ready [data-reveal] { opacity: 1; transform: none; }
+}
