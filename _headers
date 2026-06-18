@@ -1,0 +1,19 @@
+# Cloudflare Pages — https://developers.cloudflare.com/pages/configuration/headers/
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+# HTML: always revalidate so updates ship immediately.
+/
+  Cache-Control: public, max-age=0, must-revalidate
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Static assets: cache for a year (bust by editing/renaming).
+/*.css
+  Cache-Control: public, max-age=31536000
+/*.js
+  Cache-Control: public, max-age=31536000

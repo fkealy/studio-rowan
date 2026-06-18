@@ -317,22 +317,3 @@ if (document.fonts && document.fonts.ready) {
 } else {
   window.addEventListener("load", runLoader);
 }
-
-/* Signup (front-end only — no backend yet) */
-const form = document.getElementById("signup");
-const email = document.getElementById("email");
-const ok = document.getElementById("signupOk");
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
-  if (!valid) {
-    ok.textContent = "Please enter a valid email.";
-    ok.classList.add("show");
-    email.focus();
-    return;
-  }
-  ok.textContent = "Thank you. We'll be in touch.";
-  ok.classList.add("show");
-  email.value = "";
-  email.blur();
-});
