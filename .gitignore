@@ -10,5 +10,5 @@ Thumbs.db
 # Logs
 *.log
 
-# Dependencies (none currently — three.js & GSAP load via CDN)
+# Dependencies. three.js & GSAP are vendored under /vendor and committed.
 node_modules/

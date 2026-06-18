@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { gsap } from "https://cdn.jsdelivr.net/npm/gsap@3.12.5/+esm";
+import { gsap } from "gsap";
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const isMobile = window.matchMedia("(max-width: 720px)").matches;
@@ -260,7 +260,24 @@ const loader = document.getElementById("loader");
 const loaderNum = document.getElementById("loaderNum");
 const loaderFill = document.getElementById("loaderFill");
 
+let booted = false;
+
+// No-animation reveal. Safety fallback for cases where the entrance never
+// runs — e.g. the page is opened in a background tab (requestAnimationFrame,
+// and therefore gsap's ticker, is paused) or gsap fails to load. gsap.set is
+// synchronous and needs no ticker, so this always lands the final state.
+function showInstant() {
+  if (booted) return;
+  booted = true;
+  field.uniforms.uReveal.value = 1;
+  loader.style.display = "none";
+  gsap.set(".hero__title .line__inner", { clearProps: "transform" });
+  gsap.set("[data-reveal]", { opacity: 1, y: 0 });
+}
+
 function intro() {
+  if (booted) return;
+  booted = true;
   revealField();
 
   const lines = document.querySelectorAll(".hero__title .line__inner");
@@ -317,3 +334,7 @@ if (document.fonts && document.fonts.ready) {
 } else {
   window.addEventListener("load", runLoader);
 }
+
+// Safety net: a timer (which fires even in a background tab) guarantees the
+// page is never left stuck on the loader if the animated entrance can't run.
+setTimeout(showInstant, 6000);
