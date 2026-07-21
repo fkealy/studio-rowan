@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#e9e3d6" />
+  <meta name="theme-color" content="#f6f5f2" />
   <title>Studio Rowan · Leave Less Behind</title>
   <meta name="description" content="Studio Rowan designs and manufactures products made to last, made responsibly, and made with purpose. We're building something worthwhile." />
 
@@ -17,7 +17,6 @@
   <script type="importmap">
   {
     "imports": {
-      "three": "./vendor/three.module.js",
       "gsap": "./vendor/gsap.js"
     }
   }
@@ -33,56 +32,33 @@
     <div class="loader__bar"><span id="loaderFill"></span></div>
   </div>
 
-  <!-- WebGL canvas -->
-  <canvas id="scene" aria-hidden="true"></canvas>
-  <div class="grain" aria-hidden="true"></div>
-  <div class="vignette" aria-hidden="true"></div>
+  <!-- Hairline frame -->
+  <div class="frame" aria-hidden="true"></div>
 
   <!-- Content -->
   <main class="page">
-    <header class="topbar">
-      <div class="topbar__brand">
-        <span class="mark" data-reveal>Studio Rowan</span>
-      </div>
-      <div class="topbar__meta">
-        <span data-reveal>Est. 2026</span>
-        <span class="dot" data-reveal></span>
-        <span data-reveal>Coming Soon</span>
-      </div>
-    </header>
-
-    <section class="hero">
-      <p class="hero__eyebrow" data-reveal>Design &amp; manufacture</p>
-      <h1 class="hero__title">
-        <span class="line"><span class="line__inner">Leave</span></span>
-        <span class="line"><span class="line__inner">Less</span></span>
-        <span class="line"><span class="line__inner"><em>Behind</em></span></span>
-      </h1>
-      <p class="hero__lede" data-reveal>Good design should do more with less.</p>
-    </section>
-
-    <footer class="footer">
-      <div class="footer__col footer__statement">
-        <p data-reveal>
-          We design and manufacture products that are made to last, made
-          responsibly, and made with purpose. We believe sustainability and great
-          design belong together, creating products that leave a smaller footprint
-          and a bigger positive impact.
+    <div class="stage">
+      <header class="brand">
+        <h1 class="brand__name">
+          <span class="line"><span class="line__inner">Studio Rowan</span></span>
+        </h1>
+        <p class="brand__tagline">
+          <span class="line"><span class="line__inner">Leave Less Behind</span></span>
         </p>
-      </div>
+      </header>
 
-      <div class="footer__col footer__contact">
-        <p class="footer__note" data-reveal>We're busy building something worthwhile. Check back soon.</p>
-        <p class="contact" data-reveal>
-          <span class="contact__label">Enquiries</span>
-          <a class="contact__link" href="mailto:info@studiorowan.co.uk">
-            <span>info@studiorowan.co.uk</span>
-            <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true">
-              <path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
-        </p>
-      </div>
+      <p class="status" data-reveal>
+        <span class="status__dot"></span>
+        <span>Coming Soon</span>
+      </p>
+    </div>
+
+    <footer class="foot" data-reveal>
+      <p>
+        Please contact
+        <a class="foot__link" href="mailto:info@studiorowan.co.uk"><span>info@studiorowan.co.uk</span></a>
+        in the meantime.
+      </p>
     </footer>
   </main>
 

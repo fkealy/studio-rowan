@@ -10,7 +10,8 @@
   --sans: "Inter", system-ui, sans-serif;
 
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --pad: clamp(1.25rem, 4vw, 3.25rem);
+  --pad: clamp(1.5rem, 5vw, 4rem);
+  --inset: clamp(0.75rem, 2vw, 1.6rem);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -27,36 +28,13 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* ---------- WebGL + texture layers ---------- */
-#scene {
+/* Hairline frame, inset from the viewport edge. */
+.frame {
   position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  z-index: 0;
-}
-
-/* Texture overlays removed for a clean, minimal white surface. */
-.grain, .vignette { display: none; }
-
-/* Paper fades back in toward the foot of the page so the contour field
-   recedes to clean white and the footer copy always stays crisp. */
-body::after {
-  content: "";
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 42vh;
-  z-index: 1;
+  inset: var(--inset);
+  border: 1px solid var(--line);
+  z-index: 2;
   pointer-events: none;
-  background: linear-gradient(
-    to top,
-    var(--bone) 0%,
-    var(--bone) 22%,
-    rgba(246, 245, 242, 0) 100%
-  );
 }
 
 /* ---------- Preloader ---------- */
@@ -104,145 +82,96 @@ body::after {
   transform-origin: left;
 }
 
-/* ---------- Page layout ---------- */
+/* ---------- Centered layout ---------- */
 .page {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   min-height: 100svh;
-  padding: var(--pad);
+  padding: calc(var(--inset) + var(--pad)) var(--pad) calc(var(--inset) + var(--pad));
   display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: clamp(2rem, 5vh, 3rem);
+  grid-template-rows: 1fr auto;
+  gap: 2rem;
+  text-align: center;
 }
 
-/* Topbar */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.72rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  font-weight: 500;
-}
-.topbar__brand .mark { font-weight: 500; letter-spacing: 0.16em; }
-.topbar__meta {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  color: var(--ink-soft);
-}
-.topbar__meta .dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: var(--rowan);
-  display: inline-block;
-}
-@media (max-width: 540px) {
-  .topbar { font-size: 0.62rem; letter-spacing: 0.14em; }
-  .topbar__meta { gap: 0.55rem; }
-}
-
-/* Hero */
-.hero {
-  align-self: center;
+.stage {
   display: flex;
   flex-direction: column;
-  gap: clamp(1rem, 2.6vh, 1.75rem);
-  max-width: 100%;
+  align-items: center;
+  justify-content: center;
+  /* Generous air between the lockup and the status line. */
+  gap: clamp(3rem, 11vh, 6.5rem);
 }
-.hero__eyebrow {
-  font-size: 0.74rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
+
+/* Brand lockup */
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.4rem, 1.4vh, 0.9rem);
 }
-.hero__title {
+.brand__name {
   font-family: var(--serif);
   font-weight: 300;
-  font-size: clamp(3.6rem, 13.5vw, 12rem);
-  line-height: 0.9;
-  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  font-size: clamp(1.75rem, 7.2vw, 5.5rem);
+  line-height: 1.05;
+  letter-spacing: 0.16em;
+  /* Tracking adds a trailing gap; nudge back so it reads optically centred. */
+  text-indent: 0.16em;
 }
-.hero__title em {
+.brand__tagline {
+  font-family: var(--serif);
   font-style: italic;
   font-weight: 300;
+  font-size: clamp(1.05rem, 3vw, 2rem);
+  line-height: 1.2;
   color: var(--ink);
 }
-.hero__title .line {
+
+/* Masked reveal lines */
+.line {
   display: block;
   overflow: hidden;
-  padding-bottom: 0.06em; /* breathing room so the mask never clips glyphs */
+  padding-bottom: 0.1em;
 }
-.hero__title .line__inner {
+.line__inner {
   display: block;
   white-space: nowrap;
   will-change: transform;
 }
-.hero__lede {
-  font-family: var(--serif);
-  font-style: italic;
-  font-weight: 300;
-  font-size: clamp(1.05rem, 2.6vw, 1.6rem);
-  color: var(--ink-soft);
-  max-width: 22ch;
-}
 
-/* Footer */
-.footer {
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: clamp(1.5rem, 5vw, 5rem);
-  align-items: end;
-  padding-top: clamp(1.5rem, 4vh, 2.5rem);
-  border-top: 1px solid var(--line);
-}
-.footer__statement p {
-  font-size: clamp(0.86rem, 1.5vw, 1rem);
-  line-height: 1.6;
-  max-width: 46ch;
-  color: var(--ink-soft);
-}
-.footer__signup {
-  display: flex;
-  flex-direction: column;
-  gap: 1.1rem;
-  align-items: flex-start;
-}
-.footer__note {
-  font-family: var(--serif);
-  font-size: clamp(0.95rem, 1.5vw, 1.1rem);
-  line-height: 1.5;
-  max-width: 30ch;
-}
-
-/* Contact */
-.contact {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-}
-.contact__label {
-  font-size: 0.7rem;
-  letter-spacing: 0.18em;
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--ink-soft);
 }
-.contact__link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  align-self: flex-start;
-  font-family: var(--serif);
-  font-weight: 300;
-  font-size: clamp(1.15rem, 2.2vw, 1.6rem);
+.status__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--rowan);
+  flex: none;
+}
+
+/* Foot */
+.foot {
+  font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+.foot__link {
   color: var(--ink);
   text-decoration: none;
-  position: relative;
   transition: color 0.4s var(--ease);
+  white-space: nowrap;
 }
 /* Animated hairline underline. */
-.contact__link span {
+.foot__link span {
   background-image: linear-gradient(var(--rowan), var(--rowan));
   background-position: 0 100%;
   background-repeat: no-repeat;
@@ -250,21 +179,13 @@ body::after {
   transition: background-size 0.45s var(--ease);
   padding-bottom: 2px;
 }
-.contact__link svg {
-  transition: transform 0.45s var(--ease);
-  flex: none;
-}
-.contact__link:hover { color: var(--rowan); }
-.contact__link:hover span { background-size: 100% 1px; }
-.contact__link:hover svg { transform: translateX(3px); }
-.contact__link:focus-visible { outline: 2px solid var(--rowan); outline-offset: 4px; border-radius: 2px; }
+.foot__link:hover { color: var(--rowan); }
+.foot__link:hover span { background-size: 100% 1px; }
+.foot__link:focus-visible { outline: 2px solid var(--rowan); outline-offset: 4px; border-radius: 2px; }
 
-@media (max-width: 720px) {
-  .footer {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-  .hero { max-width: none; }
+/* Small screens: let the long wordmark breathe rather than overflow. */
+@media (max-width: 520px) {
+  .brand__name { letter-spacing: 0.1em; text-indent: 0.1em; }
 }
 
 /* ---------- Reveal init state ---------- */
@@ -276,6 +197,5 @@ body::after {
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .grain { animation: none; }
   .js-ready [data-reveal] { opacity: 1; transform: none; }
 }
