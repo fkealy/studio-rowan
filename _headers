@@ -1,4 +1,6 @@
 # Cloudflare Pages — https://developers.cloudflare.com/pages/configuration/headers/
+# Rules are cumulative; where two rules set the same header for the same
+# path, the LAST matching rule in this file wins.
 
 /*
   X-Content-Type-Options: nosniff
@@ -12,11 +14,20 @@
 /*.html
   Cache-Control: public, max-age=0, must-revalidate
 
-# Static assets: cache for a year (bust by editing/renaming).
+# Top-level app code (styles.css, main.js) changes on every deploy but keeps
+# the same filename — always revalidate so visitors get the latest build
+# instead of a stale cached copy.
 /*.css
-  Cache-Control: public, max-age=31536000
+  Cache-Control: public, max-age=0, must-revalidate
 /*.js
-  Cache-Control: public, max-age=31536000
-/*.woff2
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Pinned third-party dependencies: these only change when we deliberately
+# replace the vendored file (e.g. bumping the GSAP version), so it's safe
+# to cache them hard. Declared after the rules above so they take
+# precedence for these specific paths.
+/vendor/*
+  Cache-Control: public, max-age=31536000, immutable
+/fonts/*.woff2
   Cache-Control: public, max-age=31536000, immutable
   Access-Control-Allow-Origin: *
