@@ -1,0 +1,549 @@
+/* ============================================================================
+   Studio Rowan — the Never-Ending Slipper.
+   Grammar: split stage (uniqueness.md 2.7). Two grounds, held in tension for
+   the whole page, resolved by the collapse in act 7.
+
+   The divider is the chrome. There is no nav bar, by grammar.
+   Bespoke behaviour (the wash line) is in page.js, driven off --sc-p.
+   The engine in ./engine/ is vendored and never edited.
+   ========================================================================== */
+
+@font-face {
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  /* Shared with the holding page, already cached immutable with CORS.
+     Deliberately absolute: the one exception to this folder's relative paths. */
+  src: url("/fonts/outfit.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url("/fonts/inter.woff2") format("woff2");
+}
+
+:root {
+  /* Brand palette, from prototypes/shared/brand.css. */
+  --white:   #FFFFFF;
+  --ivory:   #F6F5F2;
+  --hemp:    #EBEAD7;
+  --clay:    #E0DCD1;
+  --apricot: #FC814A;
+  --ochre:   #7A6B11;   /* darkened from #9B8816: 4.5:1 on Ivory for small text */
+  --olive:   #40531B;
+  --onyx:    #2C302E;
+
+  /* Engine token overrides. Six roles and two faces is the whole rebrand. */
+  --sc-canvas:     var(--ivory);
+  --sc-surface:    var(--white);
+  --sc-ink:        var(--onyx);
+  --sc-ink-soft:   #5C605B;   /* tinted off the ink, not flat gray */
+  --sc-accent:     var(--apricot);
+  --sc-accent-ink: var(--onyx);
+
+  /* Display stays behind one variable. When the Raptor V2 Premium licence
+     lands, self-host the woff2 and change the first family name here. Nothing
+     else on the page names a display family. */
+  --display: "Outfit", system-ui, sans-serif;
+  --sc-font-display: var(--display);
+  --sc-font-text: "Inter", system-ui, -apple-system, sans-serif;
+
+  --hair:   color-mix(in oklab, var(--onyx) 16%, transparent);
+  --hair-2: color-mix(in oklab, var(--onyx) 30%, transparent);
+
+  /* The wash line's position. 50vw until the peak; page.js drives it left in
+     discrete steps from there, and to 0 at the collapse. */
+  --wash-x: 50vw;
+  --loop-o: 0;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  background: var(--ivory);
+  color: var(--onyx);
+  font-family: var(--sc-font-text);
+  font-size: var(--sc-t-base);
+  line-height: var(--sc-leading-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img, svg, video { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+
+:focus-visible {
+  outline: 2px solid var(--apricot);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+
+.skip {
+  position: absolute; left: var(--sc-gutter); top: -4rem; z-index: 200;
+  padding: .6rem 1rem; background: var(--onyx); color: var(--ivory);
+  font-size: var(--sc-t-sm);
+}
+.skip:focus { top: .75rem; }
+
+/* ---------------------------------------------------------------- grounds --
+   Two grounds, one per side. `drift` is banned by this grammar: they hold,
+   and only the boundary between them moves. Fixed, so page content scrolls
+   over them and the split is continuous for the whole page.
+   -------------------------------------------------------------------------- */
+.grounds { position: fixed; inset: 0; z-index: -2; pointer-events: none; }
+.grounds__l {
+  position: absolute; inset: 0 auto 0 0; width: var(--wash-x);
+  background: var(--clay);
+}
+.grounds__r {
+  position: absolute; inset: 0 0 0 auto; left: var(--wash-x);
+  background: var(--ivory);
+}
+
+/* ------------------------------------------------------------- the loop ----
+   Ambient product loop. Its left edge IS the wash line, so as the line
+   advances the loop takes the screen with it. Full-bleed happens at the
+   collapse, when the line reaches 0, which is the payoff rather than a
+   violation of "no full-bleed before the resolve".
+   -------------------------------------------------------------------------- */
+.loop {
+  position: fixed; inset: 0 0 0 auto; left: var(--wash-x);
+  z-index: -1; overflow: hidden; pointer-events: none;
+  opacity: var(--loop-o);
+}
+.loop video, .loop img {
+  width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%;
+}
+
+/* -------------------------------------------------------- the wash line ----
+   The signature move, and the page's only chrome. Carries both side labels
+   and the argument's progress. It travels left in discrete steps, one per
+   wash, and each step gives the right column more of the screen.
+   -------------------------------------------------------------------------- */
+.wash {
+  position: fixed; top: 0; bottom: 0; left: var(--wash-x);
+  width: 1px; background: var(--hair-2); z-index: 40; pointer-events: none;
+}
+/* The apricot travelling head. Palette rule: apricot is the wash line only. */
+.wash::after {
+  content: ""; position: absolute; left: -1px; width: 3px;
+  top: calc(var(--wash-head, 0.5) * 100% - 3rem); height: 6rem;
+  background: var(--apricot); opacity: var(--wash-live, 0);
+  transition: opacity var(--sc-d-slow) var(--sc-ease-out);
+}
+
+.wash__labels {
+  position: absolute; top: clamp(1.1rem, 2.4vw, 1.9rem); left: 0;
+  display: flex; align-items: baseline; width: 0;
+}
+/* These name the two worlds, and under this grammar that job belongs to the
+   chrome. Repeating it as an eyebrow inside each column made it ambiguous:
+   sat under the wordmark, "what hospitality has" reads as if it introduces
+   OUR product rather than the one being replaced. So the labels carry it
+   alone, and they are set to be read, not to be decoration. */
+.wash__labels span {
+  font-size: var(--sc-t-sm); letter-spacing: .06em;
+  text-transform: uppercase; white-space: nowrap; color: var(--onyx);
+  padding-bottom: .5rem;
+}
+.wash__labels .l {
+  position: absolute; right: 1rem; text-align: right;
+  color: var(--sc-ink-soft); border-bottom: 1px solid var(--hair);
+}
+.wash__labels .r {
+  position: absolute; left: 1rem;
+  border-bottom: 1px solid var(--hair-2);
+}
+
+/* The readout. Counts up to 70,000 as act 2 lands, then depletes through the
+   peak, one decrement per step of the line. It hangs on the LEFT of the line,
+   because the figure it carries belongs to the disposable world: it travels
+   with the line as that side is taken, and it never crosses into the product
+   column. Anchored low so it clears the right column's media. */
+.wash__readout {
+  position: absolute; top: 72%; right: .9rem; width: max-content;
+  text-align: right;
+  opacity: var(--readout-o, 0); transition: opacity var(--sc-d-slow) var(--sc-ease-out);
+}
+.wash__readout b {
+  display: block; font-family: var(--display); font-weight: 300;
+  font-size: var(--sc-t-xl); line-height: 1; letter-spacing: var(--sc-track-snug);
+  font-variant-numeric: tabular-nums; color: var(--onyx);
+}
+.wash__readout small {
+  display: block; margin-top: .45rem; margin-left: auto; max-width: 17ch;
+  font-size: var(--sc-t-xs); line-height: 1.35; color: var(--sc-ink-soft);
+}
+
+@media (max-width: 860px) {
+  /* Mobile art direction, not a reflow of the desktop one.
+
+     A fixed vertical divider cannot survive a 390px viewport, and a fixed
+     HORIZONTAL one is worse: content scrolls through it, so the ground changes
+     tone in the middle of a heading and reads as a rendering fault rather than
+     a composition. So on a phone the two worlds become alternating BANDS, each
+     side carrying its own ground, and the line does its travelling only where
+     it is actually doing work: the peak and the collapse, where it moves up
+     and hands the screen to the product. Same move, rotated. */
+  .grounds { display: none; }
+  .wash { display: none; }
+  .loop { inset: var(--wash-y, 50vh) 0 0 0; left: 0; }
+
+  .side--l, .hero__floor > div:first-child, .peak__l { background: var(--clay); }
+  .side--r, .hero__floor > div:last-child, .mission, .peak__r { background: var(--ivory); }
+  .hero { background: var(--clay); }
+}
+
+/* ------------------------------------------------------------------ type -- */
+.d {
+  font-family: var(--display); font-weight: 300;
+  letter-spacing: var(--sc-track-tight); line-height: var(--sc-leading-none);
+  text-wrap: balance;
+}
+.d--xl { font-size: var(--sc-t-4xl); }
+.d--lg { font-size: var(--sc-t-3xl); }
+.d--md { font-size: var(--sc-t-2xl); }
+.d--sm { font-size: var(--sc-t-xl); letter-spacing: var(--sc-track-snug); }
+
+@media (max-width: 700px) {
+  /* The desktop floor on --sc-t-4xl wraps a hero to six lines at 390px. */
+  .d--xl { font-size: var(--sc-t-2xl); }
+  .d--lg { font-size: var(--sc-t-xl); }
+}
+
+.lede { font-size: var(--sc-t-lg); line-height: 1.45; max-width: 34ch; text-wrap: pretty; }
+.prose { max-width: 46ch; text-wrap: pretty; }
+.prose p + p { margin-top: var(--sc-4); }
+.prose strong { font-weight: 500; }
+.meta {
+  font-size: var(--sc-t-xs); letter-spacing: var(--sc-track-wide);
+  text-transform: uppercase; color: var(--sc-ink-soft);
+}
+
+/* ----------------------------------------------------------------- split ---
+   Content columns track the divider, so the line is always the boundary
+   between the two worlds and never a rule drawn near one.
+   -------------------------------------------------------------------------- */
+.split {
+  display: grid;
+  /* NOT var(--wash-x). The wash line is a live global that runs to 0 at the
+     collapse, and these columns exist in every act. Tracking it meant that the
+     moment the divider reached the edge, the left column of every earlier act
+     collapsed to zero width, rewrapped its text into hundreds of lines and
+     grew the document by thousands of pixels. It happens above the viewport so
+     it is invisible, and it staled the cached geometry of every pinned act,
+     which is what made the later pins slip.
+
+     The divider holds at the halfway mark for the whole of acts 1 to 5, so
+     these columns are simply fixed there. Only the peak and the collapse read
+     the live variable, because there it IS the mechanism. */
+  grid-template-columns: 50vw 1fr;
+  min-height: 100vh;
+  align-items: start;
+}
+.split > * { min-width: 0; }
+.side {
+  padding: clamp(6rem, 13vh, 10rem) calc(var(--sc-gutter) * .62) var(--sc-8);
+  display: flex; flex-direction: column; gap: var(--sc-6);
+}
+.side--l { padding-left: var(--sc-gutter); align-items: flex-start; }
+.side--r { padding-right: var(--sc-gutter); }
+
+@media (max-width: 860px) {
+  .split { grid-template-columns: 1fr; min-height: 0; }
+  .side { padding: var(--sc-8) var(--sc-gutter); }
+  .side--l { padding-top: var(--sc-9); }
+
+  /* A pinned stage is exactly one viewport tall and clips what will not fit.
+     Stacked into one column on a phone these spreads overflow it, and the
+     overflow is not scrollable: it is content nobody can ever reach. Measured
+     at 984px inside an 844px viewport before this rule. The acts that can flow
+     on a phone already do; the scrub has to stay pinned, so it gets a tighter
+     frame instead. */
+  [data-sc-act="pin"] .side,
+  [data-sc-act="scrub"] .side { padding-top: var(--sc-6); padding-bottom: var(--sc-5); gap: var(--sc-4); }
+  [data-sc-act="pin"] .side--l,
+  [data-sc-act="scrub"] .side--l { padding-top: var(--sc-6); }
+  [data-sc-act="scrub"] .spin__cap { margin-top: var(--sc-2); }
+}
+
+/* ------------------------------------------------------------------ act 1 -- */
+.hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; }
+.hero__top {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: var(--sc-5); padding: clamp(1rem, 2.4vw, 1.8rem) var(--sc-gutter);
+}
+.hero__mark { width: clamp(120px, 13vw, 178px); color: var(--onyx); }
+.hero__mark svg { width: 100%; height: auto; }
+.hero__meta { text-align: right; display: grid; gap: .2rem; }
+
+.hero__head {
+  padding: clamp(2rem, 6vh, 5rem) var(--sc-gutter) clamp(1.5rem, 4vh, 3rem);
+}
+.hero__head h1 { max-width: 18ch; }
+.hero__head .lede { margin-top: var(--sc-5); }
+
+.hero__floor {
+  margin-top: auto;
+  display: grid; grid-template-columns: 50vw 1fr;   /* fixed, see .split */
+  border-top: 1px solid var(--hair);
+}
+.hero__floor > div {
+  padding: var(--sc-6) calc(var(--sc-gutter) * .62) clamp(2.5rem, 7vh, 5rem);
+  display: flex; flex-direction: column; gap: var(--sc-3);
+}
+.hero__floor > div:first-child { padding-left: var(--sc-gutter); }
+.hero__floor > div:last-child { padding-right: var(--sc-gutter); }
+
+@media (max-width: 860px) {
+  .hero__floor { grid-template-columns: 1fr; }
+  .hero__floor > div { padding: var(--sc-6) var(--sc-gutter); }
+  .hero__floor > div + div { border-top: 1px solid var(--hair); }
+}
+
+/* ------------------------------------------------------------------ act 2 -- */
+.figures { display: grid; gap: var(--sc-6); margin-top: var(--sc-2); }
+/* minmax(0, 1fr) so the counter cannot size the column. A count device grows
+   its number while the reader watches, and a content-sized column rewraps the
+   prose beside it as it does, changing this section's height mid-scroll and
+   staling every act measurement below it. */
+.figure { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--sc-2); }
+.figure__n {
+  font-family: var(--display); font-weight: 300; font-size: var(--sc-t-2xl);
+  line-height: 1; letter-spacing: var(--sc-track-tight);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.figure__n--soft { color: var(--ochre); }
+.figure small {
+  display: block; font-size: var(--sc-t-xs); letter-spacing: var(--sc-track-wide);
+  text-transform: uppercase; color: var(--sc-ink-soft); margin-bottom: .3rem;
+}
+.figure p { max-width: 42ch; text-wrap: pretty; }
+/* Sourcing note carried next to an uncited figure. See BUILD-NOTES.md. */
+.figure cite {
+  display: block; margin-top: .5rem; font-style: normal;
+  font-size: var(--sc-t-xs); color: var(--sc-ink-soft);
+}
+
+.turn { display: grid; gap: .2rem; margin-top: var(--sc-7); }
+.turn span { display: block; }
+
+/* ------------------------------------------------------------------ act 3 -- */
+.spin { position: relative; width: 100%; }
+.spin__frame {
+  position: relative; width: 100%; aspect-ratio: 1440 / 900;
+  background: color-mix(in oklab, var(--clay) 45%, var(--ivory));
+  overflow: hidden;
+}
+.spin__frame canvas, .spin__frame picture, .spin__frame img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
+.spin__frame canvas { opacity: 0; transition: opacity var(--sc-d-slow) var(--sc-ease-out); }
+.spin__frame.is-live canvas { opacity: 1; }
+.spin__frame.is-live img { opacity: 0; }
+.spin__frame img { transition: opacity var(--sc-d-slow) var(--sc-ease-out); }
+.spin__frame:focus-visible { outline: 2px solid var(--apricot); outline-offset: 4px; }
+/* Hairline decode readout. Never a spinner, never a percentage. */
+.spin__load {
+  position: absolute; left: 0; bottom: 0; height: 1px; width: 100%;
+  transform: scaleX(var(--decoded, 0)); transform-origin: 0 50%;
+  background: var(--ochre); opacity: .85;
+  transition: opacity var(--sc-d-base) var(--sc-ease-out);
+}
+.spin__frame.is-ready .spin__load { opacity: 0; }
+.spin__cap {
+  display: flex; justify-content: space-between; gap: var(--sc-4);
+  margin-top: var(--sc-3); font-size: var(--sc-t-xs); color: var(--sc-ink-soft);
+}
+@media (hover: hover) and (pointer: fine) {
+  .spin__frame.is-live { cursor: ew-resize; }
+}
+
+/* ------------------------------------------------------------------ act 4 -- */
+.claims { display: grid; gap: 0; margin-top: var(--sc-2); }
+.claim {
+  display: grid; grid-template-columns: 2.6rem 1fr; gap: var(--sc-4);
+  align-items: start;
+  padding: var(--sc-5) 0;
+  border-top: 1px solid var(--hair);
+}
+.claim:last-child { border-bottom: 1px solid var(--hair); }
+.claim i { display: block; width: 2.6rem; height: 2.6rem; color: var(--olive); }
+.claim i svg { width: 100%; height: 100%; }
+.claim b { display: block; font-weight: 500; font-size: var(--sc-t-lg); letter-spacing: var(--sc-track-normal); }
+.claim span { display: block; color: var(--sc-ink-soft); margin-top: .15rem; }
+
+/* ------------------------------------------------------------------ act 5 -- */
+.mission {
+  padding: clamp(7rem, 20vh, 16rem) var(--sc-gutter);
+  display: grid; gap: clamp(3rem, 9vh, 7rem);
+}
+.mission h2 { max-width: 20ch; }
+.mission h2 em { font-style: italic; }
+.mission__cols {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 26ch), 1fr));
+  gap: clamp(2rem, 5vw, 5rem); align-items: start;
+}
+.changed { list-style: none; display: grid; gap: var(--sc-3); }
+.changed li { font-size: var(--sc-t-lg); line-height: 1.35; text-wrap: pretty; }
+.changed li:last-child { font-weight: 500; }
+
+/* ------------------------------------------------------------------ act 6 -- */
+/* 100%, not 100vh: the engine's stage is 100svh, and on a phone svh excludes
+   the browser UI while vh does not. Sizing this to vh made it taller than the
+   stage that clips it, so the bottom was unreachable. */
+.peak { position: relative; height: 100%; overflow: hidden; }
+/* Left content is occluded by the advancing ground rather than reflowed. */
+.peak__l {
+  position: absolute; inset: 0 auto 0 0; width: 50vw;
+  clip-path: inset(0 calc(100% - var(--wash-x)) 0 0);
+  padding: clamp(5rem, 12vh, 9rem) calc(var(--sc-gutter) * .62) var(--sc-8) var(--sc-gutter);
+  display: flex; flex-direction: column; gap: var(--sc-5);
+}
+.peak__r {
+  position: absolute; inset: 0 0 0 auto; left: var(--wash-x);
+  display: flex; align-items: center;
+  padding: var(--sc-8) var(--sc-gutter) var(--sc-8) calc(var(--sc-gutter) * .62);
+}
+/* Fixed measure so growth recentres the block instead of rewrapping it. */
+.peak__copy { position: relative; width: min(46ch, 42vw); }
+
+.tally {
+  --dot: 5px;
+  display: grid; grid-template-columns: repeat(auto-fill, var(--dot));
+  gap: 4px; align-content: start; flex: 1; min-height: 0; overflow: hidden;
+  opacity: .5;
+}
+.tally i { display: block; width: var(--dot); height: var(--dot); background: var(--onyx); opacity: .5; }
+
+.peak__setup {
+  font-size: var(--sc-t-lg); line-height: 1.4; max-width: 30ch;
+  color: var(--sc-ink-soft); margin-bottom: var(--sc-5);
+}
+.again { display: grid; gap: .1rem; font-weight: 300; }
+.peak__lede { margin-top: var(--sc-6); }
+.again > span { display: block; }
+.betters { display: grid; gap: .35rem; margin-top: var(--sc-6); }
+.betters span { display: block; color: var(--sc-ink-soft); }
+.betters .key { color: var(--onyx); font-weight: 500; }
+
+@media (max-width: 860px) {
+  /* The peak still runs its mechanism, rotated: the boundary rises and the
+     product takes the screen from the top down. */
+  .peak { height: 100%; }   /* svh, via the stage; see the base rule */
+  .peak__l {
+    inset: 0 0 auto 0; width: auto; height: var(--wash-y, 50vh);
+    clip-path: none; overflow: hidden;
+    padding: var(--sc-7) var(--sc-gutter) var(--sc-4);
+  }
+  .peak__r {
+    inset: var(--wash-y, 50vh) 0 0 0; left: 0; align-items: flex-start;
+    background: transparent;
+    padding: var(--sc-6) var(--sc-gutter);
+  }
+  .peak__copy { width: auto; }
+  .scrim-col { width: 100%; background: linear-gradient(180deg,
+      color-mix(in oklab, var(--ivory) 90%, transparent) 0%,
+      color-mix(in oklab, var(--ivory) 74%, transparent) 62%, transparent 100%); }
+  .tally { min-height: 0; }
+}
+
+/* ------------------------------------------------------------------ act 7 --
+   The collapse. The divider has reached the edge, one world remains, and the
+   CTA lives in the winning column. Asymmetric by requirement: the plate is
+   anchored to the trailing edge, never centred.
+   -------------------------------------------------------------------------- */
+.close { position: relative; min-height: 100vh; display: flex; flex-direction: column; }
+.close__body {
+  flex: 1; display: grid; grid-template-columns: 1fr min(52ch, 46vw);
+  align-items: center; gap: var(--sc-7);
+  padding: clamp(5rem, 12vh, 9rem) var(--sc-gutter) var(--sc-7);
+}
+.plate {
+  background: var(--olive); color: var(--ivory);
+  padding: clamp(2rem, 4vw, 3.25rem);
+  display: grid; gap: var(--sc-5);
+  box-shadow: var(--sc-e2);
+}
+/* color is inherited as a computed value, so restating the tokens on an
+   inverted subtree is not enough on its own. Restate color with them. */
+.plate { --sc-ink: var(--ivory); --sc-ink-soft: #C9D2B4; color: var(--sc-ink); }
+.plate h2 { max-width: 17ch; }
+.plate p { color: var(--sc-ink-soft); max-width: 40ch; }
+.plate__tag { font-size: var(--sc-t-lg); }
+
+.ctas { display: flex; flex-wrap: wrap; gap: var(--sc-3); }
+.btn {
+  display: inline-flex; align-items: center; gap: .55rem;
+  padding: .85rem 1.4rem; font-size: var(--sc-t-sm);
+  background: var(--ivory); color: var(--onyx);
+  transition: transform var(--sc-d-fast) var(--sc-ease-out),
+              background-color var(--sc-d-fast) var(--sc-ease-out);
+}
+.btn svg { width: 1em; height: 1em; }
+.btn--ghost { background: transparent; color: var(--ivory); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ivory) 45%, transparent); }
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover { background: var(--hemp); }
+  .btn--ghost:hover { background: color-mix(in oklab, var(--ivory) 14%, transparent); }
+}
+.btn:active { transform: translateY(1px); }
+.plate :focus-visible { outline-color: var(--hemp); }
+
+.foot {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sc-3) var(--sc-6);
+  padding: var(--sc-5) var(--sc-gutter) var(--sc-6);
+  border-top: 1px solid var(--hair);
+  font-size: var(--sc-t-xs); color: var(--sc-ink-soft);
+  background: color-mix(in oklab, var(--ivory) 88%, transparent);
+  backdrop-filter: blur(6px);
+}
+.foot a { border-bottom: 1px solid transparent; }
+@media (hover: hover) and (pointer: fine) { .foot a:hover { border-bottom-color: currentColor; } }
+.foot .sp { margin-left: auto; }
+
+@media (max-width: 860px) {
+  .close__body { grid-template-columns: 1fr; padding-top: var(--sc-8); }
+}
+
+/* Scrim: only where text sits, never a full-frame overlay, and never a child
+   of the copy it protects (the harness hides the copy to measure underneath). */
+.scrim-col {
+  position: absolute; inset: 0 auto 0 0; width: min(62%, 70ch);
+  background: linear-gradient(90deg,
+    color-mix(in oklab, var(--ivory) 92%, transparent) 0%,
+    color-mix(in oklab, var(--ivory) 78%, transparent) 58%,
+    transparent 100%);
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------- no script ---
+   The engine parks [data-sc-cue] and [data-sc-in] at opacity 0 as their
+   pre-paint state, so without JS the page would be blank. The .js class is set
+   by an inline script in <head>, before first paint, so this costs no flash.
+   -------------------------------------------------------------------------- */
+html:not(.js) [data-sc-cue],
+html:not(.js) [data-sc-in],
+html:not(.js) [data-sc-stagger] > * {
+  opacity: 1 !important;
+  transform: none !important;
+}
+/* Without JS the wash line never moves, so the split stays at 50/50 and the
+   page reads as a two-column document. That is the correct degraded state. */
+
+/* ------------------------------------------------------- reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .wash, .grounds__l, .grounds__r, .loop, .peak__l, .peak__r { transition: none !important; }
+  .spin__frame canvas { display: none; }
+  .spin__frame img { opacity: 1 !important; }
+  .spin__load { display: none; }
+}

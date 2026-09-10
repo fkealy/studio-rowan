@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "static",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "4175"],
+      "port": 4175
+    },
+    {
+      "name": "csp-check",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["scrollcraft/builds/studio-rowan/csp-server.mjs"],
+      "port": 4176
+    }
+  ]
+}

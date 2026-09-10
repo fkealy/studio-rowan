@@ -31,3 +31,32 @@
 /fonts/*.woff2
   Cache-Control: public, max-age=31536000, immutable
   Access-Control-Allow-Origin: *
+
+# The next site, published alongside the holding page and not yet public.
+/preview/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: public, max-age=0, must-revalidate
+  # Nothing external is loaded at runtime: fonts, engine, media and the frame
+  # sequence are all same-origin. Scoped to /preview/* deliberately, so the
+  # holding page at / is not affected; widen it at promotion, not before.
+  # The sha256 covers the one inline script, which sets the .js class before
+  # first paint so the no-JS fallback does not flash.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw='; style-src 'self'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; object-src 'none'
+
+# Its long-lived assets. Declared after the rule above so they take precedence
+# for these paths; X-Robots-Tag still applies, because rules are cumulative.
+/preview/spin/*
+  Cache-Control: public, max-age=31536000, immutable
+/preview/media/*
+  Cache-Control: public, max-age=31536000, immutable
+/preview/engine/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Preview 2: the chaptered-editorial proposal. Shares preview 1's spin and
+# media by relative path, so it declares no asset rules of its own.
+/preview-2/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: public, max-age=0, must-revalidate
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw='; style-src 'self'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; object-src 'none'
+/preview-2/engine/*
+  Cache-Control: public, max-age=31536000, immutable

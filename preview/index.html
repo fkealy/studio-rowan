@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Studio Rowan. Leave less behind.</title>
+<meta name="description" content="The Never-Ending Slipper: a reusable, waterproof, recycled EVA hotel slider that replaces the disposables hospitality throws away by the tens of thousands.">
+<meta name="robots" content="noindex, nofollow">
+<script>document.documentElement.classList.add('js');</script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23F6F5F2'/><circle cx='16' cy='16' r='6' fill='%232C302E'/></svg>">
+
+<meta property="og:title" content="Studio Rowan. Leave less behind.">
+<meta property="og:description" content="The Never-Ending Slipper. A reusable hotel slider, designed for a world with less waste.">
+<meta property="og:image" content="./og.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preload" href="/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="./engine/scrollcraft.css">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- Two grounds, one per side. They hold; only the boundary moves. -->
+<div class="grounds" aria-hidden="true">
+  <div class="grounds__l"></div>
+  <div class="grounds__r"></div>
+</div>
+
+<!-- The ambient loop. Left edge is the wash line, so it takes the screen as
+     the line advances and is full-bleed exactly at the collapse. -->
+<div class="loop" id="loop" aria-hidden="true">
+  <video id="loopv" muted loop playsinline preload="none"
+         poster="./media/slide-loop-poster.webp" width="1440" height="1440"></video>
+</div>
+
+<!-- The wash line: the chrome, the progress readout, the peak's mechanism. -->
+<div class="wash" id="wash" aria-hidden="true">
+  <div class="wash__labels">
+    <span class="l">The hotel slipper</span>
+    <span class="r">The Never-Ending Slipper</span>
+  </div>
+  <p class="wash__readout" id="readout">
+    <b id="readout-n">0</b>
+    <small id="readout-l">disposable pairs, one hotel, one year</small>
+  </p>
+</div>
+
+<main id="main">
+
+  <!-- ============================================================ ACT 1
+       Recognition. pin. The split is established at 50/50 and both
+       headlines are readable at once, so the format is understood before
+       the first scroll. -->
+  <section data-sc-act="pin" data-sc-span="2.2" id="act1" aria-label="Introduction">
+    <div data-sc-stage>
+      <div class="hero">
+        <div class="hero__top">
+          <div class="hero__mark" role="img" aria-label="Studio Rowan"><svg xmlns="http://www.w3.org/2000/svg" viewBox="485.56 474.43 975.61 131.14" fill="currentColor"><path fill-rule="nonzero" d="M499.79 507.40 C499.79 494.79 509.88 485.42 523.75 485.42 C537.26 485.42 545.54 492.81 548.60 505.96 L560.85 505.96 C557.43 485.06 542.66 474.43 523.75 474.43 C504.83 474.43 488.08 487.40 488.08 507.58 C488.08 555.85 550.23 532.61 550.23 570.80 C550.23 583.59 540.50 594.58 525.37 594.58 C509.34 594.58 500.87 585.57 497.81 572.24 L485.56 572.24 C488.98 592.96 503.03 605.57 525.37 605.57 C546.26 605.57 562.11 590.80 562.11 570.62 C562.11 521.99 499.79 545.22 499.79 507.40Z"/><path fill-rule="nonzero" d="M696.54 563.96 C696.54 587.73 678.71 594.94 665.74 594.94 C651.87 594.94 639.98 587.73 639.98 563.96 L639.98 515.14 L630.61 515.14 L628.81 515.14 L589.72 515.14 L589.72 492.09 L578.55 492.09 L578.55 580.53 C578.55 594.76 587.38 603.05 601.07 603.05 L614.76 603.05 L614.76 592.96 L601.07 592.96 C593.51 592.96 589.72 588.64 589.72 580.53 L589.72 525.23 L628.81 525.23 L628.81 567.74 C628.81 593.50 644.30 605.57 663.76 605.57 C674.03 605.57 688.44 601.24 696.54 588.09 L696.54 603.05 L707.71 603.05 L707.71 515.14 L696.54 515.14 L696.54 563.96Z"/><path fill-rule="nonzero" d="M766.42 594.94 C747.86 594.94 732.73 581.97 732.73 559.09 C732.73 536.22 747.86 523.25 766.42 523.25 C784.97 523.25 800.10 536.22 800.10 559.09 C800.10 581.97 784.97 594.94 766.42 594.94 M800.10 530.45 C792.53 518.74 779.93 512.62 765.34 512.62 C742.10 512.62 721.02 529.01 721.02 559.09 C721.02 589.18 742.10 605.57 765.34 605.57 C779.93 605.57 792.53 599.44 800.10 587.73 L800.10 603.05 L811.27 603.05 L811.27 476.95 L800.10 476.95 L800.10 530.45Z"/><path fill-rule="nonzero" d="M831.03 515.14H842.20V603.05H831.03ZZ"/><path fill-rule="nonzero" d="M836.61 481.10 C831.75 481.10 827.97 484.88 827.97 489.74 C827.97 494.61 831.75 498.39 836.61 498.39 C841.48 498.39 845.26 494.61 845.26 489.74 C845.26 484.88 841.48 481.10 836.61 481.10Z"/><path fill-rule="nonzero" d="M903.08 594.94 C884.71 594.94 869.40 581.97 869.40 559.09 C869.40 536.22 884.71 523.25 903.08 523.25 C921.64 523.25 936.95 536.22 936.95 559.09 C936.95 581.97 921.64 594.94 903.08 594.94 M903.08 512.62 C879.66 512.62 857.69 529.01 857.69 559.09 C857.69 589.18 879.66 605.57 903.08 605.57 C926.50 605.57 948.48 589.18 948.48 559.09 C948.48 529.01 926.50 512.62 903.08 512.62Z"/><path fill-rule="nonzero" d="M1001.71 543.42 C1024.41 543.42 1040.08 531.71 1040.08 510.46 C1040.08 489.38 1024.41 476.95 1001.71 476.95 L968.57 476.95 L968.57 603.05 L979.91 603.05 L979.91 533.52 L979.91 487.40 L1001.71 487.40 C1017.38 487.40 1028.19 494.79 1028.19 510.46 C1028.19 526.13 1017.38 533.52 1001.71 533.52 L979.91 533.52 L1031.79 603.05 L1045.48 603.05 L1000.99 543.42 L1001.71 543.42Z"/><path fill-rule="nonzero" d="M1090.70 594.94 C1072.32 594.94 1057.01 581.97 1057.01 559.09 C1057.01 536.22 1072.32 523.25 1090.70 523.25 C1109.25 523.25 1124.56 536.22 1124.56 559.09 C1124.56 581.97 1109.25 594.94 1090.70 594.94 M1090.70 512.62 C1067.28 512.62 1045.30 529.01 1045.30 559.09 C1045.30 589.18 1067.28 605.57 1090.70 605.57 C1114.11 605.57 1136.09 589.18 1136.09 559.09 C1136.09 529.01 1114.11 512.62 1090.70 512.62Z"/><path fill-rule="nonzero" d="M1173.92 603.05 L1184.55 603.05 L1204.00 515.14 L1193.37 515.14 L1173.92 603.05Z"/><path fill-rule="nonzero" d="M1233.54 603.05 L1245.25 603.05 L1271.55 515.14 L1259.84 515.14 L1233.54 603.05Z"/><path fill-rule="nonzero" d="M1135.55 515.14 L1162.03 603.05 L1173.92 603.05 L1147.44 515.14 L1135.55 515.14Z"/><path fill-rule="nonzero" d="M1204.00 515.14 L1222.92 603.05 L1233.54 603.05 L1214.63 515.14 L1204.00 515.14Z"/><path fill-rule="nonzero" d="M1328.84 568.28 C1328.84 588.09 1312.80 595.30 1301.28 595.30 C1292.63 595.30 1283.98 591.34 1283.98 580.71 C1283.98 572.42 1288.31 567.92 1299.29 564.86 L1328.84 556.93 L1328.84 568.28 M1309.02 512.62 C1291.91 512.62 1277.68 521.09 1274.08 540.90 L1286.33 540.90 C1289.39 527.03 1299.11 523.25 1309.02 523.25 C1322.35 523.25 1328.84 530.27 1328.84 538.92 L1328.84 547.20 L1296.77 555.67 C1280.38 559.81 1272.46 567.20 1272.46 581.07 C1272.46 598.36 1285.24 605.57 1299.66 605.57 C1308.66 605.57 1321.63 601.78 1328.84 590.80 L1328.84 603.05 L1340.00 603.05 L1340.00 538.92 C1340.00 523.25 1328.66 512.62 1309.02 512.62Z"/><path fill-rule="nonzero" d="M1399.49 512.62 C1389.23 512.62 1374.82 516.94 1366.71 530.09 L1366.71 515.14 L1355.54 515.14 L1355.54 603.05 L1366.71 603.05 L1366.71 554.41 C1366.71 530.45 1384.54 523.25 1397.51 523.25 C1411.38 523.25 1423.27 530.45 1423.27 554.41 L1423.27 603.05 L1434.44 603.05 L1434.44 550.45 C1434.44 524.69 1418.95 512.62 1399.49 512.62Z"/><path fill-rule="nonzero" d="M1457.79 515.12H1461.17V528.19H1457.79ZZ"/><path fill-rule="nonzero" d="M1454.33 525.93 L1456.87 525.93 L1457.79 515.12 L1455.25 515.12 L1454.33 525.93Z"/><path fill-rule="nonzero" d="M1437.21 518.18 L1439.96 518.18 L1439.96 528.19 L1443.48 528.19 L1443.48 518.18 L1446.23 518.18 L1446.23 515.12 L1437.21 515.12 L1437.21 518.18Z"/><path fill-rule="nonzero" d="M1447.71 515.12H1450.95V528.19H1447.71ZZ"/><path fill-rule="nonzero" d="M1450.95 515.12 L1451.80 525.93 L1454.33 525.93 L1453.49 515.12 L1450.95 515.12Z"/></svg></div>
+          <p class="hero__meta meta"><span>Lasting hospitality goods</span><span>London, 2026</span></p>
+        </div>
+
+        <div class="hero__head">
+          <h1 class="d d--xl" data-sc-cue="0 0.9 0">Leave less behind.</h1>
+          <p class="lede" data-sc-cue="0 0.9 0">Studio Rowan redesigns products and systems that create unnecessary waste.</p>
+        </div>
+
+        <div class="hero__floor">
+          <div data-sc-cue="0 0.95 0">
+            <p class="d d--sm">Worn for moments, wasted forever.</p>
+          </div>
+          <div data-sc-cue="0 0.95 0">
+            <p class="d d--sm">The Never-Ending Slipper.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ ACT 2
+       Tension. count. The one number the page has earned. -->
+  <!-- flow, not pin: this column is 1332px of content and a pinned stage is
+       exactly one viewport tall with `overflow: clip`, which put the second
+       figure and the whole "We thought there had to be a better way" couplet
+       permanently below the fold. The count device does not need a pin. -->
+  <!-- The story flows: it is prose, and it wants to be read past. -->
+  <section data-sc-act="flow" id="act2" aria-labelledby="a2h">
+    <div data-sc-stage>
+      <div class="split">
+        <div class="side side--l">
+          <h2 class="d d--lg" id="a2h" data-sc-cue="0 1 0.02 0">Worn for moments, wasted forever.</h2>
+          <p class="prose" data-sc-cue="0.04 1 0.06 0">It was summertime in the Swiss Alps. The moon was shining, and the campfire was crackling. A group of friends sat by a lake, beers in hand, chatting about work. One of them managed a hotel and mentioned, almost in passing, that the hotel got through 70,000 pairs of disposable slippers a year.</p>
+        </div>
+        <div class="side side--r">
+          <p class="d d--md" data-sc-cue="0.14 1 0.1 0">Reusable hotel sliders, designed for the world we live in now.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The figures hold. A counter needs the page to stop while it runs, or the
+       reader scrolls past a number that is still moving and it never lands.
+       The couplet moves to the right column, where it belongs: it is the
+       alternative emerging, not part of the tally, and it arrives after the
+       numbers have finished. -->
+  <section data-sc-act="pin" data-sc-span="2.4" id="act2n" aria-label="The figures">
+    <div data-sc-stage>
+      <div class="split">
+        <div class="side side--l">
+          <div class="figures">
+            <div class="figure" data-sc-cue="0 1 0.05 0">
+              <p class="figure__n" data-sc-count="0 70,000" data-sc-count-at="0.06 0.42">0</p>
+              <p><small>One hotel, one year</small><strong>70,000 pairs.</strong> Used once, often for a matter of minutes, and thrown away. It was one of those numbers that was difficult to forget about.</p>
+            </div>
+            <div class="figure" data-sc-cue="0 1 0.05 0">
+              <p class="figure__n figure__n--soft" data-sc-count="0 120,000,000" data-sc-count-at="0.06 0.42">0</p>
+              <p><small>America, every year</small>Slippers sent to landfill. So, once back in the UK, we reached out to hotels and spas and quickly realised that this was not an isolated issue. Disposable slippers are used in enormous quantities across the hospitality industry.
+                <cite>Figure not yet sourced. Carried for this preview only.</cite></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="side side--r">
+          <p class="turn d d--sm" data-sc-cue="0.5 1 0.14 0">
+            <span>We thought there had to be a better way.</span>
+            <span>So we redesigned them.</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ ACT 3
+       Turn. scrub. The only scrub the grammar allows: the object turning
+       under the reader's hand, inside the right column. -->
+  <section data-sc-act="scrub" data-sc-span="3" data-sc-dwell="0.3" id="act3" aria-labelledby="a3h">
+    <div data-sc-stage>
+      <div class="split">
+        <div class="side side--l">
+          <p class="prose" data-sc-cue="0.06 1 0.08 0">The conventional hotel slipper isn&rsquo;t just wasteful. <strong>It&rsquo;s not particularly good at being a slipper.</strong></p>
+          <p class="prose" data-sc-cue="0.2 1 0.06 0">They offer little support. Limited sizing. They aren&rsquo;t particularly comfortable. And despite spending much of their (very short) lives around pools and spas, they aren&rsquo;t even waterproof.</p>
+          <p class="prose" data-sc-cue="0.42 1 0.08 0">We saw an opportunity to change that.</p>
+        </div>
+
+        <div class="side side--r">
+          <h2 class="d d--lg" id="a3h" data-sc-cue="0 1 0.02 0">The Never-Ending Slipper.</h2>
+          <p class="lede" data-sc-cue="0.04 1 0.06 0">A better hotel slipper, designed for a world with less waste.</p>
+
+          <div class="spin">
+            <div class="spin__frame" id="spin" tabindex="0" role="img"
+                 aria-label="The Never-Ending Slipper in near-white recycled EVA, turning through half a rotation from side profile to the opposite profile. Use the left and right arrow keys to turn it.">
+              <picture>
+                <source type="image/avif" srcset="./spin/still.avif">
+                <img src="./spin/still.webp" width="1440" height="900" alt="" decoding="async" fetchpriority="high">
+              </picture>
+              <canvas width="1440" height="900" aria-hidden="true"></canvas>
+              <span class="spin__load" aria-hidden="true"></span>
+            </div>
+            <p class="spin__cap"><span>Recycled EVA, near-white</span><span id="spin-hint"></span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ ACT 4
+       Substance. reveal. A wipe per claim, because each feature is a change
+       of state. Sequence B (the sole reveal) does not exist yet, so the
+       treaded-sole claim is stated without visual evidence. -->
+  <!-- flow for the same reason: 969px of content in a 900px stage clipped the
+       closing paragraphs. The reveals run against act progress either way. -->
+  <section data-sc-act="flow" id="act4" aria-labelledby="a4h">
+    <div data-sc-stage>
+      <div class="split">
+        <div class="side side--l">
+          <p class="prose" data-sc-cue="0.06 1 0.08 0">Thin foam, an open weave upper, a single wash cycle it was never meant to survive. The disposable slipper is designed to be thrown away, and it succeeds.</p>
+        </div>
+
+        <div class="side side--r">
+          <h2 class="d d--lg" id="a4h" data-sc-cue="0 1 0.02 0">Why it holds up.</h2>
+
+          <ul class="claims">
+            <li class="claim" data-sc-reveal="left" data-sc-reveal-at="0.08 0.3">
+              <i aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="397.50 286.03 165.00 165.00" fill="currentColor"><path fill-rule="nonzero" d="M480.00 430.40 C514.17 430.40 541.88 402.70 541.88 368.53 C507.70 368.53 480.00 396.23 480.00 430.40Z"/><path fill-rule="nonzero" d="M418.13 368.53 C418.13 402.70 445.83 430.40 480.00 430.40 C480.00 396.23 452.30 368.53 418.13 368.53Z"/><path fill-rule="nonzero" d="M480.00 368.53 C514.17 368.53 541.88 340.83 541.88 306.65 C507.70 306.65 480.00 334.36 480.00 368.53Z"/><path fill-rule="nonzero" d="M418.13 306.65 C418.13 340.83 445.83 368.53 480.00 368.53 C480.00 334.36 452.30 306.65 418.13 306.65Z"/><path fill-rule="nonzero" d="M480.00 416.65 C506.58 416.65 528.13 395.11 528.13 368.53 C501.55 368.53 480.00 390.07 480.00 416.65Z"/><path fill-rule="nonzero" d="M431.88 368.53 C431.88 395.11 453.42 416.65 480.00 416.65 C480.00 390.07 458.45 368.53 431.88 368.53Z"/><path fill-rule="nonzero" d="M480.00 368.53 C506.58 368.53 528.13 346.98 528.13 320.40 C501.55 320.40 480.00 341.95 480.00 368.53Z"/><path fill-rule="nonzero" d="M431.88 320.40 C431.88 346.98 453.42 368.53 480.00 368.53 C480.00 341.95 458.45 320.40 431.88 320.40Z"/></svg></i>
+              <div><b>Recycled EVA foam</b><span>Made from what already exists.</span></div>
+            </li>
+            <li class="claim" data-sc-reveal="left" data-sc-reveal-at="0.26 0.48">
+              <i aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="1033.68 286.03 165.00 165.00" fill="currentColor"><path fill-rule="nonzero" d="M1137.35 368.23 C1144.37 384.13 1133.71 402.61 1117.05 403.00 C1116.86 403.01 1116.67 403.01 1116.48 403.01 C1116.09 403.01 1115.71 403.00 1115.32 402.98 C1098.97 402.19 1088.68 384.05 1095.48 368.39 L1116.26 320.51 L1137.35 368.23Z"/></svg></i>
+              <div><b>Waterproof</b><span>Built for pools and spas, not in spite of them.</span></div>
+            </li>
+            <li class="claim" data-sc-reveal="left" data-sc-reveal-at="0.44 0.66">
+              <i aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="1353.68 286.03 165.00 165.00" fill="currentColor"><path fill-rule="nonzero" d="M1476.22 395.92 C1474.52 392.70 1471.68 391.54 1468.72 389.73 C1467.82 389.17 1466.86 388.68 1465.87 388.23 C1466.74 387.75 1467.56 387.19 1468.29 386.53 C1470.30 384.73 1471.60 382.03 1471.11 379.43 C1470.76 377.57 1469.53 375.94 1468.02 374.74 C1466.50 373.54 1464.70 372.71 1462.89 371.98 C1460.51 371.01 1458.07 370.19 1455.60 369.49 C1455.95 369.22 1456.28 368.94 1456.59 368.65 C1459.78 365.66 1459.56 360.48 1456.13 357.78 C1452.70 355.08 1447.08 353.24 1440.71 352.25 C1449.97 350.72 1457.16 346.35 1452.97 339.15 C1452.29 337.97 1451.27 337.02 1450.05 336.42 C1441.51 332.20 1426.11 334.32 1417.86 339.10 C1416.34 339.97 1415.15 341.36 1414.65 343.05 C1413.37 347.31 1417.13 350.18 1422.77 351.66 C1417.20 352.14 1412.02 353.25 1408.12 354.99 C1402.46 357.53 1402.44 365.59 1408.08 368.17 C1409.90 369.00 1411.93 369.77 1414.10 370.46 C1413.01 370.96 1411.94 371.52 1410.91 372.13 C1409.19 373.15 1407.47 374.45 1406.88 376.30 C1406.19 378.49 1407.31 380.91 1409.06 382.45 C1410.01 383.29 1411.12 383.92 1412.29 384.44 C1406.79 385.87 1401.36 388.11 1397.74 392.00 C1396.21 393.65 1395.09 395.72 1394.90 397.93 C1394.58 401.69 1397.03 405.28 1400.23 407.47 C1403.59 409.78 1407.41 410.52 1411.22 411.72 C1415.37 413.03 1419.60 414.07 1423.88 414.86 C1432.44 416.44 1441.21 416.98 1449.91 416.46 C1452.70 416.29 1455.48 416.02 1458.24 415.63 C1460.35 415.34 1462.47 414.98 1464.52 414.42 C1466.07 414.00 1467.58 413.47 1469.02 412.78 C1472.38 411.17 1475.35 408.58 1476.70 405.22 C1477.90 402.24 1477.72 398.77 1476.22 395.92Z"/></svg></i>
+              <div><b>Supportive, wider fit</b><span>Comfortable for a wider range of guests.</span></div>
+            </li>
+            <li class="claim" data-sc-reveal="left" data-sc-reveal-at="0.62 0.84">
+              <i aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="1033.68 639.20 165.00 165.00" fill="currentColor"><path fill-rule="nonzero" d="M1095.56 749.56H1109.31V763.31H1095.56Z M1095.56 722.06H1109.31V735.81H1095.56Z M1095.56 694.56H1109.31V708.31H1095.56Z M1123.06 749.56H1136.81V763.31H1123.06Z M1123.06 722.06H1136.81V735.81H1123.06Z M1123.06 694.56H1136.81V708.31H1123.06Z M1150.56 769.83 L1150.56 687.68 C1150.56 683.89 1147.48 680.81 1143.68 680.81 L1088.68 680.81 C1084.89 680.81 1081.81 683.89 1081.81 687.68 L1081.81 769.83 L1068.02 769.83 L1068.02 774.15 L1164.34 774.15 L1164.34 769.83 L1150.56 769.83Z"/><path fill-rule="nonzero" d="M1116.18 659.83 L1117.81 664.82 L1123.06 664.82 L1118.81 667.91 L1120.43 672.91 L1116.18 669.82 L1111.93 672.91 L1113.55 667.91 L1109.30 664.82 L1114.56 664.82 L1116.18 659.83Z"/><path fill-rule="nonzero" d="M1102.43 662.05 L1104.06 667.05 L1109.31 667.05 L1105.06 670.14 L1106.68 675.14 L1102.43 672.05 L1098.18 675.14 L1099.80 670.14 L1095.55 667.05 L1100.81 667.05 L1102.43 662.05Z"/><path fill-rule="nonzero" d="M1129.93 662.05 L1131.56 667.05 L1136.81 667.05 L1132.56 670.14 L1134.18 675.14 L1129.93 672.05 L1125.68 675.14 L1127.30 670.14 L1123.05 667.05 L1128.31 667.05 L1129.93 662.05Z"/></svg></i>
+              <div><b>Treaded sole</b><span>Designed with wet, poolside floors in mind.</span></div>
+            </li>
+          </ul>
+
+          <div class="prose" data-sc-cue="0.72 1 0.2 0">
+            <p>Our reusable hotel sliders are made from recycled EVA foam. They&rsquo;re waterproof, more supportive and fit a wider range of guests. Their treaded soles are designed with wet, poolside environments in mind.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ ACT 5
+       Mission. flow + in. Deliberately plain and near-silent. This is
+       authored silence, recorded in BRIEF.md: it exists to make act 6 land.
+       Any device here would fill it. -->
+  <section data-sc-act="flow" id="act5" aria-labelledby="a5h">
+    <div class="mission">
+      <h2 class="d d--lg" id="a5h" data-sc-in>We don&rsquo;t think the world has a waste problem. We think it has design problems.</h2>
+
+      <div class="mission__cols" data-sc-in data-sc-stagger="70">
+        <ul class="changed">
+          <li>But times have changed.</li>
+          <li>The world has changed.</li>
+          <li>And it&rsquo;s important that we change too.</li>
+        </ul>
+        <div class="prose">
+          <p>Many of the products and systems we use today were designed decades ago and, at the time, they made sense for the world they existed in.</p>
+          <p>Our mission is to re-examine outdated products and systems that create unnecessary waste and design better alternatives. Alternatives that aren&rsquo;t just better for the planet, but better for people, business and budgets too.</p>
+          <p>Because we don&rsquo;t want sustainability to be the only improvement we make. <strong>We want our products and systems to be better than they were before as well as better for the planet.</strong></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ ACT 6
+       PEAK. kinetic + the wash line. Largest span on the page by a visible
+       margin. Every repetition steps the line left, the readout depletes,
+       and the left column is taken rather than redrawn. -->
+  <section data-sc-act="pin" data-sc-span="4.4" id="act6" aria-labelledby="a6h">
+    <div data-sc-stage>
+      <div class="peak">
+        <div class="peak__l">
+          <p class="meta">Still being thrown away</p>
+          <div class="tally" id="tally" aria-hidden="true"></div>
+        </div>
+        <div class="peak__r">
+          <div class="scrim-col" aria-hidden="true"></div>
+          <div class="peak__copy">
+            <!-- Each repetition is its own cue element: splitText() reads
+                 textContent and discards child nodes, so one element carrying
+                 three spans collapses into a run-on. Three elements also give
+                 the three sentences their own entrances, which is the point of
+                 the beat. rampOut 0 so they accumulate instead of fading. -->
+            <!-- The peak's setup line. In the approved copy it runs straight
+                 into the repetitions, hinged on "again", so it opens the peak
+                 rather than closing the claims act two beats earlier. -->
+            <p class="peak__setup" data-sc-cue="0 1 0.04 0">Most importantly, they can be washed and used again.</p>
+            <h2 class="again" id="a6h">
+              <span class="d d--lg" data-sc-cue="0.02 1 0.05 0" data-sc-kinetic="lines">And again.</span>
+              <span class="d d--lg" data-sc-cue="0.16 1 0.05 0" data-sc-kinetic="lines">And again.</span>
+              <span class="d d--lg" data-sc-cue="0.3 1 0.05 0" data-sc-kinetic="lines">And again.</span>
+            </h2>
+            <p class="prose peak__lede" data-sc-cue="0.46 1 0.08 0">Every wash keeps another disposable pair out of landfill, and brings down the environmental and financial cost.</p>
+            <p class="betters" data-sc-cue="0.64 1 0.08 0">
+              <span>They&rsquo;re better for guests.</span>
+              <span>Better for businesses.</span>
+              <span>Better for the planet.</span>
+              <span class="key">And, crucially, better than what came before.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ ACT 7
+       Collapse. pin. The divider reaches the edge, one world remains, the
+       loop is full-bleed, and the CTA lives in the winning column. The
+       close is asymmetric by requirement and the footer is inside the
+       stage, so there is no dead tail after the call to action. -->
+  <section data-sc-act="pin" data-sc-span="1.6" id="act7" aria-labelledby="a7h">
+    <div data-sc-stage>
+      <div class="close">
+        <div class="scrim-col" aria-hidden="true"></div>
+        <div class="close__body">
+          <p class="d d--md" data-sc-cue="0.1">Let&rsquo;s leave less behind.</p>
+          <div class="plate" data-sc-cue="0.04">
+            <h2 class="d d--md" id="a7h">Still paying for thousands of disposable slippers every year?</h2>
+            <p>We&rsquo;d love to help you change that. If your hotel, spa or hospitality group is interested in replacing its current slipper system with something designed for the world we live in now, get in touch.</p>
+            <div class="ctas">
+              <a class="btn" href="mailto:hi@studiorowan.com?subject=Working%20with%20Studio%20Rowan">Work with us
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+              <a class="btn btn--ghost" href="mailto:hi@studiorowan.com?subject=Sample%20request">Request samples</a>
+            </div>
+          </div>
+        </div>
+        <footer class="foot">
+          <span>&copy; 2026 Studio Rowan</span>
+          <span>Lasting hospitality goods</span>
+          <span>London, UK</span>
+          <a class="sp" href="mailto:hi@studiorowan.com">hi@studiorowan.com</a>
+        </footer>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script src="./engine/scrollcraft.js"></script>
+<script src="./page.js"></script>
+</body>
+</html>

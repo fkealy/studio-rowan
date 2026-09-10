@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#E0DCD1" />
+  <title>Studio Rowan — Leave less behind</title>
+  <meta name="description" content="Studio Rowan redesigns the everyday products hospitality throws away. Starting with the hotel slipper." />
+  <script>document.documentElement.classList.add('js');</script>
+
+  <link rel="preload" href="../../fonts/inter.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400&display=swap" />
+  <link rel="stylesheet" href="../shared/brand.css" />
+
+  <style>
+    /* ============================================================
+       PROTOTYPE 03 — "Clay"
+       Structured and textural. A visible 12-column grid (echoing the
+       9×9 grid the icon system is built on), the brand symbols used
+       as large graphic elements, and a hero made of a very slow
+       three.js "dune" shader in Clay / Hemp / Ivory tones — like the
+       sand macro in the brand kit. Ochre labels, Apricot links.
+       ============================================================ */
+
+    :root {
+      --line: rgba(44,48,46,.14);
+      --display-xl: clamp(3rem, 11vw, 11.5rem);
+      --display-l:  clamp(2.2rem, 5.4vw, 5.6rem);
+      --display-m:  clamp(1.5rem, 2.8vw, 2.8rem);
+      --lede:       clamp(1.05rem, 1.35vw, 1.3rem);
+      --cols: 12;
+    }
+    body { background: var(--clay); color: var(--onyx); }
+
+    /* Grid lines that sit behind the whole page */
+    .gridlines {
+      position: fixed; inset: 0 var(--gutter); z-index: 0; pointer-events: none;
+      background-image: linear-gradient(to right, var(--line) 1px, transparent 1px);
+      background-size: calc(100% / var(--cols)) 100%;
+      background-position: 0 0;
+      opacity: .7;
+    }
+    .gridlines::after { content: ""; position: absolute; top: 0; bottom: 0; right: 0; width: 1px; background: var(--line); }
+    main, header, footer { position: relative; z-index: 1; }
+
+    /* ---------- Header ---------- */
+    .top {
+      position: fixed; inset: 0 0 auto 0; z-index: 20;
+      display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+      padding: clamp(1rem, 2.4vw, 1.5rem) var(--gutter); font-size: .85rem;
+    }
+    .top__logo { display: block; width: clamp(118px, 12vw, 150px); }
+    .top__nav { display: flex; gap: 1.6rem; justify-content: center; }
+    .top__nav a { opacity: .7; transition: opacity .3s; } .top__nav a:hover { opacity: 1; }
+    .top__cta { justify-self: end; display: inline-flex; gap: .55rem; align-items: center; }
+    .top__cta::before { content: ""; width: .5rem; height: .5rem; border-radius: 50%; background: var(--apricot); }
+    .top__cta span { border-bottom: 1px solid transparent; transition: border-color .3s; }
+    .top__cta:hover span { border-color: currentColor; }
+
+    /* ---------- Hero ---------- */
+    .hero { position: relative; min-height: 100svh; overflow: hidden; isolation: isolate; display: grid; grid-template-rows: 1fr auto; }
+    .hero__canvas { position: absolute; inset: 0; z-index: -1; }
+    .hero__canvas canvas { width: 100%; height: 100%; display: block; }
+    .hero__canvas::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(224,220,209,.35), rgba(224,220,209,0) 35%, rgba(224,220,209,0) 65%, rgba(224,220,209,.6)); }
+    .hero__mark { align-self: center; justify-self: center; text-align: center; padding: 6rem var(--gutter) 2rem; width: 100%; }
+    .hero__mark .wordmark { width: min(78vw, 64rem); margin: 0 auto; color: var(--olive); }
+    .hero__mark h1 { font-family: var(--display); font-weight: 300; font-size: clamp(1.6rem, 3.6vw, 3.4rem); letter-spacing: -.01em; margin-top: clamp(1.2rem, 3vh, 2.2rem); }
+    .hero__strip {
+      display: grid; grid-template-columns: repeat(3, 1fr); align-items: end; gap: 1rem;
+      padding: 0 var(--gutter) var(--gutter); font-size: .82rem; line-height: 1.4;
+    }
+    .hero__strip .c { text-align: center; opacity: .75; }
+    .hero__strip .r { text-align: right; }
+    .hero__icons { display: flex; gap: .9rem; justify-content: center; }
+    .hero__icons i { width: 1.35rem; height: 1.35rem; color: var(--olive); }
+    .hero__strip .ochre { color: var(--ochre); text-transform: uppercase; letter-spacing: .08em; font-size: .72rem; display: block; margin-bottom: .3rem; }
+    .line { display: block; overflow: hidden; }
+    .line__inner { display: block; }
+    .js .line__inner { transform: translateY(110%); }
+
+    /* ---------- Sections ---------- */
+    .sec { padding: clamp(5rem, 12vh, 9rem) var(--gutter); border-top: 1px solid var(--line); }
+    .g { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 0; row-gap: 2rem; }
+    .g > * { min-width: 0; }
+    .c1-3 { grid-column: 1 / 4; } .c4-12 { grid-column: 4 / 13; } .c5-11 { grid-column: 5 / 12; } .c4-8 { grid-column: 4 / 9; } .c9-12 { grid-column: 9 / 13; }
+    .c1-12 { grid-column: 1 / 13; } .c7-12 { grid-column: 7 / 13; } .c1-6 { grid-column: 1 / 7; }
+    .pad { padding-right: clamp(1rem, 3vw, 3rem); }
+
+    .kicker { font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ochre); display: flex; gap: .8rem; }
+    .kicker::before { content: attr(data-n); opacity: .6; }
+    .sym { width: clamp(4.5rem, 9vw, 9rem); height: auto; aspect-ratio: 1; color: var(--olive); margin-top: 1.4rem; position: sticky; top: 7rem; }
+    .display { font-family: var(--display); font-weight: 300; font-size: var(--display-l); line-height: 1; letter-spacing: -.02em; text-wrap: balance; }
+    .display--m { font-size: var(--display-m); line-height: 1.15; letter-spacing: -.01em; }
+    .prose { max-width: 58ch; font-size: var(--lede); line-height: 1.55; }
+    .prose p + p { margin-top: 1.25em; }
+    .display + .prose { margin-top: clamp(1.8rem, 4vh, 3rem); }
+    .prose + .display { margin-top: clamp(2.5rem, 6vh, 4.5rem); }
+    .hi { color: var(--apricot); }
+
+    /* Spec table for numbers */
+    .table { margin: clamp(2.5rem, 7vh, 5rem) 0; border-top: 1px solid var(--line); }
+    .table .r { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 1.5rem; padding: 1.4rem 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+    .table .n { font-family: var(--display); font-weight: 300; font-size: clamp(2.8rem, 5.2vw, 5.8rem); line-height: .95; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+    .table .n.apricot { color: var(--apricot); }
+    .table .d { font-size: 1rem; line-height: 1.45; max-width: 28ch; }
+    .table .d small { display: block; color: var(--ochre); text-transform: uppercase; letter-spacing: .08em; font-size: .72rem; margin-bottom: .4rem; }
+
+    /* Mission */
+    .mission { font-family: var(--display); font-weight: 300; font-size: clamp(2rem, 6.4vw, 6.6rem); line-height: 1.02; letter-spacing: -.02em; }
+    .mission .w { display: inline-block; } .js .mission .w { opacity: .16; }
+    .changed { list-style: none; margin-top: clamp(2.5rem, 6vh, 4rem); }
+    .changed li { padding: .7rem 0; border-top: 1px solid var(--line); font-family: var(--display); font-weight: 300; font-size: var(--display-m); letter-spacing: -.01em; display: flex; gap: 1.2rem; align-items: baseline; }
+    .changed li:last-child { border-bottom: 1px solid var(--line); }
+    .changed small { font-family: var(--text); font-size: .74rem; color: var(--ochre); min-width: 1.6rem; }
+    .changed .key { color: var(--olive); }
+
+    /* Ring */
+    .ring { position: relative; width: min(100%, 24rem); aspect-ratio: 1; margin: 0 auto; }
+    .ring svg.text { width: 100%; height: 100%; }
+    .ring svg.text text { font-family: var(--display); font-weight: 300; font-size: 21px; letter-spacing: .02em; fill: var(--onyx); }
+    .ring .core { position: absolute; inset: 27%; color: var(--olive); }
+
+    /* Feature grid */
+    .feat { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; border-top: 1px solid var(--line); border-left: 1px solid var(--line); margin-top: clamp(2.5rem, 6vh, 4rem); }
+    .feat li { padding: 1.4rem; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); min-height: 9rem; display: flex; flex-direction: column; justify-content: space-between; gap: 1.5rem; }
+    .feat i { width: 1.8rem; height: 1.8rem; color: var(--olive); }
+    .feat b { font-weight: 500; display: block; font-size: 1rem; }
+    .feat span { font-size: .85rem; opacity: .75; }
+
+    .betters { margin-top: clamp(2.5rem, 6vh, 4rem); font-family: var(--display); font-weight: 300; font-size: var(--display-m); line-height: 1.25; letter-spacing: -.01em; }
+    .betters span { display: block; } .betters .key { color: var(--apricot); }
+
+    /* CTA */
+    .cta { background: var(--olive); color: var(--ivory); }
+    .cta .kicker { color: var(--hemp); }
+    .cta .display { font-size: clamp(2.4rem, 6.8vw, 7rem); max-width: 16ch; }
+    .btn { display: inline-flex; align-items: center; gap: .9rem; background: var(--apricot); color: var(--onyx); padding: 1.05rem 1.6rem 1.05rem 1.8rem; border-radius: 3rem; font-size: 1rem; font-weight: 500; transition: transform .5s var(--ease-out), background .3s; margin-top: 2rem; }
+    .btn:hover { transform: translateY(-2px); background: #ff9464; }
+    .btn svg { width: 1.1rem; height: 1.1rem; }
+    .cta__tag { font-family: var(--display); font-weight: 300; font-size: var(--display-m); align-self: end; }
+
+    /* Footer: cropped wordmark, favicon style */
+    .foot { background: var(--onyx); color: var(--hemp); padding: clamp(2rem, 5vh, 3.5rem) var(--gutter) 0; }
+    .foot__row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; font-size: .85rem; padding-bottom: 2rem; opacity: .85; }
+    .foot__row a:hover { color: var(--apricot); }
+    .foot__crop { overflow: hidden; height: clamp(4rem, 14vw, 13rem); }
+    .foot__crop [data-logo] { width: 120%; margin-left: -6%; transform: translateY(18%); color: var(--hemp); opacity: .9; }
+
+    .js [data-reveal] { opacity: 0; transform: translateY(1.4rem); }
+
+    @media (max-width: 860px) {
+      :root { --cols: 4; }
+      .g { grid-template-columns: 1fr; row-gap: 1.6rem; }
+      .g > * { grid-column: auto !important; }
+      .sym { position: static; width: 3.4rem; }
+      .top { grid-template-columns: 1fr auto; } .top__nav { display: none; }
+      .hero__strip { grid-template-columns: 1fr 1fr; } .hero__strip .c { display: none; }
+      .table .r { grid-template-columns: 1fr; gap: .6rem; }
+      .feat { grid-template-columns: 1fr; } .feat li { min-height: 0; }
+      .ring { margin: 1rem 0 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .js .line__inner, .js [data-reveal], .js .mission .w { transform: none; opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="gridlines" aria-hidden="true"></div>
+
+  <header class="top">
+    <a class="top__logo" href="#" aria-label="Studio Rowan — home"><span data-logo></span></a>
+    <nav class="top__nav" aria-label="Sections">
+      <a href="#story">Story</a><a href="#mission">Mission</a><a href="#first-step">First step</a>
+    </nav>
+    <a class="top__cta" href="mailto:hi@studiorowan.com"><span>Get in touch</span></a>
+  </header>
+
+  <main id="main">
+    <!-- ================= HERO ================= -->
+    <section class="hero" aria-label="Introduction">
+      <div class="hero__canvas" id="dune" aria-hidden="true"></div>
+      <div class="hero__mark">
+        <div class="wordmark" data-reveal><span data-logo></span></div>
+        <h1><span class="line"><span class="line__inner">Leave less behind.</span></span></h1>
+      </div>
+      <div class="hero__strip">
+        <p data-reveal><span class="ochre">Lasting hospitality goods</span>Reusable hotel sliders, designed for the world we live in now.</p>
+        <div class="c hero__icons" data-reveal><i data-icon="natural"></i><i data-icon="circular"></i><i data-icon="washable"></i><i data-icon="balanced"></i></div>
+        <p class="r" data-reveal><span class="ochre">London, 2026</span><a href="#story">Read our story ↓</a></p>
+      </div>
+    </section>
+
+    <!-- ================= OUR STORY ================= -->
+    <section class="sec" id="story" aria-labelledby="story-h">
+      <div class="g">
+        <div class="c1-3 pad">
+          <p class="kicker" data-n="01" id="story-h">Our story</p>
+          <i class="sym" data-icon="natural"></i>
+        </div>
+        <div class="c4-12">
+          <h2 class="display" data-reveal>It was summertime in the Swiss&nbsp;Alps.</h2>
+          <div class="prose">
+            <p data-reveal>The moon was shining, and the campfire was crackling. A group of friends sat by a lake, beers in hand, chatting about work. One of them managed a hotel and mentioned, almost in passing, that the hotel got through 70,000 pairs of disposable slippers a year.</p>
+          </div>
+          <div class="table" data-reveal>
+            <div class="r"><p class="n" data-count="70000">0</p><p class="d"><small>One hotel, one year</small><b>70,000 pairs.</b> Used once, often for a matter of minutes, and thrown away. It was one of those numbers that was difficult to forget about.</p></div>
+            <div class="r"><p class="n apricot" data-count="120000000">0</p><p class="d"><small>America, every year</small>Slippers sent to landfill. Once back in the UK we reached out to hotels and spas and quickly realised this was not an isolated issue.</p></div>
+          </div>
+          <h3 class="display" data-reveal>And it’s not just the slippers.</h3>
+          <div class="prose">
+            <p data-reveal>So many everyday products and systems create unnecessary waste, often simply because they were designed that way and because that’s the way things have always been done.</p>
+            <p data-reveal><strong>Studio Rowan was created to question those ways and find better ones.</strong></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= OUR MISSION ================= -->
+    <section class="sec" id="mission" aria-labelledby="mission-h">
+      <div class="g">
+        <div class="c1-3 pad">
+          <p class="kicker" data-n="02" id="mission-h">Our mission</p>
+          <i class="sym" data-icon="balanced"></i>
+        </div>
+        <div class="c4-12">
+          <h2 class="mission" data-words>We don’t think the world has a waste problem. We think it has <span class="hi">design</span> problems.</h2>
+        </div>
+        <div class="c4-8 pad">
+          <ul class="changed" aria-label="But times have changed. The world has changed. And it's important that we change too.">
+            <li data-reveal><small>i</small>But times have changed.</li>
+            <li data-reveal><small>ii</small>The world has changed.</li>
+            <li class="key" data-reveal><small>iii</small>And it’s important that we change too.</li>
+          </ul>
+        </div>
+        <div class="c9-12 prose" style="margin-top: clamp(2.5rem, 6vh, 4rem)">
+          <p data-reveal>Many of the products and systems we use today were designed decades ago and, at the time, they made sense for the world they existed in.</p>
+          <p data-reveal>Our mission is to re-examine outdated products and systems that create unnecessary waste and design better alternatives. Alternatives that aren’t just better for the planet, but better for people, business and budgets too.</p>
+          <p data-reveal>Because we don’t want sustainability to be the only improvement we make. We want our products and systems to be better for the planet, <strong>and better than they were before.</strong></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= THE FIRST STEP ================= -->
+    <section class="sec" id="first-step" aria-labelledby="step-h">
+      <div class="g">
+        <div class="c1-3 pad">
+          <p class="kicker" data-n="03" id="step-h">The first step</p>
+          <i class="sym" data-icon="washable"></i>
+        </div>
+        <div class="c4-12">
+          <h2 class="display" data-reveal>We decided to start where the whole thing began; with the humble hotel&nbsp;slipper.</h2>
+          <div class="prose">
+            <p data-reveal>We got hold of a few pairs and had a close look at them. During this inspection we realised something quite poignant; not only are these slippers not very good for their environment… <strong>they’re just not very good.</strong></p>
+            <p data-reveal>They offer little support. They don’t fit a wide range of feet. They aren’t particularly comfortable. And despite spending most of their (very short) lives by pools and in spas, they aren’t even waterproof!</p>
+            <p data-reveal>We realised we had got pretty lucky as we had a pretty easy first product to redesign. So we did.</p>
+          </div>
+        </div>
+
+        <div class="c4-8 pad">
+          <ul class="feat" data-reveal>
+            <li><i data-icon="natural"></i><div><b>Recycled EVA foam</b><span>Made from what already exists.</span></div></li>
+            <li><i data-icon="washable"></i><div><b>Waterproof</b><span>Built for pools and spas, not in spite of them.</span></div></li>
+            <li><i data-icon="balanced"></i><div><b>Supportive, wider fit</b><span>Comfortable for a wider range of guests.</span></div></li>
+            <li><i data-icon="for-hotels"></i><div><b>Treaded sole</b><span>Designed with wet, poolside floors in mind.</span></div></li>
+          </ul>
+          <div class="prose" style="margin-top: clamp(2rem, 5vh, 3.5rem)">
+            <p data-reveal>Most importantly, they can be washed and used again. And again. And again.</p>
+            <p data-reveal>Every wash keeps another disposable pair out of landfill, and brings down the environmental and financial cost.</p>
+          </div>
+          <p class="betters" data-reveal>
+            <span>They’re better for guests.</span>
+            <span>Better for businesses.</span>
+            <span>Better for the planet.</span>
+            <span class="key">And, crucially, better than what came before.</span>
+          </p>
+        </div>
+        <div class="c9-12" style="align-self:center">
+          <div class="ring" data-reveal aria-label="Again. And again. And again.">
+            <svg class="text" viewBox="0 0 300 300" aria-hidden="true">
+              <defs><path id="circ" d="M150,150 m-118,0 a118,118 0 1,1 236,0 a118,118 0 1,1 -236,0"/></defs>
+              <text><textPath href="#circ" id="ringText">Again. And again. And again. And again. And again. And again. </textPath></text>
+            </svg>
+            <i class="core" data-icon="circular"></i>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= WORK WITH US ================= -->
+    <section class="sec cta" id="contact" aria-labelledby="cta-h">
+      <div class="g">
+        <div class="c1-3 pad"><p class="kicker" data-n="04" id="cta-h">Work with us</p></div>
+        <div class="c4-12">
+          <h2 class="display" data-reveal>Still handing out thousands of disposable slippers every year?</h2>
+        </div>
+        <div class="c4-8 pad prose">
+          <p data-reveal>We’d love to help you change that. If your hotel, spa or hospitality group is interested in replacing its current slipper system with something designed for the world we live in now, get in touch.</p>
+          <a class="btn" data-reveal href="mailto:hi@studiorowan.com?subject=Replacing%20our%20disposable%20slippers">hi@studiorowan.com
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+        <p class="c9-12 cta__tag" data-reveal>Let’s leave less behind.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="foot__row">
+      <span>© 2026 Studio Rowan · Lasting hospitality goods</span>
+      <span>London, UK</span>
+      <a href="mailto:hi@studiorowan.com">hi@studiorowan.com</a>
+      <a href="#" rel="me">Instagram</a>
+    </div>
+    <div class="foot__crop" aria-hidden="true"><span data-logo></span></div>
+  </footer>
+
+  <script src="../shared/brand.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.158.0/three.min.js"></script>
+  <script>
+  (function () {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* ---------- three.js: slow dune shader ---------- */
+    if (window.THREE) try {
+      const host = document.getElementById('dune');
+      const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false, powerPreference: 'low-power' });
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+      host.appendChild(renderer.domElement);
+      const scene = new THREE.Scene();
+      const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      const mat = new THREE.ShaderMaterial({
+        uniforms: {
+          uTime: { value: 0 }, uRes: { value: new THREE.Vector2(1, 1) }, uMouse: { value: new THREE.Vector2(.5, .5) },
+          uClay: { value: new THREE.Color('#E0DCD1') }, uHemp: { value: new THREE.Color('#EBEAD7') },
+          uIvory: { value: new THREE.Color('#F6F5F2') }, uShade: { value: new THREE.Color('#CFC9B9') },
+        },
+        vertexShader: `void main(){ gl_Position = vec4(position, 1.0); }`,
+        fragmentShader: `
+          precision highp float;
+          uniform float uTime; uniform vec2 uRes, uMouse; uniform vec3 uClay, uHemp, uIvory, uShade;
+          vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
+          vec2 mod289(vec2 x){return x-floor(x*(1.0/289.0))*289.0;}
+          vec3 permute(vec3 x){return mod289(((x*34.0)+1.0)*x);}
+          float snoise(vec2 v){
+            const vec4 C=vec4(0.211324865405187,0.366025403784439,-0.577350269189626,0.024390243902439);
+            vec2 i=floor(v+dot(v,C.yy)); vec2 x0=v-i+dot(i,C.xx);
+            vec2 i1=(x0.x>x0.y)?vec2(1.0,0.0):vec2(0.0,1.0);
+            vec4 x12=x0.xyxy+C.xxzz; x12.xy-=i1; i=mod289(i);
+            vec3 p=permute(permute(i.y+vec3(0.0,i1.y,1.0))+i.x+vec3(0.0,i1.x,1.0));
+            vec3 m=max(0.5-vec3(dot(x0,x0),dot(x12.xy,x12.xy),dot(x12.zw,x12.zw)),0.0); m=m*m; m=m*m;
+            vec3 x=2.0*fract(p*C.www)-1.0; vec3 h=abs(x)-0.5; vec3 ox=floor(x+0.5); vec3 a0=x-ox;
+            m*=1.79284291400159-0.85373472095314*(a0*a0+h*h);
+            vec3 g; g.x=a0.x*x0.x+h.x*x0.y; g.yz=a0.yz*x12.xz+h.yz*x12.yw; return 130.0*dot(m,g);
+          }
+          float fbm(vec2 p){ float v=0.0, a=0.5; for(int i=0;i<5;i++){ v+=a*snoise(p); p=p*2.02+vec2(17.3,9.1); a*=0.5; } return v; }
+          void main(){
+            vec2 uv = gl_FragCoord.xy / uRes; vec2 p = uv; p.x *= uRes.x / uRes.y;
+            float t = uTime * 0.035;
+            vec2 m = (uMouse - 0.5) * 0.12;
+            // large slow ridges + fine grain
+            float ridge = fbm(p * 1.35 + vec2(t * .6, -t * .35) + m);
+            float fine  = fbm(p * 6.0 + vec2(-t, t * .5)) * 0.18;
+            float n = ridge + fine;
+            float band = smoothstep(-0.55, 0.65, n);
+            vec3 col = mix(uShade, uClay, smoothstep(0.0, 0.45, band));
+            col = mix(col, uHemp, smoothstep(0.4, 0.8, band));
+            col = mix(col, uIvory, smoothstep(0.78, 1.0, band));
+            // paper grain
+            float g = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898,78.233))) * 43758.5453);
+            col += (g - 0.5) * 0.018;
+            gl_FragColor = vec4(col, 1.0);
+          }`,
+      });
+      scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat));
+      const resize = () => { const w = host.clientWidth, h = host.clientHeight; renderer.setSize(w, h, false); mat.uniforms.uRes.value.set(w * renderer.getPixelRatio(), h * renderer.getPixelRatio()); };
+      resize(); addEventListener('resize', resize);
+      let tm = new THREE.Vector2(.5, .5);
+      if (matchMedia('(pointer: fine)').matches) addEventListener('pointermove', (e) => tm.set(e.clientX / innerWidth, 1 - e.clientY / innerHeight), { passive: true });
+      const clock = new THREE.Clock(); let visible = true;
+      new IntersectionObserver((en) => { visible = en[0].isIntersecting; }).observe(host);
+      if (reduce) { mat.uniforms.uTime.value = 40; renderer.render(scene, camera); }
+      else renderer.setAnimationLoop(() => { if (!visible) return; mat.uniforms.uTime.value = clock.getElapsedTime(); mat.uniforms.uMouse.value.lerp(tm, .02); renderer.render(scene, camera); });
+    } catch (e) { console.warn('Dune disabled:', e); }
+
+    if (!window.gsap) { document.documentElement.classList.remove('js'); return; }
+    gsap.registerPlugin(ScrollTrigger);
+
+    const mission = document.querySelector('[data-words]');
+    if (mission) {
+      const walk = (node) => [...node.childNodes].forEach((n) => {
+        if (n.nodeType === 3) {
+          const frag = document.createDocumentFragment();
+          n.textContent.split(/(\s+)/).forEach((t) => {
+            if (!t) return;
+            if (/^\s+$/.test(t)) return frag.appendChild(document.createTextNode(' '));
+            const s = document.createElement('span'); s.className = 'w'; s.textContent = t; frag.appendChild(s);
+          });
+          n.replaceWith(frag);
+        } else if (n.nodeType === 1) walk(n);
+      });
+      walk(mission);
+    }
+
+    const counters = document.querySelectorAll('[data-count]');
+    if (reduce) {
+      gsap.set('.line__inner, [data-reveal], .mission .w', { clearProps: 'all', opacity: 1, y: 0 });
+      counters.forEach((el) => el.textContent = Number(el.dataset.count).toLocaleString('en-GB'));
+      return;
+    }
+
+    gsap.timeline({ defaults: { ease: 'expo.out' }, delay: .2 })
+      .to('.hero .wordmark', { opacity: 1, y: 0, duration: 1.6 })
+      .to('.hero .line__inner', { y: 0, duration: 1.3 }, '-=1.1')
+      .to('.hero__strip [data-reveal]', { opacity: 1, y: 0, duration: 1, stagger: .1 }, '-=.9');
+
+    ScrollTrigger.batch('main :not(.hero) [data-reveal]', {
+      start: 'top 88%', once: true,
+      onEnter: (els) => gsap.to(els, { opacity: 1, y: 0, duration: 1.1, ease: 'expo.out', stagger: .08, overwrite: true }),
+    });
+
+    counters.forEach((el) => {
+      const target = Number(el.dataset.count), o = { v: 0 };
+      ScrollTrigger.create({ trigger: el, start: 'top 85%', once: true,
+        onEnter: () => gsap.to(o, { v: target, duration: 2.2, ease: 'power3.out',
+          onUpdate: () => { el.textContent = Math.round(o.v).toLocaleString('en-GB'); } }) });
+    });
+
+    if (mission) gsap.to('.mission .w', { opacity: 1, stagger: .06, ease: 'none',
+      scrollTrigger: { trigger: mission, start: 'top 78%', end: 'bottom 45%', scrub: .6 } });
+
+    // Text ring turns with the page; the symbols nudge in as their section arrives
+    gsap.to('.ring svg.text', { rotation: 180, ease: 'none', transformOrigin: '50% 50%',
+      scrollTrigger: { trigger: '#first-step', start: 'top bottom', end: 'bottom top', scrub: 1 } });
+    document.querySelectorAll('.sym').forEach((s) => gsap.from(s, { scale: .7, opacity: 0, duration: 1.2, ease: 'expo.out',
+      scrollTrigger: { trigger: s, start: 'top 85%', once: true } }));
+  })();
+  </script>
+</body>
+</html>

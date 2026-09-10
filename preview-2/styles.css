@@ -1,0 +1,435 @@
+/* ============================================================================
+   Studio Rowan — preview 2. The Never-Ending Slipper.
+   Grammar: chaptered editorial (uniqueness.md 2.2). The page is a printed
+   feature. Chapters are the unit, not acts: a full-stop intertitle, then one
+   dense asymmetric spread, then the next intertitle. Hard cuts between
+   grounds, never an interpolation. Media sits in its own column with a
+   caption and never bleeds under type.
+
+   No fixed bar. The folio in the margin is the navigation, and it is also
+   where the naming of each world lives, so a heading never has to carry an
+   eyebrow that can be mistaken for part of the headline.
+
+   Signature move: THE REPRINT (see .press, and page.js).
+   Engine in ./engine/ is vendored and never edited.
+   ========================================================================== */
+
+@font-face {
+  font-family: "Outfit"; font-style: normal; font-weight: 300; font-display: swap;
+  src: url("/fonts/outfit.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter"; font-style: normal; font-weight: 400 500; font-display: swap;
+  src: url("/fonts/inter.woff2") format("woff2");
+}
+
+:root {
+  --white: #FFFFFF; --ivory: #F6F5F2; --hemp: #EBEAD7; --clay: #E0DCD1;
+  --apricot: #FC814A; --ochre: #7A6B11; --olive: #40531B; --onyx: #2C302E;
+
+  --sc-canvas: var(--ivory);
+  --sc-surface: var(--white);
+  --sc-ink: var(--onyx);
+  --sc-ink-soft: #5C605B;
+  --sc-accent: var(--apricot);
+  --sc-accent-ink: var(--onyx);
+
+  --display: "Outfit", system-ui, sans-serif;
+  --sc-font-display: var(--display);
+  --sc-font-text: "Inter", system-ui, -apple-system, sans-serif;
+
+  --hair: color-mix(in oklab, var(--onyx) 15%, transparent);
+  --hair-2: color-mix(in oklab, var(--onyx) 28%, transparent);
+
+  /* One editorial measure, held everywhere. A feature has a column width. */
+  --col: 34rem;
+  --margin: clamp(1.25rem, 5vw, 6rem);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  background: var(--ivory); color: var(--onyx);
+  font-family: var(--sc-font-text); font-size: var(--sc-t-base);
+  line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+img, svg, video { display: block; max-width: 100%; }
+a { color: inherit; }
+
+:focus-visible { outline: 2px solid var(--apricot); outline-offset: 3px; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+.skip {
+  position: absolute; left: var(--margin); top: -4rem; z-index: 200;
+  padding: .6rem 1rem; background: var(--onyx); color: var(--ivory);
+  font-size: var(--sc-t-sm);
+}
+.skip:focus { top: .75rem; }
+
+/* ------------------------------------------------------------------ folio --
+   The navigation. One line, in the margin, naming the chapter you are in.
+   Not a bar: no wordmark, no CTA, no full width. It updates as chapters pass.
+   -------------------------------------------------------------------------- */
+.folio {
+  position: fixed; left: var(--margin); bottom: clamp(1rem, 3vh, 2rem);
+  z-index: 40; display: flex; align-items: baseline; gap: .7rem;
+  font-size: var(--sc-t-xs); letter-spacing: .07em; text-transform: uppercase;
+  color: var(--sc-ink-soft); pointer-events: none;
+  transition: color var(--sc-d-slow) var(--sc-ease-out);
+}
+.folio__n {
+  padding-right: .7rem; border-right: 1px solid var(--hair);
+  color: var(--onyx);
+}
+.folio__t { transition: opacity var(--sc-d-base) var(--sc-ease-out); }
+.folio.is-turning .folio__t { opacity: 0; }
+.page--colophon ~ *, .folio.on-dark { color: color-mix(in oklab, var(--hemp) 80%, transparent); }
+
+/* ------------------------------------------------------------------- type -- */
+.d {
+  font-family: var(--display); font-weight: 300;
+  letter-spacing: var(--sc-track-tight); line-height: 1.02; text-wrap: balance;
+}
+.d--xl { font-size: var(--sc-t-4xl); }
+.d--lg { font-size: var(--sc-t-3xl); }
+.d--md { font-size: var(--sc-t-2xl); }
+@media (max-width: 700px) {
+  .d--xl { font-size: var(--sc-t-2xl); }
+  .d--lg { font-size: var(--sc-t-xl); }
+}
+
+.lede { font-size: var(--sc-t-lg); line-height: 1.42; max-width: 32ch; text-wrap: pretty; }
+.prose { max-width: 44ch; text-wrap: pretty; }
+.prose p + p { margin-top: var(--sc-4); }
+.prose strong { font-weight: 500; }
+
+/* --------------------------------------------------------------- chapters --
+   Each chapter lands on its own ground and stays there. Hard cuts, never a
+   gradient: `drift` is banned by this grammar for exactly that reason.
+   `color` is restated wherever the tokens are, because colour inherits as a
+   computed value and a subtree that only redefines the token keeps the old ink.
+   -------------------------------------------------------------------------- */
+.page { padding: clamp(4rem, 11vh, 9rem) var(--margin); }
+
+/* A pinned section must carry NO vertical padding. Sticky is constrained by
+   its containing block, which is the section's CONTENT box, so padding steals
+   from both ends of the pin: the stage has not stuck yet when the act starts
+   and has already slid away before it finishes, while the engine computes
+   progress against the full height. Measured before this rule: the stage sat
+   at +99 at p=0 and -128 at p=1, so the tail of the spin played while the
+   frame was sliding off screen.
+
+   The breathing room the padding was providing now lives inside the stage,
+   on the spread. Selecting on the attribute means this follows the mobile
+   switch in page.js automatically: a chapter demoted to `flow` there gets
+   its section padding back. */
+[data-sc-act="pin"],
+[data-sc-act="scrub"] { padding-top: 0; padding-bottom: 0; }
+.page--title   { background: var(--ivory); min-height: 100vh; display: flex; align-items: center; }
+.page--clay    { background: var(--clay); }
+.page--white   { background: var(--white); }
+.page--ivory   { background: var(--ivory); }
+.page--hemp    { background: var(--hemp); }
+.page--colophon {
+  background: var(--olive);
+  --sc-ink: var(--ivory); --sc-ink-soft: #C9D2B4;
+  color: var(--sc-ink);
+}
+
+/* Intertitles: the full stop between chapters. One thing on the screen. */
+/* A full stop has to actually stop. As a flow section this was just a tall
+   sparse block the line drifted through and out of: the page never paused, so
+   the emptiness read as a void rather than as a held statement. An ink-coverage
+   scan could not tell those apart, because it only counts what is on screen,
+   not whether the screen is moving.
+
+   So an intertitle is a short pinned act. The line sits dead still in the
+   middle of the frame for a little under half a viewport of scrolling, then
+   releases. One statement, held, never crossfading into another: this grammar
+   bans pinned crossfade type acts, and a held page-turn is not one.
+
+   Centred, and that is measured rather than chosen: biasing the line to the
+   upper third changes the length of the surrounding voids by exactly nothing,
+   because what the reader crosses is the STAGE sliding in and out, not the
+   line inside it. A one-viewport stage is mostly empty wherever the line sits.
+   -------------------------------------------------------------------------- */
+.inter__stage {
+  display: flex; align-items: center;
+  padding-inline: var(--margin);
+}
+.inter h2, .inter h3 { max-width: 16ch; }
+.inter--clay  { background: var(--clay); }
+.inter--white { background: var(--white); }
+.inter--ivory { background: var(--ivory); }
+.inter--hemp  { background: var(--hemp); }
+
+/* ------------------------------------------------------------- title page -- */
+.sheet { width: 100%; }
+.title__mark { width: clamp(150px, 20vw, 270px); color: var(--onyx); margin-bottom: clamp(3rem, 9vh, 7rem); }
+.title__mark svg { width: 100%; height: auto; }
+.page--title h1 { max-width: 15ch; }
+.page--title .lede { margin-top: var(--sc-6); }
+.imprint {
+  margin-top: clamp(3rem, 9vh, 7rem); display: flex; gap: var(--sc-6);
+  font-size: var(--sc-t-xs); letter-spacing: .07em; text-transform: uppercase;
+  color: var(--sc-ink-soft); border-top: 1px solid var(--hair); padding-top: var(--sc-4);
+}
+
+/* ----------------------------------------------------------------- spreads --
+   Asymmetric by rule. Never a centred column, never three equal cards.
+   -------------------------------------------------------------------------- */
+.spread { display: grid; gap: clamp(2.5rem, 6vw, 5rem); }
+
+.spread__lead { display: grid; gap: var(--sc-5); max-width: 52rem; }
+/* Explicit tracks, not auto-fit. A `count` device grows its number from "0"
+   to "120,000,000" while the reader watches, and with content-sized tracks
+   that growth re-sizes the column, rewraps the prose beside it and changes
+   this section's height mid-scroll. Measured: chapter one went 1131px -> 1102px
+   as the counters ran, which left every pinned act below it 29px away from the
+   geometry the engine had cached. minmax(0, 1fr) makes the tracks independent
+   of their content, so the number can no longer move the page. */
+/* No rule above the figures now: they open their own held section, so the
+   hairline would be drawing a boundary across the top of a screen. */
+.spread--figures .spread__figs { border-top: 0; padding-top: 0; }
+.spread__figs {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(2rem, 5vw, 4rem); align-items: start;
+  border-top: 1px solid var(--hair); padding-top: clamp(2rem, 5vh, 3.5rem);
+}
+@media (max-width: 860px) { .spread__figs { grid-template-columns: minmax(0, 1fr); } }
+/* minmax(0, 1fr) is load-bearing: without it the implicit column is sized by
+   max-content, so the nowrap counter's final width ("120,000,000" is 438px at
+   this size) widens every sibling paragraph and rewraps them as it counts.
+   Capping the column at the container makes the figure's layout identical
+   whether the number reads "0" or its final value. max-width is set so the
+   finished number still fits inside it rather than spilling. */
+.fig {
+  display: grid; grid-template-columns: minmax(0, 1fr);
+  gap: var(--sc-2); max-width: 40ch;
+}
+.fig__n {
+  font-family: var(--display); font-weight: 300; font-size: var(--sc-t-3xl);
+  line-height: 1; letter-spacing: var(--sc-track-tight); font-variant-numeric: tabular-nums;
+  white-space: nowrap;   /* a wrapped counter changes height as it counts */
+}
+.fig__n--soft { color: var(--ochre); }
+.fig__r {
+  font-size: var(--sc-t-xs); letter-spacing: .07em; text-transform: uppercase;
+  color: var(--sc-ink-soft);
+}
+.fig cite {
+  display: block; font-style: normal; font-size: var(--sc-t-xs);
+  color: var(--sc-ink-soft); margin-top: .4rem;
+}
+.turn { display: grid; gap: .15rem; margin-top: clamp(1rem, 4vh, 3rem); }
+.turn span { display: block; }
+
+/* Media column. Never bleeds under type; always carries a caption. */
+.spread--media {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  align-items: start;
+}
+.spread__text { display: grid; gap: var(--sc-6); }
+.plate { display: grid; gap: var(--sc-3); }
+.plate__frame {
+  position: relative; width: 100%; aspect-ratio: 1440 / 900; overflow: hidden;
+  background: color-mix(in oklab, var(--clay) 40%, var(--white));
+}
+.plate__frame canvas, .plate__frame picture, .plate__frame img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
+.plate__frame canvas { opacity: 0; transition: opacity var(--sc-d-slow) var(--sc-ease-out); }
+.plate__frame.is-live canvas { opacity: 1; }
+.plate__frame.is-live img { opacity: 0; }
+.plate__frame img { transition: opacity var(--sc-d-slow) var(--sc-ease-out); }
+.plate__load {
+  position: absolute; left: 0; bottom: 0; height: 1px; width: 100%;
+  transform: scaleX(var(--decoded, 0)); transform-origin: 0 50%;
+  background: var(--ochre); opacity: .85; transition: opacity var(--sc-d-base) var(--sc-ease-out);
+}
+.plate__frame.is-ready .plate__load { opacity: 0; }
+.plate figcaption {
+  font-size: var(--sc-t-xs); color: var(--sc-ink-soft); max-width: 34ch;
+  padding-top: .3rem; border-top: 1px solid var(--hair);
+}
+@media (hover: hover) and (pointer: fine) { .plate__frame.is-live { cursor: ew-resize; } }
+
+/* ------------------------------------------------------------------ claims -- */
+.spread--claims { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: start; }
+.claims { list-style: none; }
+.claim {
+  display: grid; grid-template-columns: 2.4rem 1fr; gap: var(--sc-4);
+  align-items: start; padding: var(--sc-5) 0; border-top: 1px solid var(--hair);
+}
+.claim:last-child { border-bottom: 1px solid var(--hair); }
+.claim i { display: block; width: 2.4rem; height: 2.4rem; color: var(--olive); }
+.claim i svg { width: 100%; height: 100%; }
+.claim b { display: block; font-weight: 500; font-size: var(--sc-t-lg); }
+.claim span { display: block; color: var(--sc-ink-soft); margin-top: .1rem; }
+.prose--tail { align-self: end; }
+
+/* ------------------------------------------------------------------- quiet -- */
+.spread--quiet {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 62rem;
+}
+.spread--quiet h3 { max-width: 20ch; }
+.changed { list-style: none; display: grid; gap: var(--sc-3); max-width: 40ch; }
+.changed li { font-size: var(--sc-t-lg); line-height: 1.35; }
+.changed li:last-child { font-weight: 500; }
+
+/* ================================================================== THE PRESS
+   The signature move. The chapter reprints itself: each impression is set
+   smaller and tighter than the last and offset a little, so the repetitions
+   stack down the sheet like proofs coming off a press. By the end the page is
+   made of its own repetition, and the smallest impressions read as texture,
+   which is the rhyme with 70,000.
+
+   Impressions are real elements, written by page.js and driven off --sc-p.
+   Nothing crossfades: this grammar cuts.
+   ============================================================================ */
+/* No vertical padding here either: .press would otherwise win over the
+   pinned-section rule above on equal specificity, being later in the file.
+   The breathing room lives on .spread--press instead. */
+.press { padding-top: 0; padding-bottom: 0; }
+.spread--press {
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4.5rem); align-items: start; align-content: start;
+}
+.press__lead { grid-column: 1; }
+.press__setup {
+  font-size: var(--sc-t-lg); line-height: 1.4; max-width: 30ch;
+  color: var(--sc-ink-soft); margin-bottom: var(--sc-3);
+}
+/* Impression one. Sized and tracked exactly like the generated impressions so
+   the cascade below reads as a continuation of it, not a second start. */
+.press__first {
+  font-family: var(--display); font-weight: 300; font-size: 9.4vh;
+  letter-spacing: var(--sc-track-tight); line-height: .96;
+  white-space: nowrap; color: var(--onyx);
+}
+.press__stack { grid-column: 1; display: block; position: relative; }
+.press__stack b {
+  display: block; font-family: var(--display); font-weight: 300;
+  letter-spacing: var(--sc-track-tight); line-height: .96;
+  white-space: nowrap; transform-origin: 0 50%;
+  /* size, offset and ink are all written per impression by page.js */
+}
+.press__margin {
+  grid-column: 2; display: grid; gap: var(--sc-5);
+  border-left: 1px solid var(--hair); padding-left: clamp(1rem, 2.5vw, 2rem);
+}
+.press__count {
+  font-family: var(--display); font-weight: 300; font-size: var(--sc-t-2xl);
+  line-height: 1; font-variant-numeric: tabular-nums;
+}
+.press__rule {
+  font-size: var(--sc-t-xs); letter-spacing: .06em; text-transform: uppercase;
+  color: var(--sc-ink-soft); max-width: 22ch;
+}
+.plate--small video { width: 100%; height: auto; max-height: 26vh; object-fit: cover; }
+.press__tail {
+  display: grid; gap: var(--sc-4); padding-top: var(--sc-5);
+  border-top: 1px solid var(--hair);
+}
+.press__tail .prose { max-width: none; }
+.betters { display: grid; gap: .3rem; }
+.betters span { display: block; color: var(--sc-ink-soft); }
+.betters .key { color: var(--onyx); font-weight: 500; }
+
+/* --------------------------------------------------------------- colophon --
+   Small type. The ask is a line of running text, not a button island, and
+   there is no magnet: both are this grammar's bans.
+   -------------------------------------------------------------------------- */
+.colophon { display: grid; gap: clamp(2rem, 5vh, 3.5rem); max-width: 64rem; }
+.colophon h2 { max-width: 20ch; }
+.colophon .prose { color: var(--sc-ink-soft); max-width: 46ch; }
+.colophon .prose strong { color: var(--sc-ink); }
+.colophon__tag { color: var(--sc-ink); font-size: var(--sc-t-lg); }
+a.run {
+  color: var(--sc-ink); text-decoration: underline;
+  text-underline-offset: .22em; text-decoration-thickness: 1px;
+  transition: text-decoration-color var(--sc-d-fast) var(--sc-ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  a.run:hover { text-decoration-color: var(--apricot); }
+}
+.colophon :focus-visible { outline-color: var(--hemp); }
+
+.masthead {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: var(--sc-5) clamp(1.5rem, 4vw, 3rem);
+  border-top: 1px solid color-mix(in oklab, var(--ivory) 30%, transparent);
+  padding-top: var(--sc-5); font-size: var(--sc-t-sm);
+}
+.masthead dt {
+  font-size: var(--sc-t-xs); letter-spacing: .07em; text-transform: uppercase;
+  color: var(--sc-ink-soft); margin-bottom: .3rem;
+}
+.masthead dd a { text-decoration: underline; text-underline-offset: .2em; }
+.masthead__foot { font-size: var(--sc-t-xs); color: var(--sc-ink-soft); }
+
+/* ------------------------------------------------------------------ mobile --
+   The grammar already reads one-thing-at-a-time, so the phone needs the
+   spreads to stop being spreads rather than a different composition.
+   -------------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  .spread--media, .spread--claims, .spread--press { grid-template-columns: minmax(0, 1fr); }
+  .spread--press { min-height: 0; }
+  .press__stack, .press__margin, .press__tail { grid-column: 1; }
+  .press__margin { border-left: 0; padding-left: 0; border-top: 1px solid var(--hair); padding-top: var(--sc-5); }
+  /* Flowing on a phone, so the stack sizes to its content. */
+  .press__stack { min-height: 0; }
+  .press__tail { border-top: 1px solid var(--hair); }
+  .folio { font-size: 10px; }
+}
+
+
+/* ------------------------------------------------- pinned stage composition --
+   The engine's stage is exactly one viewport tall and clips. Content dropped
+   into it sits flush against the very top edge, and anything shorter than a
+   viewport leaves the rest of the frame dead. A pinned act HOLDS on that
+   composition for its whole span, so a spread that fills half the stage reads
+   as the page pausing on an unfinished screen.
+
+   These are my own elements, not the mechanism: the stage itself is untouched.
+   -------------------------------------------------------------------------- */
+.spread--media,
+.spread--claims,
+.spread--figures,
+.spread--press {
+  height: 100%;
+  align-content: center;
+  padding-block: clamp(1.5rem, 5vh, 4rem);
+}
+/* The press carries more in its margin column than the other spreads, so it
+   gets a tighter frame: measured at 922px inside a 900px stage, which put the
+   last 22px behind the stage's `overflow: clip` where nobody could reach it. */
+.spread--press { padding-block: clamp(.5rem, 1.5vh, 1.25rem); gap: clamp(1.5rem, 4vw, 3.5rem); }
+.spread--press .press__margin { gap: var(--sc-4); }
+
+@media (max-width: 860px) {
+  /* Chapters three and five flow on a phone, so there is no stage to fill. */
+  .spread--claims, .spread--press { height: auto; align-content: start; }
+}
+
+/* --------------------------------------------------------------- no script -- */
+html:not(.js) [data-sc-cue],
+html:not(.js) [data-sc-in],
+html:not(.js) [data-sc-stagger] > * { opacity: 1 !important; transform: none !important; }
+/* Without JS the press prints nothing, so the sr-only line carries the beat. */
+html:not(.js) .press__stack::before {
+  content: "And again. And again. And again.";
+  display: block; font-family: var(--display); font-weight: 300;
+  font-size: var(--sc-t-2xl); line-height: 1.05;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plate__frame canvas { display: none; }
+  .plate__frame img { opacity: 1 !important; }
+  .plate__load { display: none; }
+}

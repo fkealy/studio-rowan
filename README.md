@@ -35,3 +35,12 @@ python3 -m http.server 4175
 - Respects `prefers-reduced-motion` and degrades gracefully without JS
   (page content stays visible; the loader is JS-driven).
 - Contact is a direct `mailto:info@studiorowan.co.uk` link — no form/backend.
+
+## Prototypes
+
+Five full-site design directions built from the brand guidelines and the
+website copy live under [`prototypes/`](prototypes/). Open
+`http://localhost:4175/prototypes/` for the index, which also lists the
+working assumptions (display-font stand-in, contact address, copy variant).
+Each prototype is a self-contained `index.html`; shared tokens and the
+extracted wordmark/icon SVGs are in `prototypes/shared/`.
