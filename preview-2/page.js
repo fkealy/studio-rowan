@@ -8,9 +8,10 @@
      3. The spin     chapter two's media plate, the one scrub this grammar allows
      4. The loop     a small captioned plate in the peak's margin
 
-   Assets are shared with preview 1 by relative path (../preview/spin,
-   ../preview/media) rather than duplicated. If this direction is chosen, the
-   assets move with it; see BUILD-NOTES.md.
+   Assets are local: ./spin and ./media. This build is self-contained and can be
+   moved, deployed or deleted without touching /preview/. They were shared with
+   preview 1 by relative path until that became the only thing coupling the two
+   proposals together; see BUILD-NOTES.md.
    ========================================================================== */
 (function () {
   'use strict';
@@ -239,7 +240,7 @@
      ---------------------------------------------------------------------- */
   var COUNT = 87;
   var TIERS = [720, 1024, 1440];
-  var BASE = '../preview/spin/';
+  var BASE = './spin/';
 
   var frame = document.getElementById('spin');
   var canvas = frame && frame.querySelector('canvas');
@@ -348,9 +349,9 @@
     if (on && !armed) {
       armed = true;
       var webm = document.createElement('source');
-      webm.type = 'video/webm'; webm.src = '../preview/media/slide-loop.webm';
+      webm.type = 'video/webm'; webm.src = './media/slide-loop.webm';
       var mp4 = document.createElement('source');
-      mp4.type = 'video/mp4'; mp4.src = '../preview/media/slide-loop.mp4';
+      mp4.type = 'video/mp4'; mp4.src = './media/slide-loop.mp4';
       loopEl.appendChild(webm); loopEl.appendChild(mp4);
       loopEl.load();
     }

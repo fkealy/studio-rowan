@@ -52,11 +52,15 @@
 /preview/engine/*
   Cache-Control: public, max-age=31536000, immutable
 
-# Preview 2: the chaptered-editorial proposal. Shares preview 1's spin and
-# media by relative path, so it declares no asset rules of its own.
+# Preview 2: the chaptered-editorial proposal. Self-contained: its spin, media
+# and share image are its own, so it carries the same asset rules preview 1 does.
 /preview-2/*
   X-Robots-Tag: noindex, nofollow
   Cache-Control: public, max-age=0, must-revalidate
   Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw='; style-src 'self'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; object-src 'none'
 /preview-2/engine/*
+  Cache-Control: public, max-age=31536000, immutable
+/preview-2/spin/*
+  Cache-Control: public, max-age=31536000, immutable
+/preview-2/media/*
   Cache-Control: public, max-age=31536000, immutable

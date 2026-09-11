@@ -74,11 +74,33 @@ move.
 
 ## Assets
 
-Shared with preview 1 by relative path (`../preview/spin/`,
-`../preview/media/`) rather than duplicated, so this proposal costs about 60 KB
-on top of what preview 1 already ships. **If this direction is chosen, the
-assets move with it** and the paths become local, which is a one-line change in
-`page.js` (`BASE`) and two in the markup.
+**Local. This build is self-contained.** `./spin` (87 frames at three tiers,
+7.6 MB), `./media` (1.6 MB) and `./og.jpg` are its own, so `/preview-2/` can be
+moved, deployed or deleted without touching `/preview/`, and vice versa.
+Verified by hiding `/preview/` entirely and reloading: 95 requests, none
+leaving `/preview-2/`, no failures.
+
+The two previews were sharing these by relative path (`../preview/spin/`,
+`../preview/media/`) while both were live proposals, which kept preview 2 at
+about 60 KB on top of what preview 1 already shipped. That coupling was the
+only thing left joining the two builds, and it meant neither could be retired
+without breaking the other.
+
+**The cost of the split is real: about 9.2 MB, duplicated.** Both copies are
+byte-identical and both are tracked. If preview 1 is retired, deleting
+`preview/spin`, `preview/media` and `preview/og.jpg` reclaims all of it from
+the working tree (not from history). If BOTH proposals are being kept
+long-term, the cheaper shape is a shared top-level `assets/` that each build
+points at — but neither build is self-contained then, which is the thing this
+change was asked for.
+
+`_headers` now gives `/preview-2/spin/*` and `/preview-2/media/*` the same
+`immutable` rules preview 1's carry; it previously noted that preview 2
+declared no asset rules of its own, which is no longer true.
+
+The remaining cross-build dependency is not a build dependency at all: both
+previews load `/fonts/*` by root-absolute path, which is site-level and
+correct.
 
 ## Verified
 
