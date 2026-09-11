@@ -447,11 +447,29 @@ a { color: inherit; }
 .plate__frame.is-live canvas { opacity: 1; }
 .plate__frame.is-live img { opacity: 0; }
 .plate__frame img { transition: opacity var(--sc-d-slow) var(--sc-ease-out); }
+/* The readout, on the foot of the frame. A rule that fills as the sequence
+   arrives, which is the same device the page uses everywhere else - a line that
+   measures something - rather than a spinner, which would be the only piece of
+   generic UI on the page.
+
+   2px, not 1. At a hairline and ochre-on-paper it read as a stray rule someone
+   had left under the picture rather than as a thing in progress, which is a
+   readout that fails at the one job it has. It sits ON the frame's own bottom
+   edge, so it reads as belonging to the plate. */
 .plate__load {
-  position: absolute; left: 0; bottom: 0; height: 1px; width: 100%;
+  position: absolute; left: 0; bottom: 0; height: 2px; width: 100%;
   transform: scaleX(var(--decoded, 0)); transform-origin: 0 50%;
-  background: var(--ochre); opacity: .85; transition: opacity var(--sc-d-base) var(--sc-ease-out);
+  background: var(--ochre); opacity: .85; z-index: 1;
+  transition: transform 200ms linear, opacity var(--sc-d-base) var(--sc-ease-out);
 }
+/* The track it fills against. Without one the rule is a short mark floating at
+   the left of the frame and there is no telling how far along it is. */
+.plate__frame::after {
+  content: ""; position: absolute; left: 0; bottom: 0; height: 2px; width: 100%;
+  background: color-mix(in oklab, var(--onyx) 12%, transparent);
+  transition: opacity var(--sc-d-base) var(--sc-ease-out);
+}
+.plate__frame.is-ready::after,
 .plate__frame.is-ready .plate__load { opacity: 0; }
 .plate figcaption {
   font-size: var(--sc-t-xs); color: var(--sc-ink-soft); max-width: 34ch;
@@ -754,5 +772,7 @@ html:not(.js) .press__stack::before {
 @media (prefers-reduced-motion: reduce) {
   .plate__frame canvas { display: none; }
   .plate__frame img { opacity: 1 !important; }
-  .plate__load { display: none; }
+  /* The sequence is never requested here (see `lite` in page.js), so there is
+     no run for the readout to report on - track included. */
+  .plate__load, .plate__frame::after { display: none; }
 }

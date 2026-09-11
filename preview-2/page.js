@@ -408,10 +408,56 @@
   var TIERS = [720, 1024, 1440];
   var BASE = './spin/';
 
+  /* Six at a time, not one after another. The run used to be a chain - each
+     frame requested only once the previous had decoded - which on a 4G phone
+     costs a round trip per frame and takes about eighteen seconds for the whole
+     sequence. Six in flight is what a connection carries comfortably and turns
+     that into three or four. */
+  var PARALLEL = 6;
+  /* The coarse pass: every eighth frame, eleven of them, which is enough to
+     answer any scroll position to within four frames - about two degrees of a
+     half rotation. Nothing is drawn until these are in. */
+  var COARSE = Math.ceil(COUNT / 8);
+
   var frame = document.getElementById('spin');
   var canvas = frame && frame.querySelector('canvas');
   var hint = document.getElementById('spin-hint');
   var spin = null;
+  var paint = null;
+
+  /* Coarse to fine: every eighth frame, then the halves, then the quarters,
+     then the rest. Loaded 0..86 in order, a reader who arrives at the middle of
+     the chapter is waiting on frames the far end of the run; loaded this way the
+     whole rotation is roughly covered within the first eleven, and every frame
+     after that only makes it smoother. */
+  function loadOrder(n) {
+    var order = [], seen = new Array(n), step, i;
+    for (step = 8; step >= 1; step = step >> 1) {
+      for (i = 0; i < n; i += step) if (!seen[i]) { seen[i] = 1; order.push(i); }
+    }
+    return order;
+  }
+
+  /* The nearest frame that has actually decoded. The draw used to bail when the
+     frame it wanted was missing, which left whatever was on the canvas - frame
+     zero, usually - sitting there while the reader scrolled: a slipper at the
+     wrong angle that does not move. A neighbour is never wrong by more than the
+     gap in what has loaded, and the gap closes as it goes. */
+  function nearestLoaded(idx) {
+    if (spin.ok[idx]) return idx;
+    for (var d = 1; d < COUNT; d++) {
+      if (idx - d >= 0 && spin.ok[idx - d]) return idx - d;
+      if (idx + d < COUNT && spin.ok[idx + d]) return idx + d;
+    }
+    return -1;
+  }
+
+  function setHint() {
+    if (!hint) return;
+    hint.textContent = lite ? 'shown as a still'
+      : !spin || !spin.ready ? 'loading'
+      : matchMedia('(pointer: fine)').matches ? 'drag to turn' : 'scroll to turn';
+  }
 
   function pickTier() {
     var want = frame.clientWidth * Math.min(devicePixelRatio || 1, 2);
@@ -429,39 +475,67 @@
 
   function startSpin() {
     var tier = pickTier();
+    setHint();
     probe(BASE + tier + '/f000.avif').then(function (avif) {
       var ext = avif ? 'avif' : 'webp';
-      var imgs = new Array(COUNT), decoded = 0;
-      spin = { imgs: imgs, drawn: -1, drag: 0, vel: 0, grabbed: false };
-      var i = 0;
-      (function next() {
-        if (i >= COUNT) { frame.classList.add('is-ready'); return; }
-        var n = i++;
+      spin = {
+        imgs: new Array(COUNT), ok: new Array(COUNT),
+        decoded: 0, drawn: -1, live: false, ready: false,
+        drag: 0, vel: 0, grabbed: false
+      };
+      var order = loadOrder(COUNT), at = 0;
+
+      function pump() {
+        if (at >= order.length) return;
+        var n = order[at++];
         var img = new Image();
         img.decoding = 'async';
         img.src = BASE + tier + '/f' + String(n).padStart(3, '0') + '.' + ext;
-        imgs[n] = img;
-        var done = function () {
-          decoded++;
-          frame.style.setProperty('--decoded', (decoded / COUNT).toFixed(3));
-          if (decoded === 1) { frame.classList.add('is-live'); spin.drawn = -1; }
-          next();
+        spin.imgs[n] = img;
+        var done = function (good) {
+          /* A frame that failed to decode must not be counted as available, or
+             nearestLoaded hands drawSpin an image it cannot paint. It still
+             counts toward the readout, which is measuring the run, not the
+             successes. */
+          spin.ok[n] = !!good && img.complete && img.naturalWidth > 0;
+          spin.decoded++;
+          frame.style.setProperty('--decoded', (spin.decoded / COUNT).toFixed(3));
+          if (spin.decoded === COUNT) {
+            spin.ready = true;
+            frame.classList.add('is-ready');
+            setHint();
+          }
+          pump();
         };
-        if (img.decode) img.decode().then(done, done); else { img.onload = done; img.onerror = done; }
-      })();
+        if (img.decode) img.decode().then(function () { done(true); }, function () { done(false); });
+        else { img.onload = function () { done(true); }; img.onerror = function () { done(false); }; }
+      }
+
+      for (var c = 0; c < PARALLEL; c++) pump();
       bindPointer(); bindKeys();
-      if (hint) hint.textContent = matchMedia('(pointer: fine)').matches ? 'drag to turn' : 'scroll to turn';
     });
   }
 
   function drawSpin() {
-    if (!spin) return;
-    var idx = clamp(Math.round(progress('ch2') * (COUNT - 1) + spin.drag), 0, COUNT - 1);
-    if (idx === spin.drawn) return;
-    var img = spin.imgs[idx];
-    if (!img || !img.complete || !img.naturalWidth) return;
-    canvas.getContext('2d', { alpha: false }).drawImage(img, 0, 0, canvas.width, canvas.height);
+    /* Nothing until the coarse pass is in. The canvas used to go live on the
+       FIRST decoded frame, which is frame zero: a reader who reached chapter two
+       before the run finished got the still swapped out for a canvas holding the
+       opening pose, and it stayed there, motionless, through the whole scrub.
+       Measured on a 4G phone: arriving 4.1s in, 12 per cent decoded, the slipper
+       on screen was the start of the rotation while the page was half way
+       through it. */
+    if (!spin || spin.decoded < COARSE) return;
+    var want = clamp(Math.round(progress('ch2') * (COUNT - 1) + spin.drag), 0, COUNT - 1);
+    var idx = nearestLoaded(want);
+    if (idx < 0 || idx === spin.drawn) return;
+    if (!paint) paint = canvas.getContext('2d', { alpha: false });
+    paint.drawImage(spin.imgs[idx], 0, 0, canvas.width, canvas.height);
     spin.drawn = idx;
+    /* The handover happens HERE, after the first real draw, not when a frame
+       decodes. An `alpha: false` canvas is opaque black until something is
+       painted on it, so revealing it a moment early is a black plate where the
+       product should be. */
+    if (!spin.live) { spin.live = true; frame.classList.add('is-live'); }
   }
 
   function bindPointer() {
@@ -601,16 +675,47 @@
 
   function tick() { printFrame(); spinFrame(); requestAnimationFrame(tick); }
 
+  /* WHEN the sequence starts loading, which is the other half of the reader
+     arriving before it is ready. It began when the frame came within two
+     viewports, and on a phone chapter two is about five viewports down: at a
+     normal reading pace two viewports is a few seconds' warning for 1.6MB.
+
+     So it starts as soon as the page is quiet instead. The title page and
+     chapter one are type on paper - they are already painted and being read,
+     and the reader has a minute of reading ahead of them before the plate is
+     on screen, which is the window the sequence wants. The approach observer
+     stays as the backstop for a browser that never reports idle, and whichever
+     fires first wins.
+
+     `lite` still opts out wholly: on save-data, a 2g connection, or with
+     reduced motion asked for, the still is the whole plate and 1.6MB is never
+     requested. */
+  var spinBegun = false;
+  function beginSpin() {
+    if (spinBegun || !frame || lite) return;
+    spinBegun = true;
+    startSpin();
+  }
+
   if (frame) {
     if (lite) {
       frame.removeAttribute('tabindex');
-      if (hint) hint.textContent = 'shown as a still';
-    } else if ('IntersectionObserver' in window) {
-      var io2 = new IntersectionObserver(function (en) {
-        if (en[0].isIntersecting) { io2.disconnect(); startSpin(); }
-      }, { rootMargin: '200% 0px' });
-      io2.observe(frame);
-    } else { startSpin(); }
+      setHint();
+    } else {
+      var quiet = function () {
+        if ('requestIdleCallback' in window) requestIdleCallback(beginSpin, { timeout: 2500 });
+        else setTimeout(beginSpin, 1200);
+      };
+      if (document.readyState === 'complete') quiet();
+      else addEventListener('load', quiet, { once: true });
+
+      if ('IntersectionObserver' in window) {
+        var io2 = new IntersectionObserver(function (en) {
+          if (en[0].isIntersecting) { io2.disconnect(); beginSpin(); }
+        }, { rootMargin: '200% 0px' });
+        io2.observe(frame);
+      }
+    }
   }
 
   requestAnimationFrame(tick);

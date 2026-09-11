@@ -1097,6 +1097,85 @@ what this proves is only that nothing regressed.
 
 ---
 
+## The spin arrived after the reader did
+
+Reported: readers were reaching the shoe section before it had rendered.
+Reproduced on an emulated 4G phone (4 Mbit, 60ms RTT) at 390x844, flicking down
+to chapter two in about two and a half seconds. At the moment of arrival, 4.1s
+in, **12 per cent of the sequence had decoded** - and the plate was not blank,
+which would at least have been honest. It was **wrong**: the still had already
+been swapped out for the canvas, and the canvas was holding frame zero, the
+opening pose, while the page's own progress was half way through the rotation.
+A slipper at the wrong angle that does not move when you scroll.
+
+Three causes, each fixed:
+
+**It loaded one frame at a time.** The run was a chain - the next frame
+requested only once the previous had decoded - so the whole sequence cost 87
+round trips, about **eighteen seconds** on 4G. Six in flight instead: measured
+at the same arrival point, the sequence is now **fully decoded before the reader
+gets there**, 100 per cent against 12.
+
+**It loaded in the wrong order.** Frames 0 to 86 in sequence means a reader who
+arrives at the middle of the chapter is waiting on frames from the far end of
+the run. It goes coarse to fine now - every eighth frame, then the halves, then
+the quarters - so the whole rotation is roughly covered by the first eleven, and
+everything after that only makes it smoother.
+
+**It handed over to the canvas far too early.** `is-live` was added on the FIRST
+decoded frame, and the draw bailed whenever the frame it wanted was missing,
+leaving whatever was last painted on screen. Two changes: the draw falls back to
+the **nearest decoded frame** rather than bailing, and the handover now happens
+inside the draw, *after* the first real paint, gated on the coarse pass being
+in. That gate also closes a hazard that was always there - the context is
+`alpha: false`, so the canvas is opaque **black** until something is painted on
+it, and revealing it a frame early is a black plate where the product should be.
+Confirmed on slow 3G: the canvas centre pixel reads `0,0,0` for the first two
+seconds, correctly hidden behind the still the whole time.
+
+**And it started too late.** The sequence began when the frame came within two
+viewports; on a phone chapter two is about five viewports down, so that is a few
+seconds' warning for 1.6MB. It starts when the page goes quiet now - the title
+page and chapter one are type on paper, already painted and being read, and the
+reader has a minute of reading before the plate is on screen. The approach
+observer stays as the backstop for a browser that never reports idle. `lite`
+still opts out wholly: on save-data, 2g, or reduced motion the still is the whole
+plate and the sequence is never requested. Verified - **zero frame requests**
+under `prefers-reduced-motion`.
+
+### The loading state itself
+
+The readout existed and was illegible: a 1px ochre rule on the frame's bottom
+edge, with no track behind it, which at 12 per cent read as a stray mark someone
+had left under the picture rather than as a thing in progress. It is 2px now,
+against a faint track so there is something to measure against, and it clears
+when the run finishes. Not a spinner: a line that measures something is the
+device this page uses everywhere else, and a spinner would be the only piece of
+generic UI on it.
+
+The caption carries the words. `Half a rotation, loading.` while the run is in
+flight, `scroll to turn` / `drag to turn` when it is ready, `shown as a still`
+under `lite`. The caption was already the place this plate explains itself; it
+now tells the truth at every stage rather than promising a turn that is not
+there yet.
+
+### Why there is no opening loader
+
+Considered, and deliberately not built. A full-page preloader in front of this
+page would be holding the reader in front of a brand mark while content that is
+*already there* waits behind it. Measured first contentful paint at 390x844:
+**564ms on 4G, 4.7s on slow 3G** - and in both cases the title page arrives
+complete, correctly fonted, with no flash of unstyled content and no layout
+shift. There is no gap for a loader to cover; a splash would only replace the
+browser's blank with a branded one, and it would be the page's only piece of
+furniture that is not the folio or the ask.
+
+The real answer to "they reach the shoe before it renders" was never a splash
+screen. It was that the sequence started late, loaded slowly, loaded in the
+wrong order, and lied about being ready.
+
+---
+
 ## Open items
 
 Everything still open on preview 1 applies here, because the copy and the
