@@ -560,9 +560,14 @@ a { color: inherit; }
    pinned-section rule above on equal specificity, being later in the file.
    The breathing room lives on .spread--press instead. */
 .press:not(.is-unpinned) { padding-top: 0; padding-bottom: 0; }
+/* Column two is one hairline rule drawn behind two elements - the tally and the
+   margin - so the spread's ROW gap must not fall between them or the rule shows
+   a break. Row gap is zero and the one row gap that is actually wanted, between
+   the first impression and the cascade under it, is a margin on the stack. */
 .spread--press {
   grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-  gap: clamp(2rem, 5vw, 4.5rem); align-items: start; align-content: start;
+  column-gap: clamp(2rem, 5vw, 4.5rem); row-gap: 0;
+  align-items: start; align-content: start;
 }
 .press__lead { grid-column: 1; }
 .press__setup {
@@ -587,7 +592,10 @@ a { color: inherit; }
   letter-spacing: var(--sc-track-tight); line-height: .96;
   white-space: nowrap; color: var(--onyx);
 }
-.press__stack { grid-column: 1; display: block; position: relative; }
+.press__stack {
+  grid-column: 1; display: block; position: relative;
+  margin-top: clamp(1rem, 2.5vh, 2rem);
+}
 /* width: max-content so the BOX is the line. Left at the column's full width,
    each impression was a 350px block translated up to 126px across, and thirty
    of them put the document's scrollWidth at 507 inside a 390px viewport - no
@@ -602,9 +610,24 @@ a { color: inherit; }
   white-space: nowrap; transform-origin: 0 50%;
   /* size, offset and ink are all written per impression by page.js */
 }
+/* Both sit in column two and share its rule. The tally auto-places into row
+   one, level with the lead, which is where the readout was before it was split
+   out; the margin follows in row two. */
+.press__tally,
 .press__margin {
-  grid-column: 2; display: grid; gap: var(--sc-5);
+  grid-column: 2;
   border-left: 1px solid var(--hair); padding-left: clamp(1rem, 2.5vw, 2rem);
+  /* The spread is `align-items: start`, so these would each draw their rule for
+     their own content height only and column two would show the hairline in two
+     pieces with a hole between them. Stretched, each fills its row and the two
+     meet: one rule down the column, which is what it was before the tally was
+     split out of the margin. */
+  align-self: stretch;
+}
+.press__tally { display: grid; gap: var(--sc-2); align-content: start; }
+.press__margin {
+  display: grid; gap: var(--sc-5); align-content: start;
+  padding-top: clamp(1rem, 2.5vh, 1.75rem);
 }
 .press__count {
   font-family: var(--display); font-weight: 300; font-size: var(--sc-t-2xl);
@@ -664,8 +687,17 @@ a.run {
   .spread--media, .spread--claims, .spread--press,
   .spread--story { grid-template-columns: minmax(0, 1fr); }
   .spread--press { min-height: 0; }
-  .press__stack, .press__margin, .press__tail { grid-column: 1; }
-  .press__margin { border-left: 0; padding-left: 0; border-top: 1px solid var(--hair); padding-top: var(--sc-5); }
+  .press__stack, .press__tally, .press__margin, .press__tail { grid-column: 1; }
+  .press__tally, .press__margin { border-left: 0; padding-left: 0; }
+  .press__margin { border-top: 1px solid var(--hair); padding-top: var(--sc-5); }
+  /* The number and what it counts on one line, so the tally costs the cascade
+     a row rather than two and the pair still reads as one object. */
+  .press__tally {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center; gap: var(--sc-4);
+    margin-top: clamp(1rem, 2.5vh, 1.75rem);
+  }
+  .press__tally .press__rule { max-width: none; }
   /* Flowing on a phone, so the stack sizes to its content. */
   .press__stack { min-height: 0; }
   .press__tail { border-top: 1px solid var(--hair); }
@@ -721,7 +753,10 @@ a.run {
    the sheet, not to the bottom-left corner, so there is nothing down there to
    clear - and 45px of padding it does not need is 45px that flows the
    signature move at the size the page is composed for. */
-.spread--press { padding-block: clamp(.35rem, 1vh, 1rem); gap: clamp(1.5rem, 4vw, 3.5rem); }
+/* column-gap, not the `gap` shorthand: the shorthand reset the row gap this
+   spread sets to zero further up, and column two's hairline - drawn by the
+   tally and the margin together - came apart with a 56px hole in it. */
+.spread--press { padding-block: clamp(.35rem, 1vh, 1rem); column-gap: clamp(1.5rem, 4vw, 3.5rem); }
 .spread--press .press__margin { gap: clamp(.7rem, 1.6vh, 1rem); }
 
 @media (max-width: 860px) {
@@ -777,6 +812,31 @@ a.run {
    centre. */
 @media (max-width: 860px) {
   .page[data-sc-act="flow"]:not(.page--title) { padding-bottom: clamp(7rem, 15vh, 9rem); }
+}
+
+/* ----------------------------------------------------- the opening breath --
+   A chapter cannot be HELD still on a phone. The engine's pinned stage is
+   exactly one viewport and it clips; measured, every chapter is 944-1600px
+   against a 667-932px screen, so there is no version of pinning that does not
+   put copy behind `overflow: clip`. That is arithmetic, not tuning, and it is
+   why the mobile audit flowed all of them - which left the phone holding still
+   for 8 per cent of its scroll against the desktop's 56, and reading as one
+   continuous 12-viewport slide with no punctuation in it.
+
+   So the phone gets the other half of the device. A chapter opens on its new
+   ground with a screen of air before it starts speaking: the ground cuts, you
+   cross bare colour, then the chapter names itself. Nothing is held, so nothing
+   can clip - the beat is in the composition rather than in the scroll position,
+   which is how a printed chapter opening has always done it.
+
+   `:has(.chapter)` is the rule, and it is structural rather than a list of ids:
+   a section that introduces itself gets the opening. The peak does not, because
+   it is chapter three CONTINUED and opens mid-sentence on the same ground; nor
+   do the two turn beats, which are already held; nor the title page, which is
+   not a chapter. Where :has() is not supported the padding simply stays as it
+   was, which is today's page. */
+@media (max-width: 860px) {
+  .page[data-sc-act="flow"]:has(.chapter) { padding-top: clamp(7rem, 38vh, 16rem); }
 }
 
 /* The folio carried a ground-colour halo here, to stay legible where it crossed

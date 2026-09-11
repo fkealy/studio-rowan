@@ -302,15 +302,35 @@
                setup has to be readable before the first impression answers it. -->
           <h3 class="press__first" id="c3b" data-sc-cue="0.05 1 0.05 0">And again.</h3>
         </div>
-        <div class="press__stack" id="stack" aria-hidden="true"></div>
-        <p class="sr-only">And again. And again. Every wash keeps another disposable pair out of landfill.</p>
+        <!-- The tally: the number, and what the number counts. Its own element,
+             between the lead and the stack, because those are two different
+             places at two different widths.
 
-        <aside class="press__margin">
+             In the margin column beside the cascade it works: the number climbs
+             next to the impressions it is counting, and the two read as one
+             thing. In a single column it was at the BOTTOM of the margin
+             column - which on a phone means below the whole cascade - so the
+             reader watched thirty impressions print with the readout counting
+             up out of sight beneath them, and then met a number with nothing on
+             screen for it to be about.
+
+             Set here it is in column two, row one on a wide screen, exactly
+             where it was; and on a phone it arrives with the first impression,
+             so the number and the cascade hold the same screen and you watch it
+             climb. Measured at 390x844: setup, first impression, tally and the
+             full stack come to 654px inside an 844 viewport. -->
+        <div class="press__tally">
           <!-- Arrives with impression one. The readout is impressions + 1, so
                before impression one is on screen there is nothing for it to be
                true about; cued here it agrees with the page at every frame. -->
           <p class="press__count" data-sc-cue="0.05 1 0.05 0"><span id="impression">1</span></p>
           <p class="press__rule">One pair. Every impression is one wash.</p>
+        </div>
+
+        <div class="press__stack" id="stack" aria-hidden="true"></div>
+        <p class="sr-only">And again. And again. Every wash keeps another disposable pair out of landfill.</p>
+
+        <aside class="press__margin">
           <figure class="plate plate--small">
             <video id="loopv" muted loop playsinline preload="none"
                    poster="./media/slide-loop-poster.webp" width="1440" height="1440"></video>

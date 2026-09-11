@@ -1260,6 +1260,96 @@ device that belongs in the page, not one borrowed from the margin.
 
 ---
 
+## The phone had no punctuation in it
+
+Asked directly: does each section pause, and are we doing it? Measured, and the
+answer was lopsided enough to be worth writing down.
+
+| | held still | scrolling | share held |
+|---|---|---|---|
+| Desktop 1440x900 | 11.6 vp | 9.0 vp | **56%** |
+| Phone 390x844 | 1.0 vp | 11.1 vp | **8%** |
+
+On a wide screen every chapter pauses - chapter one holds for 2 viewports, the
+proof for 1.6, the peak for 3.6. On a phone nothing paused except the two turn
+beats. That was this build's own doing: the mobile audit flowed every chapter,
+because the engine's pinned stage is exactly one viewport and it clips, and
+every chapter measures 944-1600px against a 667-932px screen. **There is no
+version of pinning a chapter on a phone that does not put copy behind
+`overflow: clip`.** Arithmetic, not tuning.
+
+So the phone gets the other half of the device instead of the pin. A chapter
+**opens on its new ground with a screen of air before it starts speaking**: the
+ground cuts, the reader crosses bare colour, then the chapter names itself.
+Measured at 390x844, 256px - about a third of the screen - between the cut and
+the first word, where it was 93. Nothing is held, so nothing can clip; the beat
+is in the composition rather than in the scroll position, which is how a printed
+chapter opening has always done it.
+
+The rule is `:has(.chapter)` rather than a list of ids, because the thing it
+encodes is true: **a section that introduces itself gets the opening.** The peak
+does not - it is chapter three *continued*, opening mid-argument on the same
+ground. Nor do the two turn beats, which are already held. Nor the title page,
+which is not a chapter. Where `:has()` is unsupported the padding stays as it
+was, which is the previous page.
+
+**Cost: +1.0 viewport on a phone** (12.1 to 13.0 at 390x844), against the
++2-3 estimated before building it. The estimate was for a bigger breath; a third
+of a screen turned out to be enough, and more would have started to read as the
+dead space just taken out of the title page. Desktop is untouched - it keeps its
+56 per cent held.
+
+## The peak was flowing one run in six
+
+Found while measuring the above, and it is the defect the notes have been
+guarding against since the beginning: **the signature move flowed at 1440x900**,
+the viewport the page is composed for, in one run out of six.
+
+The stage-fit guard runs once before mount, which is necessarily against
+**fallback font metrics** - the webfonts have not settled yet. The peak clears a
+900px stage by 47px with its impressions built, which is well inside the
+difference a font swap makes to a spread carrying that much display type. So the
+guard sometimes measured an overflow that would not exist a moment later, and
+demoted the chapter permanently.
+
+The engine already re-measures act *geometry* on `fonts.ready`. The act *type*
+is the same question asked earlier, so it is re-asked at the same moment now.
+`decideActs()` restores every chapter to its authored state before measuring, so
+a chapter demoted against fallback metrics is promoted back rather than being
+stuck with the early answer. Stable across eight consecutive runs after.
+
+## The tally counted up out of view
+
+Reported: in a single column the cascade and the readout come apart.
+
+The tally - the number and "One pair. Every impression is one wash." - lived at
+the top of the margin column. Beside the cascade that is exactly right: the
+number climbs next to the impressions it counts and the two read as one thing.
+Stacked into one column the margin lands *below the whole cascade*, so a phone
+reader watched thirty impressions print with the readout counting up out of
+sight beneath them, then met a number with nothing on screen for it to be about.
+
+It is its own element now, between the lead and the stack: column two row one on
+a wide screen, exactly where it was, and on a phone it arrives with the first
+impression so the number and the cascade hold the same screen. Measured at
+390x844, setup, first impression, tally and the full stack come to 654px inside
+an 844 viewport. On a phone the number and its rule set on one line, so the
+tally costs the cascade a row rather than two.
+
+Two things broke in the splitting, both of them the hairline down column two,
+which the tally and the margin now draw between them:
+
+- The spread is `align-items: start`, so each drew its rule for its own content
+  height and the column showed the line in two pieces. Both `align-self:
+  stretch` now, so each fills its row and the two meet.
+- A later `gap` shorthand on `.spread--press` - set for the pinned composition -
+  was resetting the `row-gap: 0` declared further up, putting a 56px hole in the
+  rule. It is `column-gap` now. Worth remembering: **a `gap` shorthand later in
+  the file silently undoes a `row-gap` set earlier**, and this file sets both
+  for the same element in two places.
+
+---
+
 ## Open items
 
 Everything still open on preview 1 applies here, because the copy and the

@@ -214,6 +214,23 @@
     reflow = setTimeout(function () { decideActs(); sc.layout(); }, 180);
   }, { passive: true });
 
+  /* And once more when the webfonts have settled. The first decision is taken
+     before mount, which is necessarily against FALLBACK metrics - and the peak
+     clears a 900px stage by 47px with its impressions built, which is well
+     inside the difference a font swap makes to a spread of that much type.
+     Measured before this: one run in six demoted the signature move at
+     1440x900, the viewport the page is composed for, and it flowed at a size it
+     did not need to.
+
+     The engine already re-measures act GEOMETRY on fonts.ready. The act TYPE is
+     the same question asked earlier, so it has to be re-asked at the same
+     moment; decideActs() restores every chapter to its authored state before it
+     measures, so a chapter demoted against fallback metrics is promoted back
+     here rather than being stuck with the early answer. */
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () { decideActs(); sc.layout(); });
+  }
+
   function progress(id) {
     var a = byId[id];
     if (!a || !a.height) return 0;
