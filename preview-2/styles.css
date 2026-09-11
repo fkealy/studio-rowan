@@ -322,6 +322,40 @@ a { color: inherit; }
 .beat--clay  { background: var(--clay); }
 .beat--white { background: var(--white); }
 
+/* THE TURN: the second beat slides up over the first.
+   turn2 is pulled up a full viewport, so while turn1 is still stuck its stage
+   climbs the frame from the bottom - the answer arriving over the question, on
+   its own ground and carrying its own line. No plane, no duplicated copy: this
+   is the real section, moving the only way a section can, at scroll speed.
+
+   -100svh, matching the unit the engine gives the stage its height in. A
+   `margin-top` shifts the section's position in the document, and the engine
+   measures act tops at layout, so it reads the shifted position and computes
+   progress against it. Nothing is desynced by this; the geometry simply is what
+   it now is.
+
+   The z-index is the one thing that is not automatic. Both stages carry the
+   engine's --sc-z-stage, and at equal z-index the later element in the document
+   paints on top - which is what we want. Stating it here anyway, because the
+   whole effect is one element covering another and leaving that to source order
+   is leaving it to something nobody will think to check. ------------------- */
+.beat--over { margin-top: -100svh; position: relative; z-index: 1; }
+
+/* The outgoing line rides the incoming edge up rather than waiting to be
+   covered: the clay screen has to go somewhere. turn1's hold is 1350px and the
+   slide occupies its last 900px, so the push runs from p 0.333 to 1 and moves
+   the line exactly as far as turn2 climbs - 1:1, the same speed, so the line
+   sits on turn2's leading edge the whole way up. */
+.beat__out {
+  transform: translateY(calc(clamp(0, (var(--sc-p, 0) - 0.333) / 0.667, 1) * -100svh));
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  /* The overlap itself is scroll, not animation, and stays. Only the line's
+     travel is ours to drop. */
+  .beat__out { transform: none; }
+}
+
 /* Media column. Never bleeds under type; always carries a caption. */
 /* The text column is the wider of the two now, where it used to be the
    narrower. It carries the product's name at display size, and that name wants
@@ -629,12 +663,15 @@ a.run {
   .spread--claims, .spread--press, .spread--quiet { height: auto; align-content: start; }
 
 }
-/* A section demoted to flow - by the phone list or by the measured guard, both
-   of which go through unpin() - gets its section padding back and must stop
+/* A section that flows - demoted by the phone list or the measured guard, both
+   of which go through unpin(), or authored that way in the first place, which
+   is what the [data-sc-act="flow"] half covers - gets its section padding back
+   and must stop
    claiming a stage's height, because there is no longer a stage. The attribute
    rule above un-applies on its own; .press does not, which is why it is written
    as :not(.is-unpinned) rather than left to specificity. */
-.is-unpinned .spread { height: auto; align-content: start; padding-block: 0; }
+.is-unpinned .spread,
+[data-sc-act="flow"] .spread { height: auto; align-content: start; padding-block: 0; }
 /* The peak flowed on a wide screen is the one case the phone rules never had to
    cover: they are scoped to max-width 860px, and a short laptop is neither. It
    needs nothing beyond the rule above - the stack has no min-height to undo, and

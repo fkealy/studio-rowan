@@ -1546,6 +1546,10 @@ land on 70,000 and 120,000,000.
 
 ## The scroll budget, trimmed
 
+> **Numbers superseded.** The method stands; the figures were overtaken twice
+> over. The page is 13.5vh now, not 18.7 — see *Audited against Apple*.
+
+
 The feedback was that the scroll is exhausting. The instinct is to make scroll
 more sensitive, or to take the gesture and step the page a section at a time.
 Both are wrong, and it is worth writing down why, because the reasoning is what
@@ -1586,11 +1590,7 @@ Four spans came down. Nothing was deleted and no composition changed:
 | `ch2` the spin | 2.6 → **2.2** | 1.6 → 1.2 |
 | `ch3` the claims | 2.6 → **1.9** | 1.6 → 0.9 |
 | `ch4` the mission | 2.8 → **2.0** | 1.8 → 1.0 |
-
-| | Before | After |
-| --- | --- | --- |
-| Page | 21.5vh | **18.7vh** |
-| Holding | 12.4 (58%) | **9.7 (52%)** |
+| `ch5` the peak | 4.6 → **3.6** | 3.6 → 2.6 |
 
 Two notes on why these four. `ch1s` was the cheapest of them to cut *because of
 the change above*: its span had been sized partly so the counters could finish
@@ -1601,13 +1601,230 @@ normalised (`progress('ch2') × 86`), so it still runs all 87 frames; it simply
 turns faster per pixel — 12.4px per frame against 16.6, still clear of where a
 scrub goes steppy.
 
-**The peak was not touched.** At 3.6 viewports it is now 37% of all the holding
-left on the page, and it is the obvious next lever if 18.7vh is still too long —
-but it is the signature move, and it is the one act where the holding is the
-argument.
+**The peak followed.** It was left alone in the first pass — it is the signature
+move, and the one act where the holding *is* the argument — but at 3.6 viewports
+it was 37% of all the holding left on the page, which made it the only lever
+worth pulling next. `ch5` 4.6 → **3.6**, holding 3.6 → 2.6.
+
+The cascade is specified in proportions of its act (`START = 0.12`, `END =
+0.78`), so it scales rather than breaking: the 29 impressions now print across
+1544px instead of 2138px — **53px of scroll per impression against 73px**. A
+wheel notch is roughly 100px, so the run went from about 1.4 impressions per
+notch to 2. It reads quicker; it does not read broken, and the stage still
+measures 900/900 with nothing clipped.
+
+| | Start of the trim | After ch5 |
+| --- | --- | --- |
+| Page | 21.5vh | **17.7vh** |
+| Holding | 12.4 (58%) | **8.7 (49%)** |
+
+Under half the page is holding for the first time since the intertitles went in.
 
 None of this changes the phone, where every one of these chapters flows and only
 the two turns hold: 13.1vh, 1.8 viewports of holding, unchanged.
+
+---
+
+## The white pushes up onto the clay
+
+> **Superseded.** The band, the plane and the merged single-act version were
+> all replaced by a real section overlap — see *Audited against Apple*, below.
+> The reasoning about push-to-scroll ratio still holds and is why the overlap
+> needed turn1's span raised.
+
+
+The two turns are the page's hinge, and the ground changing between them is how
+the hinge is said in colour — clay is the problem's, white is the product's. As
+a plain section boundary that change was something the reader *scrolled past*.
+Now the new ground arrives under its own power: a white band rises from the foot
+of the clay stage and takes the whole screen, and the line standing on it, just
+before the pin releases.
+
+It is the answer pushing the question out, which is what the copy does.
+
+```css
+.beat--clay.sc-act--pinned .beat__stage::after {
+  content: ""; position: absolute; inset: auto 0 0 0; z-index: 1;
+  background: var(--white);
+  height: calc(100% * clamp(0, (var(--sc-p, 0) - 0.7) / 0.3, 1));
+}
+```
+
+**No script.** `--sc-p` is published by the engine on every act element as a
+plain number, and this is the first thing on the page to read it from CSS. There
+is nothing for the resize machinery to keep in step, and before the engine sets
+it — including on the no-JS page — it falls back to `0`, the wipe never happens,
+and the hard cut at the section boundary is what is left. Which is where this
+started, so the fallback is the old behaviour exactly.
+
+### The two numbers are the whole feel
+
+The band crosses a full viewport of screen in whatever scroll the window buys,
+so **the window sets the ratio of push to scroll**:
+
+| Window | Scroll it buys (1440×900) | Screen crossed | Ratio |
+| --- | --- | --- | --- |
+| `0.82 .. 1` (first try) | 146px | 900px | **6.2 : 1** — a flash |
+| `0.7 .. 1` (shipped) | 243px | 900px | **3.7 : 1** |
+
+At 6:1 a trackpad gets through the whole thing in two gestures and it reads as a
+glitch rather than a gesture. At 3.7:1 it is still clearly faster than the page —
+which is what makes it read as the white *arriving* rather than as a boundary
+being scrolled past — but slow enough to watch.
+
+The ratio is the same on a phone, and not by coincidence: both the screen height
+and the pinned travel scale with `vh`, so `stage / (0.3 × travel)` is 844/228
+against 900/243. Identical by construction.
+
+### The line collapses with it
+
+Painting white *over* a line that stays put is a cover, not a push. The clay
+screen has to go somewhere, and where it goes is up and out, so the line
+translates by exactly the band's rise off the same `--push` variable:
+
+```css
+.beat--clay.sc-act--pinned .beat__stage { --push: clamp(0, (var(--sc-p,0) - 0.7) / 0.3, 1); }
+.beat--clay.sc-act--pinned .beat__stage > p { transform: translateY(calc(var(--push) * -100svh)); }
+.beat--clay.sc-act--pinned .beat__stage::after { height: calc(100% * var(--push)); }
+```
+
+Reading both off one variable is what makes them one motion rather than two
+effects that happen to agree. Measured at 1440×900 — the line travels exactly
+as far as the band rises:
+
+| `p` | band | line Y in the stage |
+| --- | --- | --- |
+| 0.70 | 0px | 368 (centred) |
+| 0.80 | 300px | 68 |
+| 0.90 | 600px | −232 |
+| 1.00 | 900px | −532 |
+
+So the clay left on screen is a band that collapses, the line is carried out of
+the top of the frame at `push 0.59` (`p ≈ 0.88`), and the last of the clay is
+squeezed out behind it. Leaving the line standing would have put *"We thought
+there had to be a better way."* on white — the product's colour — and the cut is
+supposed to land on *"So we redesigned them."*
+
+`svh`, not `vh`, because `svh` is the unit the engine gives the stage its height
+in. On a phone the two differ by the browser chrome and the line would drift off
+the edge it is supposed to be standing on.
+
+Reduced motion drops the band and leaves the line where it was put: a ground
+that moves is still motion, and so is a line leaving the frame.
+
+### The bug that made it look like nothing happened
+
+The first version gave the stage `position: relative`, to be the containing
+block for the absolute band. `.beat--clay.sc-act--pinned .beat__stage` is
+**(0,3,0)** and the engine's `.sc-stage { position: sticky }` is **(0,1,0)**, so
+it won: the stage stopped sticking, the beat stopped pinning, and the whole turn
+scrolled past as ordinary content. The band was still computing its height
+correctly, which is the worst kind of broken — every number checked out and
+nothing worked.
+
+It was not needed at all. `sticky` is a positioned value and is already the
+containing block for absolutely positioned descendants.
+
+**The general lesson for this file:** anything written against `.sc-stage`,
+`.sc-act--pinned` or any other engine class is written *against the engine*, and
+the engine's own declarations are one class deep. They lose every argument by
+default. Before adding a property to an engine-owned element, check whether the
+engine already sets it — and whether it is load-bearing.
+
+---
+
+## Audited against Apple, and what came out
+
+The feedback was that a gentle scroll "doesn't move the needle" — that getting
+from the mission to the colophon was tiring unless you knew to flick. Rather
+than guess at what the reference sites do, apple.com/macbook-pro was measured
+directly. Five rules came out of it, and they are not the ones expected.
+
+| | Measured on Apple | |
+| --- | --- | --- |
+| Scroll | Native. No Lenis, no Locomotive, no GSAP ScrollTrigger, no transformed fake-scroller, html/body overflow visible | they never touch the wheel |
+| Mechanism | `position: sticky` + JS. **Zero** scroll-driven CSS animations | same instrument as this engine |
+| Holds | 0.6, 0.9, 1.2, 2.0, 2.8, **3.0** viewports | LONGER than this page's |
+| Inside a hold | 14 and 8 elements mid-transform or mid-fade, 6 and 30 images, video | **never a still frame** |
+| Media | 2.6–5s clips, `autoplay: false`, muted, triggered on entry | one caught parked at t=4.03 of 4.0s |
+| Share of page held | 40% | |
+
+**So "Apple keeps it short" is wrong.** They pin more than this page and for
+longer. The thing that separates them is that a pinned frame is never static —
+there is always something to watch. Which makes the rule:
+
+> Never hold a still frame. If nothing changes across a hold, do not pin it.
+
+### Three chapters failed that and were unpinned
+
+`ch4` the mission, `ch1s` the story and `ch3` the claims were all pinned and all
+still. The mission was the worst: 1800px from its arrival to the colophon's, of
+which 900px — half — was a pin with nothing moving. 36 trackpad nudges, 18 of
+them on a frozen screen. Its content is 756px against a 900px viewport, so it
+already fits a screen and never needed holding to be read in one.
+
+`ch1s` is worth a note on cause: its hold only became static when the figures
+moved from scrolling to ticking on entry. One change created the other.
+
+| | Then | Now |
+| --- | --- | --- |
+| Page | 21.5vh | **13.5vh** |
+| Held | 12.4vp (58%) | **5.6vp (42%)** |
+| Mission → colophon | 1800px, half frozen | 965px, none frozen |
+
+42% against Apple's 40%, and every remaining hold earns itself — verified by
+sampling every descendant's transform and opacity at five points across each:
+
+| Hold | Span | What moves across it |
+| --- | --- | --- |
+| `turn1` | 1.5vp | the line riding up, turn2 climbing over it |
+| `ch2` | 1.2vp | canvas pixels change between p 0.15 and 0.75 — 87 frames scrubbing |
+| `ch5` | 2.6vp | 4 impressions at p 0.2, 25 at p 0.7 |
+| `turn2` | 0.3vp | the line lands; too short to be a screen where nothing happens |
+
+A warning for anyone repeating that audit: `ch2` and `ch5` first measured as
+static and are not. Their motion is rAF-driven, and rAF is throttled when the
+browser pane is hidden, so the probe saw nothing move. Sampling with 2.6s waits
+found both.
+
+### The turn, rebuilt as a real overlap
+
+Three versions were tried before this one: a white band growing by `height`
+(layout every frame, cannot be smooth), a full-height plane on a transform, and
+a single merged act carrying both lines. The last worked but cost the page a
+section and broke the no-JS path — with `--push` unresolved, the second line was
+unreachable.
+
+What shipped is the standard pattern: two real sections, `turn2` pulled up a
+viewport with `margin-top: -100svh` so its stage climbs while `turn1` is still
+stuck. No plane, no duplicated copy, no shared variable — the real section
+moving the only way a section can.
+
+It has to be paid for in span, and the arithmetic is the whole reason `turn1` is
+2.5. A pin holds for `(span - 1) x vh`. The overlap is ordinary scrolling and
+therefore 1:1 — one viewport of screen costs one viewport of scroll — so the
+hold has to be longer than a viewport or the slide begins before the line has
+settled. At 1.9 the hold was 810px against a 900px slide: 111% of it. At 2.5 it
+is 1350px, and the line sits clean for 450px first.
+
+`turn2` is 1.3 and not 2.5 for the opposite reason. `turn1` does the work; by
+the time `turn2` is stuck the arrival has already happened, so its own hold is
+270px — enough to land, not enough to be the page's last still screen.
+
+**The cost of 1:1.** A real section can only move at scroll speed. The plane
+version crossed the screen at 1.85:1 and read as a push; this reads as a clean
+arrival. That is the trade, and it was made deliberately.
+
+### Two gotchas worth keeping
+
+- **A `data-sc-in` element has a CSS transition on `transform`.** Anything
+  driven from scroll on one of those chases the scroll instead of tracking it,
+  arriving late and smearing every direction change. `transition-property:
+  opacity` fixes it; opacity keeps its reveal, transform becomes instantaneous.
+- **Engine declarations are one class deep and lose every argument.** Setting
+  `position: relative` on `.beat__stage` at (0,3,0) beat the engine's
+  `.sc-stage { position: sticky }` at (0,1,0) and silently stopped the beat
+  pinning at all, while every number still checked out.
 
 ---
 

@@ -70,12 +70,21 @@
      choose the pinned or the flow progress formula. `sc.acts` is published, so
      these flip it there rather than editing the vendored engine.
      ---------------------------------------------------------------------- */
-  /* turn1 and turn2 are the two held beats between chapters one and two. They
-     carry one line each and fit any stage, so they are never demoted in
-     practice - they are in the list because the list is the page's only answer
-     to "may this be pinned?", and a section that is exempt from it is a section
-     nobody is checking. */
-  var MUTABLE    = ['ch1s', 'turn1', 'turn2', 'ch2', 'ch3', 'ch4', 'ch5'];
+  /* turn1 and turn2 are the two held beats between chapters one and two, and
+     turn2 is pulled up a viewport to slide over turn1. They carry one line each
+     and fit any stage, so they are never demoted in practice - they are in the
+     list because the list is the page's only answer to "may this be pinned?",
+     and a section that is exempt from it is a section nobody is checking. */
+  /* What is left after the static holds came out. A pinned frame with nothing
+     happening in it is the defect - measured against Apple's own product pages,
+     which pin MORE than this one and for longer (holds up to 3 viewports, 40%
+     of the page) but never hold a still frame: every hold there carries media,
+     staged text or images in motion the whole way through. ch1s and ch3 held
+     nothing once the figures moved to an entry tick and the claims to a single
+     arrival, so they flow. What remains earns its hold: the spin scrubs 87
+     frames across ch2, the peak prints 29 impressions across ch5, and the two
+     turns carry the page's hinge. */
+  var MUTABLE    = ['turn1', 'turn2', 'ch2', 'ch5'];
   /* ch2 is on this list because of a measurement, not a composition. Its spread
      was 11px over a 390x844 stage and stayed pinned on taller phones, so the
      page held in different places on different devices - the cause of the half
@@ -89,7 +98,7 @@
      some phones and not others. The list is now every content chapter, which is
      the rule stated plainly - on a phone, the only things that hold are the two
      turns, because they are the only two short enough to hold anywhere. */
-  var PHONE_FLOW = ['ch1s', 'ch2', 'ch3', 'ch4', 'ch5'];
+  var PHONE_FLOW = ['ch2', 'ch5'];
 
   /* Declared before the first unpin() call, not with the mount below: `var` is
      hoisted as undefined, and unpin() indexes it. */

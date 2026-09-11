@@ -68,7 +68,7 @@
        presents facts. So: the narrative runs continuously down the lead
        column, and the two numbers stand alone in their own column as the
        figures they are. -->
-  <section class="page page--clay" data-sc-act="pin" data-sc-span="2.2" id="ch1s" aria-labelledby="c1">
+  <section class="page page--clay" data-sc-act="flow" id="ch1s" aria-labelledby="c1">
     <div data-sc-stage>
       <div class="spread spread--story">
         <!-- One arrival, same reasoning as the mission below. -->
@@ -137,32 +137,41 @@
        is the problem's colour and white is the product's, so the hard cut lands
        on "So we redesigned them." - on the word that changes the story rather
        than on the structural seam a screen later. -->
-  <!-- UNCUED, and this is the whole point of the beat. A cue is clamped to p=0
-       for the stage's entire entry slide, so the cued version spent a viewport
-       of scrolling on an empty ground, blinked the line on for 422px, and took
-       it away again: the line was on screen for 20% of the 2110px the beat
-       cost, and "flash and disappear" is exactly what that is. Uncued, the line
-       is painted for the whole time the stage is on screen. It rides up into
-       the frame, stops dead, and rides off - and the stopping is the full stop,
-       rather than a fade standing in for one.
+  <!-- THE TURN, two held beats with the second sliding up OVER the first.
 
-       This is the same fault, and the same fix, as the press's setup line: see
-       "The press printed its echo before its setup". The rule is worth stating
-       once more - on a pinned act, an uncued element is visible for the entire
-       entry slide and a cued one is not.
+       Real sections, no plane. turn2 is pulled up a full viewport with a
+       negative margin, so its stage rises from the foot of the frame while
+       turn1 is still stuck - the answer arriving on top of the question,
+       carrying its own line, on its own ground.
 
-       span 1.9, not 1.5. 1.9 is the value the intertitles shipped at when this
-       device was measured (see "The full stops now stop"), and it buys 0.9
-       viewports of dead-still hold against 1.5's 0.5. At 1.5 with the cue's
-       ramps the line was at full strength for 0.37 viewports - barely half the
-       0.69 that table recorded as working. -->
-  <section class="page beat beat--clay" data-sc-act="pin" data-sc-span="1.9" id="turn1">
+       The geometry has to be bought, and this is the arithmetic of it. A pin
+       holds for (span - 1) x vh: the engine makes the section span viewports
+       tall and sticks a stage exactly one viewport tall inside it, so the hold
+       is the surplus behind the stage. The overlap is ordinary scrolling and
+       therefore 1:1 - one viewport of screen costs one viewport of scroll. So
+       turn1's hold has to be longer than a viewport or the slide starts before
+       its line has settled. At the old span of 1.9 the hold was 810px against a
+       900px slide, which is 111% of it; at 2.5 the hold is 1350px and the line
+       sits clean for 450px before the white starts to climb.
+
+       UNCUED, both lines: a cue is clamped to p=0 for a stage's whole entry
+       slide, which is how these two used to spend 80% of their sections on an
+       empty ground.
+
+       turn2's span is 1.3, not turn1's 2.5, and the difference is the point.
+       turn1's hold does the work - 450px of the question standing still, then
+       900px of the answer climbing over it - so by the time turn2 is stuck the
+       arrival has already happened. Its own hold is 270px: enough for the line
+       to land, not enough to be a screen where nothing moves. Audited against
+       Apple's product pages, a held frame with nothing happening in it is the
+       one thing they never ship, and this was the page's last one at 810px. -->
+  <section class="page beat beat--clay" data-sc-act="pin" data-sc-span="2.5" id="turn1">
     <div data-sc-stage class="beat__stage">
-      <p class="d d--lg">We thought there had to be a better way.</p>
+      <p class="d d--lg beat__out">We thought there had to be a better way.</p>
     </div>
   </section>
 
-  <section class="page beat beat--white" data-sc-act="pin" data-sc-span="1.9" id="turn2">
+  <section class="page beat beat--white beat--over" data-sc-act="pin" data-sc-span="1.3" id="turn2">
     <div data-sc-stage class="beat__stage">
       <p class="d d--lg">So we redesigned them.</p>
     </div>
@@ -209,7 +218,7 @@
   </section>
 
   <!-- ===================================================== CHAPTER THREE -->
-  <section class="page page--ivory" data-sc-act="pin" data-sc-span="1.9" id="ch3" aria-labelledby="c3">
+  <section class="page page--ivory" data-sc-act="flow" id="ch3" aria-labelledby="c3">
     <div data-sc-stage>
       <!-- The proof spread. The claim list is an argument about how the thing
            behaves in a wet, busy, public place, and it was making that argument
@@ -272,7 +281,7 @@
        THE PEAK. Largest span on the page. The signature move lives here:
        the chapter reprints itself, impression after impression, until the
        repetitions are the page. -->
-  <section class="page page--ivory press" data-sc-act="pin" data-sc-span="4.6" id="ch5">
+  <section class="page page--ivory press" data-sc-act="pin" data-sc-span="3.6" id="ch5">
     <div data-sc-stage>
       <div class="spread spread--press">
         <div class="press__lead">
@@ -334,13 +343,20 @@
     </div>
   </section>
   <!-- ===================================================== CHAPTER FOUR -->
-  <!-- The mission carries 121 words, more than any other section on the page,
-       and as a flow act it was the only multi-paragraph chapter that never
-       stopped. Pinned, so the longest read on the page is held rather than
-       scrolled through. It flows again on a phone (see page.js): the spread is
-       within ~10px of a 390x844 stage and taller than a 375x667 one, and a
-       pinned stage clips what will not fit. -->
-  <section class="page page--hemp" data-sc-act="pin" data-sc-span="2.0" id="ch4" aria-labelledby="c4">
+  <!-- FLOWS, at every width. It was pinned, on the reasoning that the longest
+       read on the page (121 words, more than any other section) should be held
+       still rather than scrolled through. Measured, that is the opposite of
+       what it does: the section ran 1800px from the mission arriving to the
+       colophon arriving and 900px of it - half - was the pin, during which
+       nothing on screen moves at all. On a flick that is a beat. On a gentle
+       scroll it is 18 wheel notches of a page that appears to be broken, and
+       "scroll down until something happens" is not an instruction anyone should
+       have to work out.
+
+       The content is 756px against a 900px viewport, so it fits a screen on its
+       own and never needed holding to be read in one. Flowed, every scroll
+       moves it, and the run to the colophon is roughly half what it was. -->
+  <section class="page page--hemp" data-sc-act="flow" id="ch4" aria-labelledby="c4">
     <div data-sc-stage>
       <!-- One arrival for the whole chapter. This screen used to carry four
            data-sc-in elements, two of them staggering their children at 90ms
