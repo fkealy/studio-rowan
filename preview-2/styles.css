@@ -88,6 +88,10 @@ a { color: inherit; }
 .folio__t { transition: opacity var(--sc-d-base) var(--sc-ease-out); }
 .folio.is-turning .folio__t { opacity: 0; }
 .page--colophon ~ *, .folio.on-dark { color: color-mix(in oklab, var(--hemp) 80%, transparent); }
+/* .folio__n pins itself to --onyx, which is all but invisible on olive. It was
+   already doing that on the colophon; the olive intertitle above it makes that
+   stretch longer, so it is fixed rather than inherited. */
+.folio.on-dark .folio__n { color: var(--ivory); border-right-color: color-mix(in oklab, var(--ivory) 30%, transparent); }
 
 /* ------------------------------------------------------------------- type -- */
 .d {
@@ -166,6 +170,15 @@ a { color: inherit; }
 .inter--white { background: var(--white); }
 .inter--ivory { background: var(--ivory); }
 .inter--hemp  { background: var(--hemp); }
+/* The colophon's intertitle lands on the colophon's own ground, so the hard
+   cut happens once, at the full stop, rather than arriving underneath the
+   previous chapter's last paragraph. Ink is restated for the same reason the
+   colophon restates it: colour inherits as a computed value. */
+.inter--olive {
+  background: var(--olive);
+  --sc-ink: var(--ivory); --sc-ink-soft: #C9D2B4;
+  color: var(--sc-ink);
+}
 
 /* ------------------------------------------------------------- title page -- */
 .sheet { width: 100%; }
@@ -295,7 +308,7 @@ a { color: inherit; }
 /* No vertical padding here either: .press would otherwise win over the
    pinned-section rule above on equal specificity, being later in the file.
    The breathing room lives on .spread--press instead. */
-.press { padding-top: 0; padding-bottom: 0; }
+.press:not(.is-unpinned) { padding-top: 0; padding-bottom: 0; }
 .spread--press {
   grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
   gap: clamp(2rem, 5vw, 4.5rem); align-items: start; align-content: start;
@@ -401,6 +414,8 @@ a.run {
 .spread--media,
 .spread--claims,
 .spread--figures,
+.spread--story,
+.spread--quiet,
 .spread--press {
   height: 100%;
   align-content: center;
@@ -409,13 +424,34 @@ a.run {
 /* The press carries more in its margin column than the other spreads, so it
    gets a tighter frame: measured at 922px inside a 900px stage, which put the
    last 22px behind the stage's `overflow: clip` where nobody could reach it. */
-.spread--press { padding-block: clamp(.5rem, 1.5vh, 1.25rem); gap: clamp(1.5rem, 4vw, 3.5rem); }
-.spread--press .press__margin { gap: var(--sc-4); }
+/* Trimmed by 14px so the peak clears a 900px stage with its impressions built
+   and therefore stays PINNED at 1440x900. Without this the stage-fit guard in
+   page.js measures 910 and flows the signature move at the size the page is
+   composed for, which is far too blunt a fix for 10px.
+   Short laptops are a different problem and not a padding one: 54-76px of the
+   closing "better for..." lines sat outside the stage there, revealed and
+   unreachable behind overflow:clip. That is the guard's job, not this rule's. */
+.spread--press { padding-block: clamp(.35rem, 1vh, 1rem); gap: clamp(1.5rem, 4vw, 3.5rem); }
+.spread--press .press__margin { gap: clamp(.7rem, 1.6vh, 1rem); }
 
 @media (max-width: 860px) {
-  /* Chapters three and five flow on a phone, so there is no stage to fill. */
-  .spread--claims, .spread--press { height: auto; align-content: start; }
+  /* Chapters three and five flow on a phone, so there is no stage to fill.
+     So does the mission: its spread is within ~10px of a 390x844 stage and
+     taller than a 375x667 one, and a pinned stage clips what will not fit.
+     Chapter one's story stays pinned on a phone - it is 0.55 viewports tall,
+     with room to spare on the shortest screen we check. */
+  .spread--claims, .spread--press, .spread--quiet { height: auto; align-content: start; }
 }
+/* A section demoted to flow - by the phone list or by the measured guard, both
+   of which go through unpin() - gets its section padding back and must stop
+   claiming a stage's height, because there is no longer a stage. The attribute
+   rule above un-applies on its own; .press does not, which is why it is written
+   as :not(.is-unpinned) rather than left to specificity. */
+.is-unpinned .spread { height: auto; align-content: start; padding-block: 0; }
+/* The peak flowed on a wide screen is the one case the phone rules never had to
+   cover: they are scoped to max-width 860px, and a short laptop is neither. It
+   needs nothing beyond the rule above - the stack has no min-height to undo, and
+   the margin keeps its column - so there is deliberately no rule here. */
 
 /* --------------------------------------------------------------- no script -- */
 html:not(.js) [data-sc-cue],

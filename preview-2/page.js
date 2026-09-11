@@ -31,15 +31,81 @@
      reader can never scroll to: the press tail measured 1.54:1 there, not
      because of colour but because it was pinned off-screen. Editorial pages
      want to flow on a phone anyway. The scrub chapter stays pinned, because
-     pinning is how a scrub works at all. */
-  if (matchMedia('(max-width: 860px)').matches) {
-    ['ch1n', 'ch3', 'ch5'].forEach(function (id) {
-      var el = document.getElementById(id);
-      if (!el) return;
-      el.setAttribute('data-sc-act', 'flow');
-      el.removeAttribute('data-sc-span');
-    });
+     pinning is how a scrub works at all.
+
+     ch4, the mission, is here for the same reason and by the same measurement:
+     its spread clears a 390x844 stage by about ten pixels and does not fit a
+     375x667 one at all. Chapter one's story (ch1s) is NOT here - it is 0.55
+     viewports tall, so it pins on a phone with room to spare, and it is the
+     one full stop this change buys on mobile as well as on the desktop. */
+  /* One demotion path, so both callers below leave the page in the same state.
+     The .is-unpinned class is what the stylesheet keys off: a section that is
+     no longer pinned needs its vertical padding back and its spread has to stop
+     claiming a stage's height, and neither of those follows from the act
+     attribute alone once .press has overridden the padding rule. */
+  function unpin(id) {
+    var el = document.getElementById(id);
+    if (!el || el.getAttribute('data-sc-act') === 'flow') return;
+    el.setAttribute('data-sc-act', 'flow');
+    el.removeAttribute('data-sc-span');
+    el.classList.add('is-unpinned');
   }
+
+  if (matchMedia('(max-width: 860px)').matches) {
+    ['ch1n', 'ch3', 'ch4', 'ch5'].forEach(unpin);
+  }
+
+  /* The press's state, declared up here rather than with the rest of section 2
+     below, because buildStack() runs before the guard and a `var` assigned
+     later is hoisted as undefined: called early against the original ordering
+     it hit `if (!stack) return` and silently built nothing. */
+  var IMPRESSIONS = 30;
+  var stack = document.getElementById('stack');
+  var counter = document.getElementById('impression');
+  var marks = [];
+  var lastShown = -1;
+
+  /* The press builds its impressions here, BEFORE the stage-fit guard below and
+     before mount, because both measure this spread and an empty stack is not
+     the spread. Measured with the stack empty the peak reads ~895px and looks
+     like it fits a 900px stage; built, it is 922px and clips its own closing
+     lines by 11px top and bottom. buildStack touches no engine state, so it is
+     free to run this early. */
+  buildStack();
+
+  /* The general form of the same rule, measured rather than guessed.
+
+     A pinned stage is exactly one viewport tall and it clips, so a spread that
+     does not fit one is content nobody can reach - and "fits" is not a property
+     of the phone, it is a property of the viewport. The mission spread clears a
+     1440x900 stage and overflows a 1366x768 laptop by 42px, which no width
+     breakpoint would have caught. So: measure the spread while it is still an
+     ordinary block (the engine has not mounted, so height:100% against an
+     unsized stage is still auto) and demote the act if it will not fit.
+
+     ch5, the peak, is in this list and was clipping before any of this change.
+     Measured as VISIBLE content outside the stuck stage, at the point in the act
+     where it has been revealed: 54px at 1366x768, 67px at 1280x720, 76px at
+     1024x700 - the closing "They\'re better for guests / businesses / the planet"
+     lines, revealed and then unreachable behind overflow:clip. 1440x900 was
+     always fine, and still is: the peak stays pinned there.
+
+     The cost when the guard does fire is real - the signature move drops from a
+     4.6 viewport pin to roughly 2.3 viewports of flow - but unreachable copy is
+     not a trade, and the peak already flows on every phone. If it should stay
+     pinned on a short laptop, the fix is to make its margin column fit (~660px,
+     barely scaling with viewport height), not to remove the guard.
+
+     Like the list above, this runs once. An act type is read at mount, so a
+     window resized short after load keeps the act it was given; the engine has
+     the same limit and the mobile switch has always had it. */
+  ['ch1s', 'ch1n', 'ch3', 'ch4', 'ch5'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el || el.getAttribute('data-sc-act') !== 'pin') return;
+    var inner = el.querySelector('[data-sc-stage] > *');
+    if (!inner || inner.scrollHeight <= innerHeight) return;
+    unpin(id);
+  });
 
   var sc = ScrollCraft.mount(document.body);
   var byId = {};
@@ -103,7 +169,10 @@
       seen.forEach(function (r, el) { if (r > bestR) { bestR = r; best = el; } });
       if (best) setFolio(best.getAttribute('data-ch'), best.getAttribute('data-ch-t'));
       // The colophon is Olive; the folio has to change ink with it.
-      folio.classList.toggle('on-dark', !!(best && best.classList.contains('page--colophon')));
+      /* The colophon chapter is now two sections, its intertitle and its body,
+         and both sit on olive. Test the ground, not the one class. */
+      folio.classList.toggle('on-dark', !!(best && (best.classList.contains('page--colophon') ||
+                                                    best.classList.contains('inter--olive'))));
     }, { threshold: [0, 0.15, 0.35, 0.6, 0.9] });
     chapters.forEach(function (c) { io.observe(c); });
   }
@@ -119,12 +188,6 @@
      Impressions are real elements, created once and revealed by scroll. No
      crossfade anywhere: this grammar cuts.
      ---------------------------------------------------------------------- */
-  var IMPRESSIONS = 30;
-  var stack = document.getElementById('stack');
-  var counter = document.getElementById('impression');
-  var marks = [];
-  var lastShown = -1;
-
   function buildStack() {
     if (!stack) return;
     var frag = document.createDocumentFragment();
@@ -155,9 +218,14 @@
     var p = progress('ch5');
     /* Front-loaded: the run is complete well before the chapter ends, so the
        tail copy has a settled block to sit against rather than a moving one. */
-    /* marks holds impressions two upward; impression one is always printed,
-       so the readout is marks-shown + 1 and matches what is on screen. */
-    var n = Math.round(clamp01(p / 0.78) * marks.length);
+    /* marks holds impressions two upward; impression one is the cued .press__first
+       in the markup, so the readout is marks-shown + 1 and matches what is on
+       screen. The cascade starts at 0.12 rather than 0, AFTER impression one has
+       finished arriving (cued 0.05..0.10): started at 0 it raced its own first
+       line, and four impressions were already down before the setup sentence
+       that leads them was legible. */
+    var START = 0.12, END = 0.78;
+    var n = Math.round(clamp01((p - START) / (END - START)) * marks.length);
     if (n === lastShown) return;
     for (var i = 0; i < marks.length; i++) {
       marks[i].style.opacity = i < n ? '1' : '0';
@@ -303,7 +371,7 @@
   }
 
   /* ------------------------------------------------------------------------ */
-  buildStack();
+  /* buildStack() ran before mount; see the note above the stage-fit guard. */
 
   function tick() { printFrame(); spinFrame(); requestAnimationFrame(tick); }
 

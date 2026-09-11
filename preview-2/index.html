@@ -51,14 +51,26 @@
     </div>
   </section>
 
-  <!-- The story flows: it is prose and wants to be read past. -->
-  <section class="page page--clay" data-sc-act="flow" data-ch="One" data-ch-t="The hotel slipper">
-    <div class="spread">
+  <!-- The story gets a full stop of its own. It flowed before, on the reasoning
+       that prose wants to be read past. Measured, that meant 58 words crossing
+       the screen with nothing ever held still, while the three-word intertitle
+       directly above it held for 0.69 viewports: the page was spending its
+       stillness on its emptiest screens and none of it on its densest.
+
+       The reveal stays [data-sc-in] rather than becoming a cue. A cue would
+       re-hide this copy on scroll-up, which the engine calls a defect, and the
+       point of the change is a complete screen held still - not a second thing
+       to watch. The section is taller than the viewport, so the reveal has
+       finished during the slide-up and the pin engages on a settled frame. -->
+  <section class="page page--clay" data-sc-act="pin" data-sc-span="2.0" id="ch1s" data-ch="One" data-ch-t="The hotel slipper">
+    <div data-sc-stage>
+      <div class="spread spread--story">
       <div class="spread__lead">
         <h3 class="d d--md" data-sc-in>Worn for moments, wasted forever.</h3>
         <div class="prose" data-sc-in data-sc-stagger="70">
           <p>It was summertime in the Swiss Alps. The moon was shining, and the campfire was crackling. A group of friends sat by a lake, beers in hand, chatting about work. One of them managed a hotel and mentioned, almost in passing, that the hotel got through 70,000 pairs of disposable slippers a year.</p>
         </div>
+      </div>
       </div>
     </div>
   </section>
@@ -174,17 +186,29 @@
     <div data-sc-stage>
       <div class="spread spread--press">
         <div class="press__lead">
-          <p class="press__setup" data-sc-cue="0 1 0.02 0">Most importantly, they can be washed and used again.</p>
+          <!-- NOT cued. A cue is clamped to p=0 for the whole of the stage's
+               entry slide, so cueing this line held it at zero opacity for a
+               viewport of scrolling while the uncued "And again." below it
+               painted at full strength: the reader got the echo before the
+               sentence it echoes, and the hinge the copy order is built on
+               ("...used AGAIN. / And AGAIN.") landed backwards. The line that
+               leads the act arrives with the act. -->
+          <p class="press__setup">Most importantly, they can be washed and used again.</p>
           <!-- This heading IS impression one. The cascade in .press__stack
                continues from it rather than restarting below it, so the line
-               the reader just read is the first thing the press prints. -->
-          <h3 class="press__first" id="c3b">And again.</h3>
+               the reader just read is the first thing the press prints. It is
+               cued, and it is the FIRST thing on this screen that moves: the
+               setup has to be readable before the first impression answers it. -->
+          <h3 class="press__first" id="c3b" data-sc-cue="0.05 1 0.05 0">And again.</h3>
         </div>
         <div class="press__stack" id="stack" aria-hidden="true"></div>
         <p class="sr-only">And again. And again. Every wash keeps another disposable pair out of landfill.</p>
 
         <aside class="press__margin">
-          <p class="press__count"><span id="impression">1</span></p>
+          <!-- Arrives with impression one. The readout is impressions + 1, so
+               before impression one is on screen there is nothing for it to be
+               true about; cued here it agrees with the page at every frame. -->
+          <p class="press__count" data-sc-cue="0.05 1 0.05 0"><span id="impression">1</span></p>
           <p class="press__rule">One pair. Every impression is one wash.</p>
           <figure class="plate plate--small">
             <video id="loopv" muted loop playsinline preload="none"
@@ -214,7 +238,14 @@
     </div>
   </section>
 
-  <section class="page page--hemp" data-sc-act="flow" data-ch="Four" data-ch-t="Our mission">
+  <!-- The mission carries 121 words, more than any other section on the page,
+       and as a flow act it was the only multi-paragraph chapter that never
+       stopped. Pinned, so the longest read on the page is held rather than
+       scrolled through. It flows again on a phone (see page.js): the spread is
+       within ~10px of a 390x844 stage and taller than a 375x667 one, and a
+       pinned stage clips what will not fit. -->
+  <section class="page page--hemp" data-sc-act="pin" data-sc-span="2.8" id="ch4" data-ch="Four" data-ch-t="Our mission">
+    <div data-sc-stage>
     <div class="spread spread--quiet">
       <h3 class="d d--md" data-sc-in>We don&rsquo;t think the world has a waste problem. We think it has design problems.</h3>
       <ol class="changed" data-sc-in data-sc-stagger="90">
@@ -228,14 +259,29 @@
         <p>Because we don&rsquo;t want sustainability to be the only improvement we make. <strong>We want our products and systems to be better than they were before as well as better for the planet.</strong></p>
       </div>
     </div>
+    </div>
   </section>
 
   <!-- ===================================================== COLOPHON
-       Small type. The ask set as a line of running text, not a button
-       island, and no magnetic CTA: both are this grammar's bans. -->
+       The colophon was the only chapter that opened without a full stop, and
+       it was the only join on the page where two chapters were readable at
+       once: measured at 19 frames, 0.53 viewports of the mission's close
+       sharing the screen with the olive ground and the closing headline. Every
+       other boundary is clean because a pinned intertitle clears the screen
+       first. This is that intertitle. -->
+  <section class="inter inter--olive" data-sc-act="pin" data-sc-span="1.9" data-ch="Colophon" data-ch-t="Work with us" aria-labelledby="c5">
+    <div data-sc-stage class="inter__stage">
+      <h2 class="d d--lg" id="c5" data-sc-cue="0 1 0.1 0.16">Work with us.</h2>
+    </div>
+  </section>
+
+  <!-- Small type. The ask set as a line of running text, not a button
+       island, and no magnetic CTA: both are this grammar's bans. The headline
+       is an h3 now that the chapter has an h2 intertitle of its own, which is
+       the same shape every other chapter has. -->
   <section class="page page--colophon" data-sc-act="flow" data-ch="Colophon" data-ch-t="Work with us" aria-labelledby="c6">
     <div class="colophon">
-      <h2 class="d d--md" id="c6" data-sc-in>Still paying for thousands of disposable slippers every year?</h2>
+      <h3 class="d d--md" id="c6" data-sc-in>Still paying for thousands of disposable slippers every year?</h3>
       <div class="prose" data-sc-in data-sc-stagger="70">
         <p>We&rsquo;d love to help you change that. If your hotel, spa or hospitality group is interested in replacing its current slipper system with something designed for the world we live in now, <a class="run" href="mailto:hi@studiorowan.com?subject=Working%20with%20Studio%20Rowan">get in touch</a>, or <a class="run" href="mailto:hi@studiorowan.com?subject=Sample%20request">request a sample pair</a>.</p>
         <p class="colophon__tag">Let&rsquo;s leave less behind.</p>

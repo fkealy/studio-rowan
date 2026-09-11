@@ -294,6 +294,147 @@ the act, which is about 0.77 viewports of holding on a finished figure. The
 couplet that concludes them arrives afterwards, at 0.5, rather than competing
 with the counting.
 
+## The full stops now land where the reading is
+
+Audited on request, because the page read as though the pauses were in the
+wrong places. They were, and it is measurable. `pace.mjs` walks the page and
+records, per section, how much scroll passes while that section's own copy is
+stationary on screen. Before:
+
+| section | act | words | held |
+|---|---|---|---|
+| One, intertitle | pin 1.9 | 3 | 0.69vh |
+| One, the Alps story | **flow** | 58 | **0** |
+| One, the figures | pin 2.4 | 98 | 1.33vh |
+| Three, the claims | pin 2.6 | 75 | 1.60vh |
+| Three, the press | pin 4.6 | 58 | 3.56vh |
+| Four, intertitle | pin 1.9 | 2 | 0.69vh |
+| **Four, the mission** | **flow** | **121** | **0** |
+
+The page was spending its stillness on its emptiest screens. The mission
+carries more copy than any other section and was the only multi-paragraph
+chapter that never stopped; the two-word intertitle directly above it held for
+0.69 viewports. "Prose wants to be read past" was the reasoning for flowing the
+Alps story, and it is not wrong, but it was applied to the two densest screens
+on the page and nowhere else.
+
+Both are now pinned. Held: the Alps story **0.98vh**, the mission **1.80vh**.
+
+### The colophon was the only chapter without a full stop
+
+A second measure, `coresident.mjs`, counts frames where two chapters' copy are
+readable at once. In this grammar that should be zero, and everywhere it was,
+because a pinned intertitle clears the screen between chapters. Everywhere
+except one join:
+
+```
+before:  19/802 frames (2.4%)  ->  0.53vh  [Four + Colophon]
+after:   0/986  frames (0.0%)
+```
+
+The colophon had no intertitle, so the olive ground and the closing headline
+arrived underneath the mission's last paragraph. It has one now — "Work with
+us.", the name the folio was already using — and the colophon's headline
+dropped to `h3` to match every other chapter's shape. Zero on mobile too.
+
+### A stage fit that no breakpoint would have caught
+
+Pinning the mission surfaced the older lesson again. Its spread clears a
+1440x900 stage and does not clear a 1366x768 one, which `overflow: clip` makes
+unreachable — and no width breakpoint sees that, because it is a property of the
+viewport's *height*. So `page.js` now measures: if a spread will not fit a
+stage, its act is demoted to `flow` and it gets its padding back. One `unpin()`
+path serves both this and the phone list, so the two leave the page in the same
+state.
+
+**The guard has to measure the built page.** First written, it ran before
+`buildStack()` and so measured the press with an empty stack — a spread that is
+not the spread. `buildStack()` now runs before the guard; it touches no engine
+state, so it is free to run that early.
+
+Chapter one's story pins everywhere, including 375x667, with room to spare.
+The mission pins at 1440x900 and flows below that.
+
+### The peak was clipping its own last line
+
+Found while extending that guard to `ch5`, and it predates every change here.
+The closing lines — *"They're better for guests. Better for businesses. Better
+for the planet."* — were revealed and then sat **outside** the stuck stage,
+behind `overflow: clip`, where no amount of scrolling reached them:
+
+| viewport | visible content outside the stage |
+|---|---|
+| 1440x900 | none |
+| 1366x768 | 54px |
+| 1280x720 | 67px |
+| 1024x700 | 76px |
+
+The earlier note records this spread as fixed at "922px inside a 900px stage".
+That was true, and only ever true at 1440x900 — the one size it was measured at.
+
+`ch5` is now in the guard, so it flows where it cannot fit. The peak also lost
+14px of padding and margin gaps, which is not cosmetic: without it the guard
+measures 910 at 1440x900 and flows the signature move at the size the page is
+composed for. Pinned at 1440x900 and above, flowed below. No visible content
+sits outside any stage at any size checked, phone to 1512x982.
+
+**On measuring this at all.** Two attempts at it produced false positives worth
+recording, because both looked authoritative:
+
+1. `scrollHeight` against the stage. A spread with `height: 100%` reports the
+   stage's own height, so it cannot see its own overflow. This is where the
+   "48px at 1366x768" figure came from, and it was measuring nothing.
+2. Element rectangles against the stage rectangle, without checking visibility.
+   A `data-sc-cue` element sits *below* its final position while it waits to be
+   revealed, so every cued block reads as clipped before its cue fires. And
+   opacity does not inherit as a computed value: a `<span>` inside an unrevealed
+   `<p>` still computes `opacity: 1`, so filtering on the element's own opacity
+   does not help. Effective opacity has to be walked up the ancestors.
+
+The check that finally held: walk the whole pin, and count content as clipped
+only where it is **effectively visible** and outside the stage.
+
+### The cost
+
+**23.3vh -> 28.4vh** at 1440x900. Two pinned chapters and one new intertitle, so roughly
+five more viewports of scroll, and the length note above applies with more
+force than it did: about 4.6 viewports of this page is now a single held
+screen. If the page reads long, this is the first place to trim, and the
+cheapest single cut is the mission's span rather than any of the intertitles.
+
+## The press printed its echo before its setup
+
+Found by eye, not by the harness, and it is the sharpest example yet of what
+the harness cannot see. In the peak, `.press__setup` carried a cue and
+`.press__first` ("And again.") carried none. **A cue is clamped to p=0 for the
+whole of a pinned stage's entry slide**, so the setup was held at zero opacity
+for a viewport of scrolling while the uncued heading below it painted at full
+strength. Measured:
+
+| position | setup | "And again." |
+|---|---|---|
+| entry slide | 0.00 | **1.00** |
+| p = 0.00 | 0.00 | **1.00** |
+| p = 0.10 | 1.00 | 1.00 |
+
+The reader got the echo a full viewport before the sentence it echoes. The copy
+order above went to some trouble to put "...washed and used **again**." directly
+against "And **again**." precisely so the hinge would land, and the reveal order
+was undoing it.
+
+The line that leads an act arrives *with* the act, so `.press__setup` is no
+longer cued at all. "And again." is cued instead (0.05..0.10), and it is now the
+first thing on that screen that moves. The cascade starts at 0.12 rather than 0,
+because started at 0 it raced its own first line: four impressions were already
+down before the setup was legible. The readout is cued with impression one, so
+it never counts something that is not on screen.
+
+**The general rule, worth carrying to any build on this engine:** on a pinned
+act, an uncued element is visible for the entire entry slide and a cued one is
+not. Cueing is therefore not just timing within the pin, it decides what the
+reader sees *before* the pin — and the copy that sets up an act must be on the
+uncued side of that line.
+
 ## Open items
 
 Everything still open on preview 1 applies here, because the copy and the
