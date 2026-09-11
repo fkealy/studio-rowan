@@ -1855,6 +1855,50 @@ arrival. That is the trade, and it was made deliberately.
 
 ---
 
+## The peak's first "And again." was a viewport late
+
+*"Most importantly, they can be washed and used again."* sat alone on screen for
+**975px — 1.08 viewports, twenty gentle scrolls** — before the first *"And
+again."* arrived. Measured from the setup line becoming readable to
+`.press__first` reaching full opacity, at 1440×900.
+
+The cause is the one this build keeps rediscovering. `.press__first` was cued at
+`0.05`, and a cue is clamped to `p = 0` for a pinned act's entire entry slide —
+a whole viewport of scrolling — before its window even opens. The setup line
+above it is uncued and therefore present the moment the act appears, so the
+screen showed the sentence and nothing to answer it.
+
+It is uncued now, and arrives with the act as the setup does.
+
+The worry that put the cue there is recorded in *The press printed its echo
+before its setup*: the echo must not precede the sentence it echoes. That is a
+real constraint and reading order settles it on its own — both lines arrive
+together and the reader meets them top to bottom, which is how every other block
+on this page now works.
+
+`START` went `0.12` → **`0.04`** with it. The 0.12 existed to wait for
+impression one's cue to finish (0.05..0.10); with no cue to wait for it was
+281px of a held screen showing one impression and nothing happening, on top of
+the viewport of entry slide before it. 0.04 is as early as the cascade *can*
+begin: `p` is clamped to 0 for the whole entry slide, so no value here starts
+the run before the act is pinned. **Uncueing the first line is the only thing
+that can put anything on that screen during the slide** — which is the whole
+reason it matters.
+
+Measured after, at 1440×900: both lines present from the moment the act appears;
+first generated impression at `p ≈ 0.05` against 0.12; two down by 0.08, ten by
+0.30; all 29 still complete by `END` 0.78.
+
+**Not verified on a phone.** `printFrame` runs in page.js's rAF tick, and rAF
+stops in a hidden browser pane, so every mobile sample read zero impressions at
+every scroll position. That is the measuring instrument, not the page: the
+engine's `--sc-p` sweeps 0.18 → 1.0 correctly there, and page.js's `progress()`
+computes 0.543 against the engine's 0.5437 at the same point, so the two agree
+and the cascade has what it needs. It wants an eye on a real device all the
+same.
+
+---
+
 ## Open items
 
 Everything still open on preview 1 applies here, because the copy and the

@@ -298,12 +298,19 @@
     var p = progress('ch5');
     /* Front-loaded: the run is complete well before the chapter ends, so the
        tail copy has a settled block to sit against rather than a moving one. */
-    /* marks holds impressions two upward; impression one is the cued
-       .press__first in the markup. The cascade starts at 0.12 rather than 0,
-       AFTER impression one has finished arriving (cued 0.05..0.10): started at
-       0 it raced its own first line, and four impressions were already down
-       before the setup sentence that leads them was legible. */
-    var START = 0.12, END = 0.78;
+    /* marks holds impressions two upward; impression one is .press__first in
+       the markup, which is no longer cued - it arrives with the act, as the
+       setup above it does.
+
+       START was 0.12 to wait for impression one's cue to finish (0.05..0.10).
+       With no cue to wait for, that 0.12 is 281px of a held screen showing one
+       impression and nothing happening, on top of the viewport of entry slide
+       before it. 0.04 starts the run as soon as the pin engages, which is as
+       early as it can be: p is clamped to 0 for the whole entry slide, so no
+       value here can make the cascade begin before the act is pinned. That is
+       what uncueing the first line is for - it is the only part of this screen
+       that CAN arrive during the slide. */
+    var START = 0.04, END = 0.78;
     var n = Math.round(clamp01((p - START) / (END - START)) * marks.length);
     if (n === lastShown) return;
     for (var i = 0; i < marks.length; i++) {
