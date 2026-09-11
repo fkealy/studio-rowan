@@ -1299,6 +1299,46 @@ of a screen turned out to be enough, and more would have started to read as the
 dead space just taken out of the title page. Desktop is untouched - it keeps its
 56 per cent held.
 
+### The one seam the breath did not reach
+
+Reported straight after: no breath on the Never-Ending Slipper, after "So we
+redesigned them."
+
+Right, and for a reason worth recording. The breath works everywhere else
+because the chapter arrives **on a new ground** - the cut is the event and a
+third of a screen of air is plenty to frame it. Chapter two is the only chapter
+that follows a held beat, and it shares that beat's ground: the hard cut is
+spent one seam earlier, on the word that changes the story, exactly as intended.
+With no cut, the emptiness has to be the whole event.
+
+And it was not empty. A pinned stage slides out over a full viewport while the
+next section rises into the same screen, so "The Never-Ending Slipper." was
+**already on screen while "So we redesigned them." was still leaving it**.
+Measured as the scroll distance over which both were visible at once:
+
+| | before | after |
+|---|---|---|
+| 375x667 | 80px overlapping | 184px of clean white |
+| 390x844 | 168px overlapping | 232px of clean white |
+| 430x932 | 216px overlapping | 256px of clean white |
+
+So there was no beat at that seam at all - a gap in one continuous white field,
+which is not the same thing as a pause and does not read as one.
+
+The rule is `.beat + .page:has(.chapter)`, and it is structural like the breath
+itself: **a chapter that follows a held beat needs a viewport's worth, not a
+third.** The hinge leaves about 0.45 of a viewport above the section's top edge,
+so clearing it takes a full screen plus the gap wanted - about three quarters of
+the screen in padding. It applies to one section today and would apply to any
+other beat-then-chapter pair without being told about it.
+
+A note on the measurement, because the first version of it lied: counting the
+scroll where *neither* element was visible reported 804-840px of "clear white"
+at a seam that had none. It was counting the whole of chapter two's body, where
+the head had scrolled off and the copy had not yet reached the top. The only
+number that means anything here is the distance between the hinge leaving and
+the head entering.
+
 ## The peak was flowing one run in six
 
 Found while measuring the above, and it is the defect the notes have been

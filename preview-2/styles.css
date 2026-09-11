@@ -837,6 +837,25 @@ a.run {
    was, which is today's page. */
 @media (max-width: 860px) {
   .page[data-sc-act="flow"]:has(.chapter) { padding-top: clamp(7rem, 38vh, 16rem); }
+
+  /* A chapter that follows a HELD BEAT needs more, and this is the one seam on
+     the page where it applies: "So we redesigned them." and "The Never-Ending
+     Slipper." are both on white, because the hard cut is spent one seam earlier,
+     on the word that changes the story. Every other chapter arrives on a new
+     ground, so the cut marks the arrival and a third of a screen of air is
+     plenty. Here there is no cut, so the emptiness has to be the whole event -
+     and it was not empty: a pinned stage slides out over a full viewport while
+     the next section rises into the same screen, so the chapter title was
+     already on screen while the hinge line was still leaving. Measured: the two
+     shared the screen for 80px of scroll at 375x667, 168 at 390x844 and 216 at
+     430x932. There was no beat at that seam at all, only a gap in one
+     continuous white field.
+
+     Sized so the hinge is gone before the title arrives, with clean ground
+     between them: the line leaves about 0.45 of a viewport above this section's
+     top edge, so a viewport of clearance plus the gap wanted comes to about
+     three quarters of the screen. */
+  .beat + .page[data-sc-act="flow"]:has(.chapter) { padding-top: clamp(15rem, 78vh, 46rem); }
 }
 
 /* The folio carried a ground-colour halo here, to stay legible where it crossed
