@@ -499,6 +499,11 @@
   }
 
   if (figures.length) {
+    /* Zeroed here, not in the markup. The markup carries the real figure so the
+       page is never wrong without script; this is the one place that knows an
+       animation is actually about to happen, so it is the only place entitled
+       to replace a true number with a zero. */
+    figures.forEach(function (el) { el.textContent = '0'; });
     if ('IntersectionObserver' in window) {
       var fio = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {

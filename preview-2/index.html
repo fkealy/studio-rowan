@@ -96,7 +96,17 @@
 
              They tick once, on their own, when they come into view. page.js
              owns that (see THE FIGURES); the engine's own entry-counter path
-             only applies to counters outside an act, and these are inside one.
+             only applies to counters outside an act, and these were inside one
+             when this was written.
+
+             THE FIGURE IN THE MARKUP IS THE REAL ONE, and page.js zeroes it at
+             startup before animating it back up. Written the other way round -
+             markup saying 0, script filling it in - the page states that one
+             hotel bins zero pairs a year whenever the script does not run, and
+             a wrong number is worse than no number. It also failed on nothing
+             more exotic than a stale cache: a browser that revalidated the HTML
+             and reused an older page.js got the new attribute with none of the
+             code that reads it, and both figures sat at 0.
 
              Uncued for the same reason the turns are: a cue holds an element at
              zero for the whole of a pinned stage's entry slide, so a figure
@@ -105,11 +115,11 @@
              appeared. Present from the moment the act is. -->
         <div class="spread__figs">
           <div class="fig">
-            <p class="fig__n" data-count-to="70,000">0</p>
+            <p class="fig__n" data-count-to="70,000">70,000</p>
             <p class="fig__r">Pairs binned by one hotel, in one year</p>
           </div>
           <div class="fig">
-            <p class="fig__n fig__n--soft" data-count-to="120,000,000">0</p>
+            <p class="fig__n fig__n--soft" data-count-to="120,000,000">120,000,000</p>
             <p class="fig__r">Pairs sent to landfill in America, every year</p>
             <cite>Figure not yet sourced. Carried for this preview only.</cite>
           </div>
