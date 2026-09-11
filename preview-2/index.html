@@ -27,7 +27,13 @@
 <!-- The folio. No fixed bar, by grammar: one line in the margin naming the
      chapter you are in, updating as chapters pass. This is where the "which
      world is this?" label belongs, permanently and unambiguously, rather than
-     as an eyebrow over a heading where it reads as part of the headline. -->
+     as an eyebrow over a heading where it reads as part of the headline.
+
+     A WIDE-SCREEN DEVICE. It is not rendered below 860px, where there is no
+     margin for it to sit in and it crossed the copy instead; the labels it
+     carries are simply not said on a phone. See the note in page.js, the rule
+     in styles.css, and the loss recorded in BUILD-NOTES. It is off the title
+     page at every width, which is the one case the script still decides. -->
 <p class="folio" id="folio" aria-hidden="true"><span class="folio__n">Title</span><span class="folio__t">Studio Rowan</span></p>
 
 <main id="main">

@@ -98,10 +98,9 @@ a { color: inherit; }
 .folio.is-unlabelled .folio__n { display: none; }
 .folio__t { transition: opacity var(--sc-d-base) var(--sc-ease-out); }
 .folio.is-turning .folio__t { opacity: 0; }
-/* Stood down while the reader is reading; see page.js. Phones only - the class
-   is never set above 860px - and it fades rather than cuts, because this is the
-   one thing on the page that is furniture rather than content and furniture
-   leaving should not read as a chapter change. */
+/* The title page takes no folio; see page.js. It fades rather than cuts,
+   because this is the one thing on the page that is furniture rather than
+   content and furniture leaving should not read as a chapter change. */
 .folio.is-away { opacity: 0; }
 .folio.on-dark { color: color-mix(in oklab, var(--hemp) 80%, transparent); }
 /* .folio__n pins itself to --onyx, which is all but invisible on olive. */
@@ -670,7 +669,14 @@ a.run {
   /* Flowing on a phone, so the stack sizes to its content. */
   .press__stack { min-height: 0; }
   .press__tail { border-top: 1px solid var(--hair); }
-  .folio { font-size: 10px; }
+  /* No folio at this width. A running head belongs in a margin and there is no
+     margin here - it is one line in the bottom-left corner of a column that is
+     the whole screen, so it crosses whatever is passing under it. Standing it
+     down between pauses and then reducing it to an announcement at each turn
+     both left type over the copy; see the note in page.js and the loss recorded
+     in BUILD-NOTES. Not `visibility`, which would still hold the line's box in
+     the layout for no reason. */
+  .folio { display: none; }
 }
 
 
@@ -746,14 +752,14 @@ a.run {
    the margin keeps its column - so there is deliberately no rule here. */
 
 /* ------------------------------------------------- furniture clearance -----
-   Two things are fixed to the bottom of the viewport: the folio, bottom left,
-   and the standing ask, which moves down there below 700px. On a wide screen
-   they never touch the page, because every chapter is pinned and its spread
-   takes the bottom padding that clears them. On a phone every chapter flows,
-   `.is-unpinned .spread` takes that padding back off, and what is left is the
-   section's own 4rem - less than the ~105px the pill occupies. Measured at
-   375x667 the pill printed over the poolside caption and the folio ran through
-   the masthead.
+   One thing is fixed to the bottom of the viewport on a phone now: the standing
+   ask, which moves down there below 700px. (The folio was the other, and is no
+   longer rendered at this width at all.) On a wide screen it never touches the
+   page, because every chapter is pinned and its spread takes the bottom padding
+   that clears it. On a phone every chapter flows, `.is-unpinned .spread` takes
+   that padding back off, and what is left is the section's own 4rem - less than
+   the ~105px the pill occupies, bottom offset and height together. Measured at
+   375x667 the pill printed over the poolside caption.
 
    So a flowed section reserves the band itself. Written against the attribute,
    which unpin() rewrites, so this follows the phone list and the measured guard
@@ -773,22 +779,9 @@ a.run {
   .page[data-sc-act="flow"]:not(.page--title) { padding-bottom: clamp(7rem, 15vh, 9rem); }
 }
 
-/* Where a flowed section runs media the full width of the measure, the folio
-   crosses the picture rather than the ground, and 10px of ink-soft type over a
-   photograph of a swimming pool is not type. The halo IS the ground colour, so
-   it is invisible on the ground - it exists only on the few hundred pixels of
-   scroll where a picture is behind it. The same compromise the standing ask
-   already makes with its translucent plate, one step quieter. */
-@media (max-width: 860px) {
-  .folio {
-    text-shadow: 0 0 .5rem var(--ivory), 0 0 .25rem var(--ivory),
-                 0 0 .12rem var(--ivory);
-  }
-  .folio.on-dark {
-    text-shadow: 0 0 .5rem var(--olive), 0 0 .25rem var(--olive),
-                 0 0 .12rem var(--olive);
-  }
-}
+/* The folio carried a ground-colour halo here, to stay legible where it crossed
+   a photograph. It is not rendered below 860px any more, so there is nothing to
+   keep legible and the rule is gone with it. */
 
 /* --------------------------------------------------------------- no script -- */
 html:not(.js) [data-sc-cue],

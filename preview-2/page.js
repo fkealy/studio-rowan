@@ -268,11 +268,6 @@
     var key = n + '|' + t;
     if (key === current) return;
     current = key;
-    /* A turn is the one thing the folio exists to announce, so on a phone it
-       comes back for it whether or not the reader has stopped - see syncFolio.
-       First call included: `current` starts null, so the page's opening chapter
-       counts as a turn and the folio is on screen when the reader arrives. */
-    announce();
     folio.classList.add('is-turning');
     setTimeout(function () {
       fN.textContent = n; fT.textContent = t;
@@ -284,44 +279,34 @@
     }, 180);
   }
 
-  /* On a phone the folio ANNOUNCES and retires. It does not stand.
+  /* THE FOLIO IS A WIDE-SCREEN DEVICE. Below 860px it is not rendered at all -
+     see the display rule in styles.css.
 
-     A running head belongs in a margin, and below 860px there is no margin:
-     it is one line in the bottom-left corner of the column, and the column is
-     the whole screen. Standing there it crosses whatever is passing - measured,
-     it printed through a figure's citation at 430x932 and ran through the
-     masthead and across a photograph of a swimming pool at 375x667. It was
-     stood down while the reader was scrolling and brought back on a pause,
-     which sounded right and is not: a phone reader pauses every couple of
-     seconds, so "on a pause" is most of the time, and the clash was still
-     there for most of the page.
+     A running head belongs in a margin, and at that width there is no margin:
+     it is one line in the bottom-left corner of the column and the column is
+     the whole screen, so it crosses whatever is passing under it. Two attempts
+     at keeping it went the same way. Standing it down while the reader scrolled
+     and restoring it on a pause failed because a phone reader pauses every
+     couple of seconds, so "on a pause" was most of the time. Reducing it to an
+     announcement at each chapter turn was better and still put type over the
+     copy five times in a fourteen-viewport read, for a label the chapter's own
+     head already carries in the page.
 
-     What it is actually for is the turn. It names the chapter you have just
-     entered - that is the whole job, and the job is done in a couple of
-     seconds. So it arrives with the chapter, holds, and goes; the chapter's own
-     head is on the page above it for anyone who needs reminding after that.
-     Nothing changes above 860px, where it sits in real margin over nothing and
-     stays put.
+     So the labels are a wide-screen thing. That is a real loss, recorded in
+     BUILD-NOTES: "The problem", "The solution", "The proof", "The studio" name
+     each chapter's job in the argument, the page deliberately has nowhere else
+     to put them, and on a phone they are now simply not said.
 
-     It is off the title page at every width. The title page is not a step in
-     the argument - it carries no label, so the folio reads only "STUDIO
-     ROWAN" there, which is the wordmark set at the head of the same screen. */
-  var ANNOUNCE = 2600;
-  var announcing = false;
-  var announceT = null;
+     What survives here is the ONE case that applies at every width: the title
+     page takes no folio. It is not a step in the argument, so it carries no
+     label, and the folio read only "STUDIO ROWAN" there - which is the wordmark
+     set at the head of the same screen, and which would now collide with the
+     imprint printing on the foot. */
   var onTitle = true;
-
-  function announce() {
-    announcing = true;
-    clearTimeout(announceT);
-    announceT = setTimeout(function () { announcing = false; syncFolio(); }, ANNOUNCE);
-    syncFolio();
-  }
 
   function syncFolio() {
     if (!folio) return;
-    var phone = matchMedia('(max-width: 860px)').matches;
-    folio.classList.toggle('is-away', onTitle || (phone && !announcing));
+    folio.classList.toggle('is-away', onTitle);
   }
 
   var chapters = [].slice.call(document.querySelectorAll('[data-ch]'));

@@ -1236,13 +1236,27 @@ the argument, so it carries no label and the folio read only "STUDIO ROWAN"
 there - which is the wordmark, set at the head of the same screen. It was also
 about to collide with the imprint once that moved to the foot.
 
-**What is left, and it is a judgement rather than a defect:** the announcement
-still crosses the copy for its 2.6 seconds, five times over a fourteen-viewport
-read. That is a chapter card doing its job rather than furniture in the way, but
-if it is still one thing too many on a phone the honest alternative is no folio
-below 860px at all - the cost being that the argument-role labels ("The
-problem", "The proof") then exist only on wide screens, since the page
-deliberately has nowhere else to put them.
+**And then it went entirely.** The announcement still crossed the copy for its
+2.6 seconds, five times over a fourteen-viewport read, and the call was that
+that is one thing too many on a phone. The folio is **not rendered below
+860px** - `display: none`, not `visibility`, so it does not hold a box either.
+
+Three attempts, and the third is the one that is honest about the constraint:
+standing, then standing-down-between-pauses, then a 2.6s announcement, then
+gone. A running head is a margin device. The page has a margin at 1440 and does
+not have one at 390, and no amount of timing turns the bottom-left corner of a
+full-width column into a margin.
+
+**The loss, stated plainly, because it is a real one.** "The problem", "The
+solution", "The proof", "The studio" name each chapter's job in the argument.
+This build moved that naming wholly into the folio on purpose - it is the fix
+for preview 1's eyebrow problem, and the page deliberately has nowhere else to
+put it. On a phone those labels are now simply **not said**. What a phone reader
+gets is the chapters' own heads - "The hotel slipper.", "The Never-Ending
+Slipper.", "Why it holds up.", "Our mission.", "Work with us." - which name the
+chapters but not their function in the argument. Carried as an open item below
+rather than papered over: if the roles have to be said on a phone, they need a
+device that belongs in the page, not one borrowed from the margin.
 
 ---
 
@@ -1260,8 +1274,12 @@ assets are the same:
 5. No Instagram handle supplied.
 
 One item specific to this build: the folio labels chapters by their job in the
-argument ("The problem", "The solution") rather than by position, and it is now
-the only place that naming appears. It is not a
+argument ("The problem", "The solution") rather than by position, it is the only
+place that naming appears, **and it is a wide-screen device** - not rendered
+below 860px, so on a phone the roles are not said at all (see **The hero, and
+the folio, on a real phone**). If they have to be said there, it needs a device
+that belongs in the page rather than one borrowed from the margin; an eyebrow
+over the heading is what this grammar exists to avoid, so it is not that. It is not a
 counter and should not become one — scroll-craft bans an `01 / 06` x-of-y
 progress readout outright. If numerals are ever wanted they have to stay a book
 folio.
