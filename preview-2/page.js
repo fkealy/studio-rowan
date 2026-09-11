@@ -76,7 +76,18 @@
      to "may this be pinned?", and a section that is exempt from it is a section
      nobody is checking. */
   var MUTABLE    = ['ch1s', 'turn1', 'turn2', 'ch2', 'ch3', 'ch4', 'ch5'];
-  var PHONE_FLOW = ['ch3', 'ch4', 'ch5'];
+  /* Every chapter, not only the three that overflow. ch1s and ch2 were left to
+     the measurement alone, and the measurement answers a narrower question than
+     the phone is asking: it demoted both at 375x667 and 390x844 and kept both
+     PINNED at 430x932, which is a phone, because at that height the spread does
+     fit the stage.
+     What does not survive there is the copy. The cues inside these two chapters
+     are written against acts of 3.0 and 2.6 viewports - measured at 430x932,
+     chapter two held its own name and its plate on screen with the lede and all
+     three paragraphs at zero opacity for most of the scroll, and chapter one
+     spent 2796px of scrolling to deliver 856px of spread. A held screen is a
+     device for a screen you can take in at once. */
+  var PHONE_FLOW = ['ch1s', 'ch2', 'ch3', 'ch4', 'ch5'];
 
   /* Declared before the first unpin() call, not with the mount below: `var` is
      hoisted as undefined, and unpin() indexes it. */
@@ -257,6 +268,11 @@
     var key = n + '|' + t;
     if (key === current) return;
     current = key;
+    /* A turn is the one thing the folio exists to announce, so on a phone it
+       comes back for it whether or not the reader has stopped - see syncFolio.
+       First call included: `current` starts null, so the page's opening chapter
+       counts as a turn and the folio is on screen when the reader arrives. */
+    announce();
     folio.classList.add('is-turning');
     setTimeout(function () {
       fN.textContent = n; fT.textContent = t;
@@ -266,6 +282,34 @@
       folio.classList.toggle('is-unlabelled', !n);
       folio.classList.remove('is-turning');
     }, 180);
+  }
+
+  /* The folio stands down while the reader is reading, on a phone, on the same
+     signal as the standing ask - and for the same reason. Below 860px it is not
+     in a margin, because at that width there is no margin: it is one line in
+     the bottom-left corner of the column, and the column is the whole screen.
+     Measured at 430x932 it printed through a figure's caption; at 375x667 it
+     ran through the masthead and across a photograph of a swimming pool.
+
+     A running head names the chapter you are in. That is a question a reader
+     asks when they stop, or when the chapter turns - never in the middle of a
+     sentence - so those are the two moments it is on screen for. Nothing
+     changes above 860px, where it sits in real margin over nothing. */
+  var ANNOUNCE = 1700;
+  var announcing = false;
+  var announceT = null;
+
+  function announce() {
+    announcing = true;
+    clearTimeout(announceT);
+    announceT = setTimeout(function () { announcing = false; syncFolio(); }, ANNOUNCE);
+    syncFolio();
+  }
+
+  function syncFolio() {
+    if (!folio) return;
+    var quiet = matchMedia('(max-width: 860px)').matches && reading && !announcing;
+    folio.classList.toggle('is-away', quiet);
   }
 
   var chapters = [].slice.call(document.querySelectorAll('[data-ch]'));
@@ -309,12 +353,19 @@
     var frag = document.createDocumentFragment();
     /* Impression one is real markup in the page (.press__first), so the
        generated run starts at two and continues its cascade exactly. */
+    /* Sized off --imp, the same custom property .press__first is set in, rather
+       than off a literal 9.4vh. The property is clamped against the narrow axis
+       on a phone (see styles.css), and a hard-coded vh here would have left the
+       cascade at the size the peak is composed for while its own first line
+       shrank - the run would have started smaller than its second impression.
+       Kept in CSS units, not resolved to px, so it still tracks a rotation or a
+       resize without being rebuilt. */
     var ratio = 0.87;
-    var size = 9.4 * ratio;
+    var k = ratio;
     for (var i = 1; i < IMPRESSIONS; i++) {
       var b = document.createElement('b');
       b.textContent = 'And again.';
-      b.style.fontSize = Math.max(size, 0.85) + 'vh';
+      b.style.fontSize = 'max(calc(var(--imp) * ' + k.toFixed(5) + '), 8px)';
       /* Stepped across the sheet so the stack cascades rather than aligning
          into a column, which would read as a list instead of a print run. */
       b.style.transform = 'translateX(' + (i * 0.9) + 'ch)';
@@ -324,7 +375,7 @@
       b.style.transition = 'opacity 260ms var(--sc-ease-out)';
       frag.appendChild(b);
       marks.push(b);
-      size *= ratio;
+      k *= ratio;
     }
     stack.appendChild(frag);
   }
@@ -502,18 +553,48 @@
      that property rather than easing it so the link is never focusable while
      it is invisible.
      ---------------------------------------------------------------------- */
+  /* Below 700px the pill is not in a margin any more, it is at the foot of the
+     screen over the column - there is no free corner at that width, which is
+     why it moved there in the first place. Standing there permanently it sits
+     on two lines of running text for the length of the page: measured at
+     375x667, the pill and the folio together hold a 100px band across the foot,
+     15 per cent of the screen, over copy the whole way down.
+
+     So on a phone it stands DOWN while the reader is reading and comes back the
+     moment they are not: a pause, or a scroll back up. Both are the same
+     signal - someone who has stopped moving forward through the argument - and
+     it is the signal the ask wants anyway. Nothing changes on a wide screen,
+     where the pill is in the top margin and over nothing. */
+  var IDLE = 600;
+  var lastY = scrollY;
+  var settle = null;
+  var reading = false;
+
+  function phoneAsk() { return matchMedia('(max-width: 700px)').matches; }
+
   function syncAsk() {
     if (!ask) return;
-    var want = scrollY > innerHeight * 0.75 && !onColophon;
+    var want = scrollY > innerHeight * 0.75 && !onColophon && !(phoneAsk() && reading);
     if (want === askShown) return;
     askShown = want;
     ask.classList.toggle('is-on', want);
   }
 
-  if (ask) {
-    addEventListener('scroll', syncAsk, { passive: true });
+  function onScroll() {
+    var y = scrollY;
+    /* Only downward travel is reading. Scrolling up is going back for
+       something, which is the other half of the "not moving forward" signal. */
+    reading = y > lastY + 2;
+    lastY = y;
+    clearTimeout(settle);
+    settle = setTimeout(function () { reading = false; syncAsk(); syncFolio(); }, IDLE);
     syncAsk();
+    syncFolio();
   }
+
+  addEventListener('scroll', onScroll, { passive: true });
+  syncAsk();
+  syncFolio();
 
   /* ------------------------------------------------------------------------ */
   /* buildStack() ran before mount; see the note above the stage-fit guard. */

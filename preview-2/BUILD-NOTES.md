@@ -125,6 +125,10 @@ never reach — the press tail measured **1.54:1**, not because of colour but
 because it was pinned off-screen. Both chapters now **flow on mobile**, set
 before mount in `page.js` because the engine reads `data-sc-act` once. The
 scrub chapter stays pinned, since pinning is how a scrub works at all.
+*(Superseded twice. The scrub was un-exempted later in the build — this page
+has no `[data-sc-scrub]` in the markup, so the act type was buying the pin and
+nothing else — and then chapters one and two joined the phone list outright;
+see **Full mobile audit**, defect 4.)*
 
 **A second structural defect, found by eye rather than by the harness.** The
 engine's stage is exactly one viewport tall and clips. Content dropped into it
@@ -917,6 +921,179 @@ sets on one line; at 1300, 1150, 1000, 880 and 375 it sets as "The Never-Ending
 / Slipper."; at 800 and 600, where the spread is a single column, it is one line
 again. It never breaks inside the compound at any width, and no chapter loses a
 pixel to its stage.
+
+---
+
+## Full mobile audit
+
+Asked for directly: drop the staggered entry on the "Why it holds up" claims,
+which does not hold up on a phone, and then check the whole page over for the
+rest of it. Everything below was measured in an emulated browser at 320×568,
+375×667, 390×745, 390×844, 430×932, 844×390 (landscape) and 768×1024, with
+1440×900, 1440×700 and 1920×1080 carried alongside as the regression set, in
+three modes each: normal, `prefers-reduced-motion`, and scripting off.
+
+**Not verified: a real phone.** Still true, and the two things an emulator
+cannot tell you are still the two that matter most — how `100svh` behaves as
+the address bar comes and goes, and what the safe-area insets actually measure
+on a notched device in landscape.
+
+### 1. The claims list never finished revealing
+
+Each of the four claims carried `data-sc-reveal="left"` over a window of
+chapter three's own progress: 0.06–0.28, 0.24–0.46, 0.42–0.64, 0.6–0.82. That
+is a device built for a **pinned** chapter, where the whole list is held still
+on one screen for the length of the act and the four windows are four moments
+of one held frame.
+
+Chapter three flows on a phone. The same four windows are then stretched across
+1200px of ordinary scrolling, and the reader arrives at each claim long before
+its window closes. Measured at 375×667, walking the page in 220px steps and
+recording the widest `clip-path` each element ever reached while on screen:
+
+| claim | widest reveal reached |
+|---|---|
+| Recycled EVA foam | 100% |
+| Waterproof | 100% |
+| Supportive, wider fit | **65%** |
+| Treaded sole | **13%** |
+
+So "Supportive, wider fit" was a sentence cut off mid-word and "Treaded sole"
+was a 300px hole in the middle of the list, permanently, on every phone. The
+reveal is gone. The list takes one `data-sc-in` on the `<ol>` — it arrives with
+the chapter, as one block, and then it is just a list. Four short assertions
+are the argument; they had nothing to gain from arriving one at a time.
+
+### 2. The two turn beats were mostly blank screen
+
+`turn1` and `turn2` were cued `0 1 0.1 0.16`. A pinned act's `p` is clamped to
+0 while its stage slides in and to 1 while it slides out, and each of those
+slides is a viewport of scrolling — so at both ends the line sat at zero
+opacity on a stage that was fully on screen. Measured at 390×844, walking in
+150px steps and recording opacity whenever the line was in the viewport:
+`turn2` was on screen and invisible for about **450px before** it lit and
+**450px after** it went out, against a legible stretch of ~450px. More empty
+ground than sentence, and on a phone a blank screen reads as the page having
+broken rather than having paused.
+
+Cued `-0.45 1 0.3 0` the window is already full by the time `p` reaches 0 and
+`rOut = 0` holds it full to the end: the line rides in lit, stands dead still
+while the stage is pinned, and rides out lit. Re-measured, the line is at
+opacity 1 at every step where it is on screen at all. This was never a phone
+bug specifically — the same dead ground was there at 1440 — but it costs a
+phone reader proportionally far more.
+
+### 3. The hinge was the only type on the page with its own margin
+
+`.beat__stage` set `padding-inline: var(--margin)` on top of the section's own
+gutter. The two lines the whole argument pivots on were therefore indented past
+everything else: **40px against 20px** at 390, **192px against 96px** at 1440.
+Removed. Every text block on the page now starts on one line.
+
+### 4. Two chapters stayed pinned on a phone
+
+`PHONE_FLOW` listed `ch3`, `ch4`, `ch5`; chapters one and two were left to the
+measured stage-fit guard alone. The guard answers a narrower question than the
+phone is asking — *does the spread fit the stage* — and it demoted both at
+375×667 and 390×844 and kept both **pinned at 430×932**, which is a phone, and
+a common one, because at that height the spread genuinely does fit.
+
+What does not fit there is the reading. The cues inside those two chapters are
+written against acts of 3.0 and 2.6 viewports. Measured at 430×932, chapter two
+held its own name and its plate on screen with the lede and all three
+paragraphs at zero opacity for most of the scroll, and chapter one spent 2796px
+of scrolling to deliver 856px of spread.
+
+Both are on the phone list now, and `.spread--story` / `.spread--media` join
+the mobile `height: auto` rule. Fitting is not the whole question: a held
+screen is a device for a screen you can take in at once. The page is shorter
+for it — 430×932 went from **14.8 viewports to 11.4**.
+
+### 5. The signature move arrived jammed against both margins
+
+`.press__first` was a hard `9.4vh`, and "And again." is set `nowrap`. At
+390×844 that is a **356px line inside a 350px column** — the peak's first
+impression touching both gutters, with nothing left for the step that makes the
+stack a cascade rather than a list. The size is a custom property now,
+`--imp: 9.4vh`, clamped to `min(9.4vh, 16vw)` below 860px, and `page.js` writes
+the generated impressions off the same property in CSS units so the two can
+never drift and a rotation still re-sizes them. Desktop is untouched (84.6px at
+1440×900, before and after).
+
+The impression boxes were also full-column-width blocks translated up to 126px
+across, which put `documentElement.scrollWidth` at **507 inside a 390px
+viewport** — no visible clipping, since the type is left-aligned inside the
+box, but a page-wide horizontal overflow held back only by the `overflow-x:
+hidden` on `body`. `width: max-content` makes the box the line. The page now
+measures **zero horizontal overflow at all ten viewport sizes**.
+
+### 6. The fixed furniture was printing over the copy
+
+Two things are fixed to the bottom of the viewport on a phone: the folio,
+bottom left, and the standing ask, which moves down there below 700px. On a
+wide screen neither ever touches the page, because every chapter is pinned and
+its spread carries the bottom padding that clears them. On a phone every
+chapter flows, `.is-unpinned .spread` takes that padding straight back off, and
+what is left is the section's own 4rem — less than the ~105px the pill
+occupies. Measured at 375×667 the pill printed over the poolside caption and
+the folio ran through the masthead; at 430×932 the folio printed through a
+figure's citation line.
+
+Three changes, in order of how much they do:
+
+- **A flowed section reserves the band itself.** `.page[data-sc-act="flow"]`
+  takes `clamp(7rem, 15vh, 9rem)` of bottom padding below 860px. Written
+  against the attribute, which `unpin()` rewrites, so it follows the phone list
+  and the measured guard without being told about either.
+- **Both stand down while the reader is reading.** Below 860px the ask and the
+  folio hide on downward scroll and come back on a pause (600ms) or a scroll
+  up. Both are the same signal — someone who has stopped moving forward through
+  the argument — and it is the signal the ask wants anyway. The folio also
+  comes back for a **chapter turn**, held 1.7s, because naming the chapter you
+  have just entered is the one thing it exists to do. Nothing changes above
+  860px, where both sit in real margin over nothing.
+- **The folio carries a ground halo below 860px.** Where a flowed section runs
+  media the full width of the measure, the folio crosses a photograph rather
+  than the ground, and 10px of ink-soft type over a swimming pool is not type.
+  The halo *is* the ground colour, so it is invisible on the ground and exists
+  only on the few hundred pixels of scroll where a picture is behind it — the
+  same compromise the standing ask already makes with its translucent plate,
+  one step quieter.
+
+### 7. The title page was sized to the wrong viewport
+
+`min-height: 100vh`. On a phone `100vh` is the viewport **with the browser
+chrome hidden**, so the title page starts life taller than the screen the
+reader actually has and pushes its own imprint line under the address bar.
+`100svh` added after it, `100vh` left in front as the fallback.
+
+### 8. `viewport-fit=cover` was declared and then ignored
+
+The page asks for the full display and then measured its gutters from the
+physical edge. In landscape on a notched phone the 1.25rem floor of `--margin`
+is partly under the sensor housing, and the folio and the ask sit in the
+home-indicator zone. `--gutter-l` / `--gutter-r` are `--margin` with the
+insets taken into account — identical everywhere else — and the two
+bottom-anchored pieces add `env(safe-area-inset-bottom)`. **Not verified on
+real hardware**; in an emulator every inset resolves to its 0px fallback, so
+what this proves is only that nothing regressed.
+
+### What the audit checked and found clean
+
+- **No horizontal overflow** at 320, 375, 390, 430, 768, 844, 1440 or 1920, in
+  all three modes.
+- **Every cued, revealed and staggered element reaches full opacity and full
+  reveal** while on screen — 42 of them, at 375×667, 390×844, 430×932 and
+  1440×900. This is the check that caught defect 1, and it is the one worth
+  re-running after any change to a cue window.
+- **No console errors**, in any mode, at any size.
+- **Scripting off**: nothing is left invisible; the no-JS rules still carry.
+- **Reduced motion**: unchanged.
+- Desktop regression set (1440×900, 1440×700, 1920×1080) walked screen by
+  screen against the same pass before the changes. The only visible difference
+  on a wide screen is the two turn beats, which are now lit as they arrive and
+  leave, and the hinge lines, which have moved left to the page gutter with
+  everything else. Both are fixes, not side effects.
 
 ---
 

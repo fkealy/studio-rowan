@@ -124,16 +124,28 @@
        The ground changes BETWEEN them, not at the chapter boundary after. Clay
        is the problem's colour and white is the product's, so the hard cut lands
        on "So we redesigned them." - on the word that changes the story rather
-       than on the structural seam a screen later. The folio turns with it. -->
+       than on the structural seam a screen later. The folio turns with it.
+
+       The cue starts BEFORE the act does, and never leaves. A pinned act's p is
+       clamped to 0 while its stage slides in and to 1 while it slides out, and
+       each of those slides is a viewport of scrolling: cued 0..1 the line sat at
+       zero opacity for both, so a beat was one held sentence with a blank screen
+       on either side of it. Measured at 390x844, turn2 was on screen and
+       invisible for about 450px before the line lit and 450px after it went
+       out - more empty ground than sentence, and on a phone that reads as the
+       page having broken rather than having paused. A window that opens at
+       -0.45 is already full by the time p reaches 0, and rOut=0 holds it full
+       to the end, so the line rides in lit, stands dead still while the stage
+       is pinned, and rides out lit. -->
   <section class="page beat beat--clay" data-sc-act="pin" data-sc-span="1.5" id="turn1" data-ch="The problem" data-ch-t="The hotel slipper">
     <div data-sc-stage class="beat__stage">
-      <p class="d d--lg" data-sc-cue="0 1 0.1 0.16">We thought there had to be a better way.</p>
+      <p class="d d--lg" data-sc-cue="-0.45 1 0.3 0">We thought there had to be a better way.</p>
     </div>
   </section>
 
   <section class="page beat beat--white" data-sc-act="pin" data-sc-span="1.5" id="turn2" data-ch="The solution" data-ch-t="The Never-Ending Slipper">
     <div data-sc-stage class="beat__stage">
-      <p class="d d--lg" data-sc-cue="0 1 0.1 0.16">So we redesigned them.</p>
+      <p class="d d--lg" data-sc-cue="-0.45 1 0.3 0">So we redesigned them.</p>
     </div>
   </section>
 
@@ -180,6 +192,19 @@
            pool - so the claims read down the left of the spread and the frame
            carries the right of it.
 
+           The claims arrive as ONE block, on entry, and then stay. They were
+           four clip-path wipes keyed to four windows of this chapter's own
+           progress (0.06..0.28 through 0.6..0.82), which reads as intended
+           while the chapter is pinned and the whole list is held still for the
+           length of the act. Flowed - which is what this chapter does on every
+           phone - those windows are stretched over 1200px of ordinary
+           scrolling, and the reader meets each claim long before its window
+           closes. Measured at 375x667: claim three reached 65 per cent
+           revealed and claim four 13 per cent, so "Treaded sole" was a sliced
+           word and a 300px hole in the middle of the list, permanently. Four
+           short assertions are the argument, not a device, and nothing is
+           gained by making them arrive one at a time.
+
            The summary paragraph is the figure's caption rather than a separate
            block: set UNDER the plate, not over it. Over the water it would have
            been legible only at this crop, and at any narrower one it lands on
@@ -193,20 +218,20 @@
             <h2 class="chapter__t" id="c3">Why it holds up.</h2>
           </header>
 
-          <ol class="claims">
-            <li class="claim" data-sc-reveal="left" data-sc-reveal-at="0.06 0.28">
+          <ol class="claims" data-sc-in>
+            <li class="claim">
               <i aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="397.50 286.03 165.00 165.00" fill="currentColor"><path fill-rule="nonzero" d="M480.00 430.40 C514.17 430.40 541.88 402.70 541.88 368.53 C507.70 368.53 480.00 396.23 480.00 430.40Z"/><path fill-rule="nonzero" d="M418.13 368.53 C418.13 402.70 445.83 430.40 480.00 430.40 C480.00 396.23 452.30 368.53 418.13 368.53Z"/><path fill-rule="nonzero" d="M480.00 368.53 C514.17 368.53 541.88 340.83 541.88 306.65 C507.70 306.65 480.00 334.36 480.00 368.53Z"/><path fill-rule="nonzero" d="M418.13 306.65 C418.13 340.83 445.83 368.53 480.00 368.53 C480.00 334.36 452.30 306.65 418.13 306.65Z"/><path fill-rule="nonzero" d="M480.00 416.65 C506.58 416.65 528.13 395.11 528.13 368.53 C501.55 368.53 480.00 390.07 480.00 416.65Z"/><path fill-rule="nonzero" d="M431.88 368.53 C431.88 395.11 453.42 416.65 480.00 416.65 C480.00 390.07 458.45 368.53 431.88 368.53Z"/><path fill-rule="nonzero" d="M480.00 368.53 C506.58 368.53 528.13 346.98 528.13 320.40 C501.55 320.40 480.00 341.95 480.00 368.53Z"/><path fill-rule="nonzero" d="M431.88 320.40 C431.88 346.98 453.42 368.53 480.00 368.53 C480.00 341.95 458.45 320.40 431.88 320.40Z"/></svg></i>
               <div><b>Recycled EVA foam</b><span>Made from what already exists.</span></div>
             </li>
-            <li class="claim" data-sc-reveal="left" data-sc-reveal-at="0.24 0.46">
+            <li class="claim">
               <i aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="1033.68 286.03 165.00 165.00" fill="currentColor"><path fill-rule="nonzero" d="M1137.35 368.23 C1144.37 384.13 1133.71 402.61 1117.05 403.00 C1116.86 403.01 1116.67 403.01 1116.48 403.01 C1116.09 403.01 1115.71 403.00 1115.32 402.98 C1098.97 402.19 1088.68 384.05 1095.48 368.39 L1116.26 320.51 L1137.35 368.23Z"/></svg></i>
               <div><b>Waterproof</b><span>Built for pools and spas, not in spite of them.</span></div>
             </li>
-            <li class="claim" data-sc-reveal="left" data-sc-reveal-at="0.42 0.64">
+            <li class="claim">
               <i aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="1353.68 286.03 165.00 165.00" fill="currentColor"><path fill-rule="nonzero" d="M1476.22 395.92 C1474.52 392.70 1471.68 391.54 1468.72 389.73 C1467.82 389.17 1466.86 388.68 1465.87 388.23 C1466.74 387.75 1467.56 387.19 1468.29 386.53 C1470.30 384.73 1471.60 382.03 1471.11 379.43 C1470.76 377.57 1469.53 375.94 1468.02 374.74 C1466.50 373.54 1464.70 372.71 1462.89 371.98 C1460.51 371.01 1458.07 370.19 1455.60 369.49 C1455.95 369.22 1456.28 368.94 1456.59 368.65 C1459.78 365.66 1459.56 360.48 1456.13 357.78 C1452.70 355.08 1447.08 353.24 1440.71 352.25 C1449.97 350.72 1457.16 346.35 1452.97 339.15 C1452.29 337.97 1451.27 337.02 1450.05 336.42 C1441.51 332.20 1426.11 334.32 1417.86 339.10 C1416.34 339.97 1415.15 341.36 1414.65 343.05 C1413.37 347.31 1417.13 350.18 1422.77 351.66 C1417.20 352.14 1412.02 353.25 1408.12 354.99 C1402.46 357.53 1402.44 365.59 1408.08 368.17 C1409.90 369.00 1411.93 369.77 1414.10 370.46 C1413.01 370.96 1411.94 371.52 1410.91 372.13 C1409.19 373.15 1407.47 374.45 1406.88 376.30 C1406.19 378.49 1407.31 380.91 1409.06 382.45 C1410.01 383.29 1411.12 383.92 1412.29 384.44 C1406.79 385.87 1401.36 388.11 1397.74 392.00 C1396.21 393.65 1395.09 395.72 1394.90 397.93 C1394.58 401.69 1397.03 405.28 1400.23 407.47 C1403.59 409.78 1407.41 410.52 1411.22 411.72 C1415.37 413.03 1419.60 414.07 1423.88 414.86 C1432.44 416.44 1441.21 416.98 1449.91 416.46 C1452.70 416.29 1455.48 416.02 1458.24 415.63 C1460.35 415.34 1462.47 414.98 1464.52 414.42 C1466.07 414.00 1467.58 413.47 1469.02 412.78 C1472.38 411.17 1475.35 408.58 1476.70 405.22 C1477.90 402.24 1477.72 398.77 1476.22 395.92Z"/></svg></i>
               <div><b>Supportive, wider fit</b><span>Comfortable for a wider range of guests.</span></div>
             </li>
-            <li class="claim" data-sc-reveal="left" data-sc-reveal-at="0.6 0.82">
+            <li class="claim">
               <i aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="1033.68 639.20 165.00 165.00" fill="currentColor"><path fill-rule="nonzero" d="M1095.56 749.56H1109.31V763.31H1095.56Z M1095.56 722.06H1109.31V735.81H1095.56Z M1095.56 694.56H1109.31V708.31H1095.56Z M1123.06 749.56H1136.81V763.31H1123.06Z M1123.06 722.06H1136.81V735.81H1123.06Z M1123.06 694.56H1136.81V708.31H1123.06Z M1150.56 769.83 L1150.56 687.68 C1150.56 683.89 1147.48 680.81 1143.68 680.81 L1088.68 680.81 C1084.89 680.81 1081.81 683.89 1081.81 687.68 L1081.81 769.83 L1068.02 769.83 L1068.02 774.15 L1164.34 774.15 L1164.34 769.83 L1150.56 769.83Z"/><path fill-rule="nonzero" d="M1116.18 659.83 L1117.81 664.82 L1123.06 664.82 L1118.81 667.91 L1120.43 672.91 L1116.18 669.82 L1111.93 672.91 L1113.55 667.91 L1109.30 664.82 L1114.56 664.82 L1116.18 659.83Z"/><path fill-rule="nonzero" d="M1102.43 662.05 L1104.06 667.05 L1109.31 667.05 L1105.06 670.14 L1106.68 675.14 L1102.43 672.05 L1098.18 675.14 L1099.80 670.14 L1095.55 667.05 L1100.81 667.05 L1102.43 662.05Z"/><path fill-rule="nonzero" d="M1129.93 662.05 L1131.56 667.05 L1136.81 667.05 L1132.56 670.14 L1134.18 675.14 L1129.93 672.05 L1125.68 675.14 L1127.30 670.14 L1123.05 667.05 L1128.31 667.05 L1129.93 662.05Z"/></svg></i>
               <div><b>Treaded sole</b><span>Designed with wet, poolside floors in mind.</span></div>
             </li>

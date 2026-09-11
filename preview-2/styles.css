@@ -44,6 +44,12 @@
   /* One editorial measure, held everywhere. A feature has a column width. */
   --col: 34rem;
   --margin: clamp(1.25rem, 5vw, 6rem);
+  /* The page declares viewport-fit=cover, so in landscape on a notched phone
+     the 1.25rem floor of --margin is measured from the physical edge and a
+     chunk of it is under the sensor housing. --gutter is the same measure with
+     the inset taken into account; it equals --margin everywhere else. */
+  --gutter-l: max(var(--margin), env(safe-area-inset-left, 0px));
+  --gutter-r: max(var(--margin), env(safe-area-inset-right, 0px));
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -64,7 +70,7 @@ a { color: inherit; }
   clip-path: inset(50%); white-space: nowrap;
 }
 .skip {
-  position: absolute; left: var(--margin); top: -4rem; z-index: 200;
+  position: absolute; left: var(--gutter-l); top: -4rem; z-index: 200;
   padding: .6rem 1rem; background: var(--onyx); color: var(--ivory);
   font-size: var(--sc-t-sm);
 }
@@ -75,11 +81,13 @@ a { color: inherit; }
    Not a bar: no wordmark, no CTA, no full width. It updates as chapters pass.
    -------------------------------------------------------------------------- */
 .folio {
-  position: fixed; left: var(--margin); bottom: clamp(1rem, 3vh, 2rem);
+  position: fixed; left: var(--gutter-l);
+  bottom: calc(clamp(1rem, 3vh, 2rem) + env(safe-area-inset-bottom, 0px));
   z-index: 40; display: flex; align-items: baseline; gap: .7rem;
   font-size: var(--sc-t-xs); letter-spacing: .07em; text-transform: uppercase;
   color: var(--sc-ink-soft); pointer-events: none;
-  transition: color var(--sc-d-slow) var(--sc-ease-out);
+  transition: color var(--sc-d-slow) var(--sc-ease-out),
+              opacity var(--sc-d-base) var(--sc-ease-out);
 }
 .folio__n {
   padding-right: .7rem; border-right: 1px solid var(--hair);
@@ -90,6 +98,11 @@ a { color: inherit; }
 .folio.is-unlabelled .folio__n { display: none; }
 .folio__t { transition: opacity var(--sc-d-base) var(--sc-ease-out); }
 .folio.is-turning .folio__t { opacity: 0; }
+/* Stood down while the reader is reading; see page.js. Phones only - the class
+   is never set above 860px - and it fades rather than cuts, because this is the
+   one thing on the page that is furniture rather than content and furniture
+   leaving should not read as a chapter change. */
+.folio.is-away { opacity: 0; }
 .folio.on-dark { color: color-mix(in oklab, var(--hemp) 80%, transparent); }
 /* .folio__n pins itself to --onyx, which is all but invisible on olive. */
 .folio.on-dark .folio__n { color: var(--ivory); border-right-color: color-mix(in oklab, var(--ivory) 30%, transparent); }
@@ -101,7 +114,8 @@ a { color: inherit; }
    -------------------------------------------------------------------------- */
 .topcta {
   position: absolute; z-index: 30;
-  top: clamp(1.25rem, 4vh, 2.75rem); right: var(--margin);
+  top: max(clamp(1.25rem, 4vh, 2.75rem), env(safe-area-inset-top, 0px));
+  right: var(--gutter-r);
   display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end;
   gap: clamp(.9rem, 2.2vw, 2rem);
   font-size: var(--sc-t-sm);
@@ -138,7 +152,7 @@ a { color: inherit; }
    -------------------------------------------------------------------------- */
 .ask {
   position: fixed; z-index: 40;
-  top: clamp(1rem, 3vh, 2rem); right: var(--margin);
+  top: clamp(1rem, 3vh, 2rem); right: var(--gutter-r);
   background: color-mix(in oklab, var(--ivory) 72%, transparent);
   -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   font-size: var(--sc-t-sm);
@@ -175,7 +189,8 @@ a { color: inherit; }
 @media (max-width: 700px) {
   .ask {
     font-size: var(--sc-t-xs);
-    top: auto; bottom: clamp(2.9rem, 8vh, 4.25rem);
+    top: auto;
+    bottom: calc(clamp(2.9rem, 8vh, 4.25rem) + env(safe-area-inset-bottom, 0px));
   }
 }
 
@@ -203,7 +218,10 @@ a { color: inherit; }
    `color` is restated wherever the tokens are, because colour inherits as a
    computed value and a subtree that only redefines the token keeps the old ink.
    -------------------------------------------------------------------------- */
-.page { padding: clamp(4rem, 11vh, 9rem) var(--margin); }
+.page {
+  padding-block: clamp(4rem, 11vh, 9rem);
+  padding-left: var(--gutter-l); padding-right: var(--gutter-r);
+}
 
 /* A pinned section must carry NO vertical padding. Sticky is constrained by
    its containing block, which is the section's CONTENT box, so padding steals
@@ -219,7 +237,11 @@ a { color: inherit; }
    its section padding back. */
 [data-sc-act="pin"],
 [data-sc-act="scrub"] { padding-top: 0; padding-bottom: 0; }
-.page--title   { background: var(--ivory); min-height: 100vh; display: flex; align-items: center; }
+/* 100svh, not 100vh: on a phone 100vh is the viewport WITH the browser chrome
+   hidden, so a title page sized to it starts life taller than the screen and
+   pushes its own imprint line under the address bar. The svh is the height the
+   reader actually has on arrival. */
+.page--title   { background: var(--ivory); min-height: 100vh; min-height: 100svh; display: flex; align-items: center; }
 .page--clay    { background: var(--clay); }
 .page--white   { background: var(--white); }
 .page--ivory   { background: var(--ivory); }
@@ -393,7 +415,12 @@ a { color: inherit; }
    biasing it to the upper third changes the length of the surrounding voids by
    exactly nothing, because what the reader crosses is the STAGE sliding in and
    out, not the line inside it. */
-.beat__stage { display: flex; align-items: center; padding-inline: var(--margin); }
+/* No padding-inline here. The section already carries the page gutter, and the
+   stage is inside its content box: set again on the stage it was applied twice,
+   and the two lines the whole page pivots on were the only type on the page
+   indented past everything else - 40px against 20px on a phone, 192 against 96
+   at 1440. The hinge does not get its own margin. */
+.beat__stage { display: flex; align-items: center; }
 .beat p { max-width: 18ch; }
 .beat--clay  { background: var(--clay); }
 .beat--white { background: var(--white); }
@@ -503,16 +530,35 @@ a { color: inherit; }
   font-size: var(--sc-t-lg); line-height: 1.4; max-width: 30ch;
   color: var(--sc-ink-soft); margin-bottom: var(--sc-3);
 }
+/* The impression size, and page.js writes the cascade off this same custom
+   property so the two can never drift apart. 9.4vh is the size the peak is
+   composed at; the vw term is what makes it survive a phone. "And again." is
+   set nowrap, and at 9.4vh on a 390x844 screen that is a 356px line inside a
+   350px column - the signature move arriving jammed against both margins, with
+   no room left for the step that makes the stack a cascade rather than a list.
+   Bound to the narrow axis as well, the first impression takes about four
+   fifths of the measure and the stack has somewhere to walk. */
+:root { --imp: 9.4vh; }
+@media (max-width: 860px) { :root { --imp: min(9.4vh, 16vw); } }
+
 /* Impression one. Sized and tracked exactly like the generated impressions so
    the cascade below reads as a continuation of it, not a second start. */
 .press__first {
-  font-family: var(--display); font-weight: 300; font-size: 9.4vh;
+  font-family: var(--display); font-weight: 300; font-size: var(--imp);
   letter-spacing: var(--sc-track-tight); line-height: .96;
   white-space: nowrap; color: var(--onyx);
 }
 .press__stack { grid-column: 1; display: block; position: relative; }
+/* width: max-content so the BOX is the line. Left at the column's full width,
+   each impression was a 350px block translated up to 126px across, and thirty
+   of them put the document's scrollWidth at 507 inside a 390px viewport - no
+   visible clipping, because the type is left-aligned inside the box and stays
+   well within the measure, but a page-wide horizontal overflow held back only
+   by the `overflow-x: hidden` on body. The box has no business being wider than
+   the words in it. */
 .press__stack b {
-  display: block; font-family: var(--display); font-weight: 300;
+  display: block; width: max-content;
+  font-family: var(--display); font-weight: 300;
   letter-spacing: var(--sc-track-tight); line-height: .96;
   white-space: nowrap; transform-origin: 0 50%;
   /* size, offset and ink are all written per impression by page.js */
@@ -633,12 +679,20 @@ a.run {
 .spread--press .press__margin { gap: clamp(.7rem, 1.6vh, 1rem); }
 
 @media (max-width: 860px) {
-  /* Chapters three and five flow on a phone, so there is no stage to fill.
-     So does the mission: its spread is within ~10px of a 390x844 stage and
-     taller than a 375x667 one, and a pinned stage clips what will not fit.
-     Chapter one's story stays pinned on a phone - it is 0.55 viewports tall,
-     with room to spare on the shortest screen we check. */
-  .spread--claims, .spread--press, .spread--quiet { height: auto; align-content: start; }
+  /* Every chapter flows on a phone; none of them has a stage to fill. Chapters
+     one and two are on that list now too. They had been left to the measured
+     guard, which demoted them at 375 and 390 and kept them PINNED at 430x932 -
+     a phone - where the spread does fit the stage and so passes the test, while
+     the copy inside it is cued against a two-and-a-half viewport act. Measured
+     there, chapter two held its own name and its plate on screen with the lede
+     and all three paragraphs at zero opacity for most of the scroll, and
+     chapter one spent 2796px of scrolling on 856px of spread.
+
+     Fitting is not the whole question on a phone. A chapter that wants three
+     viewports of scroll to deliver one screen is a device for a screen you can
+     take in at once. */
+  .spread--claims, .spread--press, .spread--quiet,
+  .spread--story, .spread--media { height: auto; align-content: start; }
 }
 /* A section demoted to flow - by the phone list or by the measured guard, both
    of which go through unpin() - gets its section padding back and must stop
@@ -650,6 +704,41 @@ a.run {
    cover: they are scoped to max-width 860px, and a short laptop is neither. It
    needs nothing beyond the rule above - the stack has no min-height to undo, and
    the margin keeps its column - so there is deliberately no rule here. */
+
+/* ------------------------------------------------- furniture clearance -----
+   Two things are fixed to the bottom of the viewport: the folio, bottom left,
+   and the standing ask, which moves down there below 700px. On a wide screen
+   they never touch the page, because every chapter is pinned and its spread
+   takes the bottom padding that clears them. On a phone every chapter flows,
+   `.is-unpinned .spread` takes that padding back off, and what is left is the
+   section's own 4rem - less than the ~105px the pill occupies. Measured at
+   375x667 the pill printed over the poolside caption and the folio ran through
+   the masthead.
+
+   So a flowed section reserves the band itself. Written against the attribute,
+   which unpin() rewrites, so this follows the phone list and the measured guard
+   without having to be told about either.
+   -------------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  .page[data-sc-act="flow"] { padding-bottom: clamp(7rem, 15vh, 9rem); }
+}
+
+/* Where a flowed section runs media the full width of the measure, the folio
+   crosses the picture rather than the ground, and 10px of ink-soft type over a
+   photograph of a swimming pool is not type. The halo IS the ground colour, so
+   it is invisible on the ground - it exists only on the few hundred pixels of
+   scroll where a picture is behind it. The same compromise the standing ask
+   already makes with its translucent plate, one step quieter. */
+@media (max-width: 860px) {
+  .folio {
+    text-shadow: 0 0 .5rem var(--ivory), 0 0 .25rem var(--ivory),
+                 0 0 .12rem var(--ivory);
+  }
+  .folio.on-dark {
+    text-shadow: 0 0 .5rem var(--olive), 0 0 .25rem var(--olive),
+                 0 0 .12rem var(--olive);
+  }
+}
 
 /* --------------------------------------------------------------- no script -- */
 html:not(.js) [data-sc-cue],
