@@ -342,12 +342,13 @@ a { color: inherit; }
 .beat--over { margin-top: -100svh; position: relative; z-index: 1; }
 
 /* The outgoing line rides the incoming edge up rather than waiting to be
-   covered: the clay screen has to go somewhere. turn1's hold is 1350px and the
-   slide occupies its last 900px, so the push runs from p 0.333 to 1 and moves
+   covered: the clay screen has to go somewhere. turn1's hold is 1080px and the
+   slide occupies its last 900px, so the push runs from p 0.167 to 1 and moves
    the line exactly as far as turn2 climbs - 1:1, the same speed, so the line
-   sits on turn2's leading edge the whole way up. */
+   sits on turn2's leading edge the whole way up. The window and the span are
+   one number in two places: 0.167 is 180/1080, the still part of the hold. */
 .beat__out {
-  transform: translateY(calc(clamp(0, (var(--sc-p, 0) - 0.333) / 0.667, 1) * -100svh));
+  transform: translateY(calc(clamp(0, (var(--sc-p, 0) - 0.167) / 0.833, 1) * -100svh));
   will-change: transform;
 }
 @media (prefers-reduced-motion: reduce) {

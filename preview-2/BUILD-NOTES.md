@@ -1777,7 +1777,7 @@ sampling every descendant's transform and opacity at five points across each:
 
 | Hold | Span | What moves across it |
 | --- | --- | --- |
-| `turn1` | 1.5vp | the line riding up, turn2 climbing over it |
+| `turn1` | 1.2vp | the line riding up, turn2 climbing over it (see the correction below) |
 | `ch2` | 1.2vp | canvas pixels change between p 0.15 and 0.75 — 87 frames scrubbing |
 | `ch5` | 2.6vp | 4 impressions at p 0.2, 25 at p 0.7 |
 | `turn2` | 0.3vp | the line lands; too short to be a screen where nothing happens |
@@ -1786,6 +1786,33 @@ A warning for anyone repeating that audit: `ch2` and `ch5` first measured as
 static and are not. Their motion is rAF-driven, and rAF is throttled when the
 browser pane is hidden, so the probe saw nothing move. Sampling with 2.6s waits
 found both.
+
+**And a correction: `turn1` was passed when it should not have been.** The probe
+sampled at p 0.1, 0.3, 0.5, 0.7, 0.9 and reported motion in 3 of 4 steps, which
+looked like a pass. Two of those samples were inside a still window at the front
+of the hold, and a coarse sweep found it: **475px — 0.53 of a viewport — with
+nothing visibly moving.** Ten gentle scrolls, five wheel notches, no response.
+Exactly the fault the audit was run to find.
+
+The cause is structural rather than an oversight. The overlap only becomes
+visible once the incoming stage has climbed into the frame, so any hold longer
+than the slide has a dead patch at its front, and the still window is
+`hold - viewport`. `turn1` went 2.5 → **2.2**: the hold is 1080px, the slide is
+still a full viewport, and the still window is 180px — about two notches, so one
+ordinary scroll carries the reader into the motion. Measured after: 190px at
+1440×900 and 140px at 390×844.
+
+A first sweep reported the still window as 25px and was wrong: it watched the
+incoming stage's `getBoundingClientRect().top`, which changes from the very
+start of the hold while the stage is still below the fold. Geometric change is
+not visible change, and the audit only cares about the second.
+
+**On indicators.** The obvious alternative was a scroll-pressure indicator, so
+the reader knows the hold ends. Rejected on this build's own terms: the page now
+carries zero `position: fixed` elements, having just had the folio and the
+standing pill removed to get there, and these notes ban an x-of-y progress
+readout outright. An indicator also tells a reader they are stuck without
+unsticking them. The cause of "nothing is responding" is that nothing responds.
 
 ### The turn, rebuilt as a real overlap
 

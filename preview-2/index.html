@@ -161,8 +161,17 @@
        therefore 1:1 - one viewport of screen costs one viewport of scroll. So
        turn1's hold has to be longer than a viewport or the slide starts before
        its line has settled. At the old span of 1.9 the hold was 810px against a
-       900px slide, which is 111% of it; at 2.5 the hold is 1350px and the line
-       sits clean for 450px before the white starts to climb.
+       900px slide, which is 111% of it.
+
+       2.2, not 2.5. The difference between them is the STILL WINDOW - the part
+       of the hold before the incoming section has climbed far enough to appear.
+       At 2.5 that was 475px: half a screen, ten gentle scrolls or five wheel
+       notches, with nothing on screen responding. That is the one thing a
+       measured audit of Apple's product pages says they never ship, and it is
+       also just what being stuck feels like. At 2.2 the hold is 1080px and the
+       still window is 180px - about two notches, so a single ordinary scroll
+       carries the reader into the motion. The slide itself is untouched at a
+       full viewport; only the dead part at the front is cut.
 
        UNCUED, both lines: a cue is clamped to p=0 for a stage's whole entry
        slide, which is how these two used to spend 80% of their sections on an
@@ -175,7 +184,7 @@
        to land, not enough to be a screen where nothing moves. Audited against
        Apple's product pages, a held frame with nothing happening in it is the
        one thing they never ship, and this was the page's last one at 810px. -->
-  <section class="page beat beat--clay" data-sc-act="pin" data-sc-span="2.5" id="turn1">
+  <section class="page beat beat--clay" data-sc-act="pin" data-sc-span="2.2" id="turn1">
     <div data-sc-stage class="beat__stage">
       <p class="d d--lg beat__out">We thought there had to be a better way.</p>
     </div>
