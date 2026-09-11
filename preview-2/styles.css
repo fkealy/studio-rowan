@@ -85,13 +85,99 @@ a { color: inherit; }
   padding-right: .7rem; border-right: 1px solid var(--hair);
   color: var(--onyx);
 }
+/* The title page and the colophon carry no label - neither is a step in the
+   argument - so the separator goes with it. */
+.folio.is-unlabelled .folio__n { display: none; }
 .folio__t { transition: opacity var(--sc-d-base) var(--sc-ease-out); }
 .folio.is-turning .folio__t { opacity: 0; }
-.page--colophon ~ *, .folio.on-dark { color: color-mix(in oklab, var(--hemp) 80%, transparent); }
-/* .folio__n pins itself to --onyx, which is all but invisible on olive. It was
-   already doing that on the colophon; the olive intertitle above it makes that
-   stretch longer, so it is fixed rather than inherited. */
+.folio.on-dark { color: color-mix(in oklab, var(--hemp) 80%, transparent); }
+/* .folio__n pins itself to --onyx, which is all but invisible on olive. */
 .folio.on-dark .folio__n { color: var(--ivory); border-right-color: color-mix(in oklab, var(--ivory) 30%, transparent); }
+
+/* --------------------------------------------------------------- top asks --
+   The two CTAs, top right, on the title page and nowhere else. Out of flow, so
+   they do not push the title composition around; the title page is the
+   containing block for them (see .page--title).
+   -------------------------------------------------------------------------- */
+.topcta {
+  position: absolute; z-index: 30;
+  top: clamp(1.25rem, 4vh, 2.75rem); right: var(--margin);
+  display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end;
+  gap: clamp(.9rem, 2.2vw, 2rem);
+  font-size: var(--sc-t-sm);
+}
+.topcta__a {
+  text-decoration: none; color: var(--sc-ink-soft); white-space: nowrap;
+  transition: color var(--sc-d-fast) var(--sc-ease-out);
+}
+/* A hairline pill, not a filled button: the page is paper, and a solid block
+   of accent here would be the loudest thing above the fold, louder than the
+   headline it sits beside. */
+.topcta__a--key {
+  color: var(--onyx); border: 1px solid var(--hair-2); border-radius: 999px;
+  padding: .5rem clamp(.9rem, 1.6vw, 1.15rem);
+  transition: border-color var(--sc-d-fast) var(--sc-ease-out),
+              color var(--sc-d-fast) var(--sc-ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .topcta__a:hover { color: var(--onyx); }
+  .topcta__a--key:hover { border-color: var(--apricot); color: var(--onyx); }
+}
+@media (max-width: 480px) { .topcta { font-size: var(--sc-t-xs); gap: .75rem; } }
+
+/* -------------------------------------------------------- the standing ask --
+   The only persistent thing on the page besides the folio, and it is the ask
+   itself rather than a way back to it: a chevron returning the reader to the
+   top delivered navigation where the page needed action.
+
+   It is literally the title page's pill - same classes, same hairline, same
+   size - so it reads as that object having stayed put rather than as a second
+   piece of furniture. One ask, not two: "Get in touch" is the vaguer of the
+   pair and is already set in the colophon's running text and its masthead, so
+   what persists is the specific, low-commitment one.
+   -------------------------------------------------------------------------- */
+.ask {
+  position: fixed; z-index: 40;
+  top: clamp(1rem, 3vh, 2rem); right: var(--margin);
+  background: color-mix(in oklab, var(--ivory) 72%, transparent);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  font-size: var(--sc-t-sm);
+  opacity: 0; visibility: hidden; transform: translateY(-.4rem);
+  transition: opacity var(--sc-d-base) var(--sc-ease-out),
+              transform var(--sc-d-base) var(--sc-ease-out),
+              visibility var(--sc-d-base) step-end,
+              border-color var(--sc-d-base) var(--sc-ease-out),
+              color var(--sc-d-base) var(--sc-ease-out),
+              background-color var(--sc-d-base) var(--sc-ease-out);
+}
+.ask.is-on {
+  opacity: 1; visibility: visible; transform: none;
+  transition-timing-function: var(--sc-ease-out), var(--sc-ease-out), step-start,
+                              var(--sc-ease-out), var(--sc-ease-out), var(--sc-ease-out);
+}
+/* The colophon is the one ground this should never be seen over, because the
+   asks are set in its own copy - so the ink here is insurance for the frames
+   where olive is on screen but hemp still owns it, not the normal case. */
+.ask.on-dark {
+  color: var(--ivory);
+  border-color: color-mix(in oklab, var(--ivory) 34%, transparent);
+  background: color-mix(in oklab, var(--olive) 72%, transparent);
+}
+/* Below ~700px the top-right corner is not free: every chapter opens with its
+   head on that line, and "The Never-Ending Slipper." - the longest of them -
+   reaches x=410 in a 600px viewport while the pill starts at 418. Measured at
+   700px there is ~70px of clearance and below it there is none, so that is the
+   move, not a phone breakpoint.
+
+   It goes to the foot instead, which is where a thumb is anyway, and sits one
+   line above the folio rather than beside it: side by side at this width the
+   folio's chapter title runs to within 10px of the pill. */
+@media (max-width: 700px) {
+  .ask {
+    font-size: var(--sc-t-xs);
+    top: auto; bottom: clamp(2.9rem, 8vh, 4.25rem);
+  }
+}
 
 /* ------------------------------------------------------------------- type -- */
 .d {
@@ -144,43 +230,75 @@ a { color: inherit; }
   color: var(--sc-ink);
 }
 
-/* Intertitles: the full stop between chapters. One thing on the screen. */
-/* A full stop has to actually stop. As a flow section this was just a tall
-   sparse block the line drifted through and out of: the page never paused, so
-   the emptiness read as a void rather than as a held statement. An ink-coverage
-   scan could not tell those apart, because it only counts what is on screen,
-   not whether the screen is moving.
+/* ---------------------------------------------------- the chapter marker --
+   Each chapter used to open with a pinned intertitle: one line, alone, held
+   still on an otherwise empty screen for a little under half a viewport of
+   scrolling, then a viewport of stage sliding in and another sliding out. Five
+   of them - 9.5 viewports of scroll whose only content was a chapter title, on
+   a page whose densest screens were being trimmed to the pixel to fit.
 
-   So an intertitle is a short pinned act. The line sits dead still in the
-   middle of the frame for a little under half a viewport of scrolling, then
-   releases. One statement, held, never crossfading into another: this grammar
-   bans pinned crossfade type acts, and a held page-turn is not one.
+   That became a ruled head across the top of the spread, which fixed the length
+   and introduced a different problem: a full-width rule with the title over it
+   is a masthead, and a masthead is page furniture the chapter happens to sit
+   under. Five identical bands, one per chapter, each announcing the section
+   rather than belonging to it.
 
-   Centred, and that is measured rather than chosen: biasing the line to the
-   upper third changes the length of the surrounding voids by exactly nothing,
-   because what the reader crosses is the STAGE sliding in and out, not the
-   line inside it. A one-viewport stage is mostly empty wherever the line sits.
+   So there is no band. The marker sits INSIDE the section's own first column,
+   at the head of the same stack as the headline and the copy, on that column's
+   own spacing - the chapter names itself in its own voice and then keeps
+   talking. Label and title still hold one baseline; the rule is gone, and with
+   it the full-width row it needed.
    -------------------------------------------------------------------------- */
-.inter__stage {
-  display: flex; align-items: center;
-  padding-inline: var(--margin);
+.chapter {
+  display: grid; justify-items: start;
+  /* Air below the marker, so it groups with itself before it groups with the
+     headline under it. */
+  margin-bottom: clamp(.2rem, 1.2vh, .85rem);
 }
-.inter h2, .inter h3 { max-width: 16ch; }
-.inter--clay  { background: var(--clay); }
-.inter--white { background: var(--white); }
-.inter--ivory { background: var(--ivory); }
-.inter--hemp  { background: var(--hemp); }
-/* The colophon's intertitle lands on the colophon's own ground, so the hard
-   cut happens once, at the full stop, rather than arriving underneath the
-   previous chapter's last paragraph. Ink is restated for the same reason the
-   colophon restates it: colour inherits as a computed value. */
-.inter--olive {
-  background: var(--olive);
-  --sc-ink: var(--ivory); --sc-ink-soft: #C9D2B4;
-  color: var(--sc-ink);
+/* There is no label line on the page any more. It named the job each chapter
+   does in the argument - problem, solution, proof, studio - and that naming has
+   moved wholly into the folio, which is this grammar's designated place for it:
+   one line in the margin, always on, never inside a heading where it can be
+   read as part of one. On the page it was a second, smaller thing above the
+   title that the title then had to be sized around. Gone, the title can simply
+   be the size it wants. (.chapter__n is still written by the folio's own
+   markup - see .folio__n.) */
+/* Set below the chapter's own headline, deliberately. A marker names; the
+   headline speaks. Sized level with the headline the page would have read as
+   five titles. */
+.chapter__t {
+  font-family: var(--display); font-weight: 300; font-size: var(--sc-t-xl);
+  letter-spacing: var(--sc-track-tight); line-height: 1.08; text-wrap: balance;
 }
+/* The exception, and it is one chapter only. "The Never-Ending Slipper." is the
+   product's name and the page's main hit - the thing the whole argument is
+   built to deliver - and it was set smaller than "Worn for moments, wasted
+   forever.", which is the problem it solves.
+
+   It is also the only marker that can take the size: every other chapter has a
+   headline under it to defer to, and chapter two leads with a lede rather than
+   a statement, so nothing is competing. Set level with the two turn beats, one
+   step above every chapter headline and one below the title page's own line.
+   Sized to its column rather than off the scale, because the name has a shape
+   it has to keep: "Never-Ending" is one word with a hyphen in it, and a hyphen
+   is a legal break, so every size on the scale broke the line THERE - "The
+   Never- / Ending Slipper." at 1440, and three lines between about 1100 and
+   1350. The compound is held together with .nb and the size is bound to the
+   measure, so the name sets as "The Never-Ending / Slipper." and stays that way
+   down the whole range.
+
+   The floor is a chapter headline: whatever else happens, the product's name is
+   never smaller than the problem it solves, which is where this started. The
+   ceiling is just under the 5rem the 3xl step would have given it. */
+.chapter__t--hero {
+  font-size: clamp(var(--sc-t-2xl), 5.6vw, 4.9rem);
+  line-height: 1.02;
+}
+/* No break inside a hyphenated compound. */
+.nb { white-space: nowrap; }
 
 /* ------------------------------------------------------------- title page -- */
+.page--title { position: relative; }
 .sheet { width: 100%; }
 .title__mark { width: clamp(150px, 20vw, 270px); color: var(--onyx); margin-bottom: clamp(3rem, 9vh, 7rem); }
 .title__mark svg { width: 100%; height: auto; }
@@ -195,9 +313,38 @@ a { color: inherit; }
 /* ----------------------------------------------------------------- spreads --
    Asymmetric by rule. Never a centred column, never three equal cards.
    -------------------------------------------------------------------------- */
-.spread { display: grid; gap: clamp(2.5rem, 6vw, 5rem); }
+.spread {
+  display: grid;
+  column-gap: clamp(2.5rem, 6vw, 5rem);
+  row-gap: clamp(1.75rem, 4.5vh, 3rem);
+}
 
 .spread__lead { display: grid; gap: var(--sc-5); max-width: 52rem; }
+/* Chapter one, whole. The narrative runs down the lead column and the two
+   figures stand in their own, which is what separates copy that is telling a
+   story from numbers that are stating facts - they used to be interleaved, and
+   the figures were carrying the story's sentences. Even columns rather than
+   the usual lean: "120,000,000" is eleven glyphs set nowrap, and a 1fr column
+   narrower than this cannot hold it. */
+/* The figures column is the wider of the two: it carries three things, and the
+   turn set in display type wants to hold each of its lines whole. The story
+   column only needs its 44ch measure. */
+.spread--story { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); }
+/* The two figures and the turn read down as one column, in that order: the
+   numbers, then the sentence that answers them. They were briefly held at the
+   two ends of the column instead, which read as a movement but put the couplet
+   level with the wrong thing and, on a phone, before the numbers rather than
+   after. */
+.spread--story .spread__figs {
+  grid-template-columns: minmax(0, 1fr);
+  border-top: 0; padding-top: 0; gap: clamp(1.75rem, 5vh, 3rem);
+  align-content: start;
+}
+/* One step down from the 3xl they were set at when they owned a screen of
+   their own. They are the chapter's evidence now, not its headline, and at 3xl
+   the longer number runs out of its column between about 1000px and 1200px
+   wide - measured at 464px of glyph in a 465px column. */
+.spread--story .fig__n { font-size: var(--sc-t-2xl); }
 /* Explicit tracks, not auto-fit. A `count` device grows its number from "0"
    to "120,000,000" while the reader watches, and with content-sized tracks
    that growth re-sizes the column, rewraps the prose beside it and changes
@@ -205,9 +352,6 @@ a { color: inherit; }
    as the counters ran, which left every pinned act below it 29px away from the
    geometry the engine had cached. minmax(0, 1fr) makes the tracks independent
    of their content, so the number can no longer move the page. */
-/* No rule above the figures now: they open their own held section, so the
-   hairline would be drawing a boundary across the top of a screen. */
-.spread--figures .spread__figs { border-top: 0; padding-top: 0; }
 .spread__figs {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(2rem, 5vw, 4rem); align-items: start;
@@ -238,12 +382,29 @@ a { color: inherit; }
   display: block; font-style: normal; font-size: var(--sc-t-xs);
   color: var(--sc-ink-soft); margin-top: .4rem;
 }
-.turn { display: grid; gap: .15rem; margin-top: clamp(1rem, 4vh, 3rem); }
-.turn span { display: block; }
+/* ------------------------------------------------------------- the turn --
+   Two full stops, one line each, between chapter one and chapter two. The
+   device is the old intertitle - a short pinned act holding one statement dead
+   still for about half a viewport of scrolling - taken off the chapter titles,
+   where it was spending 9.5 viewports naming things the folio already names,
+   and spent on the hinge the page actually pivots on.
+
+   The line sits centred in the frame, and that is measured rather than chosen:
+   biasing it to the upper third changes the length of the surrounding voids by
+   exactly nothing, because what the reader crosses is the STAGE sliding in and
+   out, not the line inside it. */
+.beat__stage { display: flex; align-items: center; padding-inline: var(--margin); }
+.beat p { max-width: 18ch; }
+.beat--clay  { background: var(--clay); }
+.beat--white { background: var(--white); }
 
 /* Media column. Never bleeds under type; always carries a caption. */
+/* The text column is the wider of the two now, where it used to be the
+   narrower. It carries the product's name at display size, and that name wants
+   about 650px at 1440 to set "The Never-Ending" whole; the plate is a 16:10
+   frame that reads perfectly well at 565px. */
 .spread--media {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   align-items: start;
 }
 .spread__text { display: grid; gap: var(--sc-6); }
@@ -272,7 +433,13 @@ a { color: inherit; }
 @media (hover: hover) and (pointer: fine) { .plate__frame.is-live { cursor: ew-resize; } }
 
 /* ------------------------------------------------------------------ claims -- */
-.spread--claims { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: start; }
+/* Argument left, photograph right. The claims are a list of assertions about
+   how the thing behaves in a wet, public place; the frame is the evidence for
+   them, so the two sit side by side and the reader can check one against the
+   other. Source order is the reading order here and on a phone, which stacks
+   the columns in it: title -> claims -> photograph -> summary. */
+.spread--claims { grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr); align-items: start; }
+.proof { display: grid; align-content: start; }
 .claims { list-style: none; }
 .claim {
   display: grid; grid-template-columns: 2.4rem 1fr; gap: var(--sc-4);
@@ -283,11 +450,29 @@ a { color: inherit; }
 .claim i svg { width: 100%; height: 100%; }
 .claim b { display: block; font-weight: 500; font-size: var(--sc-t-lg); }
 .claim span { display: block; color: var(--sc-ink-soft); margin-top: .1rem; }
-.prose--tail { align-self: end; }
+/* The proof plate's caption is the chapter's summary paragraph, so it is set as
+   prose rather than in the small caption voice the other plates use - it is
+   there to be read, not to label. Under the image, never over it: over the
+   water it would be legible at this crop only, and at any narrower one it lands
+   on the slippers, which are the one thing in the frame that has to stay
+   unobstructed. */
+.plate--proof figcaption {
+  font-size: var(--sc-t-base); line-height: 1.6; color: var(--sc-ink);
+  max-width: 48ch; text-wrap: pretty;
+  border-top: 1px solid var(--hair); padding-top: var(--sc-4);
+}
+.plate--proof img { width: 100%; height: auto; }
 
 /* ------------------------------------------------------------------- quiet -- */
+/* A tighter row rhythm than the other spreads, and measured rather than felt.
+   The mission is four blocks in one column - marker, headline, the three
+   "changed" lines, then 121 words of prose - and at the shared 4.5vh row gap
+   that stack came to 931px inside a 900px stage, so the fit guard flowed the
+   longest read on the page for 31 pixels. At 3vh it clears with ~39px to
+   spare and the blocks are still well apart. */
 .spread--quiet {
   grid-template-columns: minmax(0, 1fr);
+  row-gap: clamp(1.25rem, 3vh, 2rem);
   max-width: 62rem;
 }
 .spread--quiet h3 { max-width: 20ch; }
@@ -391,7 +576,8 @@ a.run {
    spreads to stop being spreads rather than a different composition.
    -------------------------------------------------------------------------- */
 @media (max-width: 860px) {
-  .spread--media, .spread--claims, .spread--press { grid-template-columns: minmax(0, 1fr); }
+  .spread--media, .spread--claims, .spread--press,
+  .spread--story { grid-template-columns: minmax(0, 1fr); }
   .spread--press { min-height: 0; }
   .press__stack, .press__margin, .press__tail { grid-column: 1; }
   .press__margin { border-left: 0; padding-left: 0; border-top: 1px solid var(--hair); padding-top: var(--sc-5); }
@@ -411,15 +597,22 @@ a.run {
 
    These are my own elements, not the mechanism: the stage itself is untouched.
    -------------------------------------------------------------------------- */
+/* The spread fills the stage again, now that the marker lives inside it rather
+   than in a row above it.
+
+   The block padding is asymmetric, and the bottom half of it is not taste. The
+   folio is fixed at the bottom-left of the viewport, and a chapter that fills
+   its stage sets its last line straight through it - chapter one's closing
+   couplet was printing over "THE PROBLEM / THE HOTEL SLIPPER". The foot of the
+   frame has to clear the furniture standing in it. */
 .spread--media,
 .spread--claims,
-.spread--figures,
 .spread--story,
 .spread--quiet,
 .spread--press {
   height: 100%;
   align-content: center;
-  padding-block: clamp(1.5rem, 5vh, 4rem);
+  padding-block: clamp(1rem, 3vh, 2.5rem) clamp(2.75rem, 6vh, 4rem);
 }
 /* The press carries more in its margin column than the other spreads, so it
    gets a tighter frame: measured at 922px inside a 900px stage, which put the
@@ -431,6 +624,11 @@ a.run {
    Short laptops are a different problem and not a padding one: 54-76px of the
    closing "better for..." lines sat outside the stage there, revealed and
    unreachable behind overflow:clip. That is the guard's job, not this rule's. */
+/* The peak keeps a symmetric, tight frame and does NOT take the folio
+   clearance the other spreads take: its impressions cascade to the middle of
+   the sheet, not to the bottom-left corner, so there is nothing down there to
+   clear - and 45px of padding it does not need is 45px that flows the
+   signature move at the size the page is composed for. */
 .spread--press { padding-block: clamp(.35rem, 1vh, 1rem); gap: clamp(1.5rem, 4vw, 3.5rem); }
 .spread--press .press__margin { gap: clamp(.7rem, 1.6vh, 1rem); }
 

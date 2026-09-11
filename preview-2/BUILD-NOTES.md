@@ -6,9 +6,13 @@ holding page and preview 1. Nothing at the root was touched.
 Serve the repo root and open **`/preview-2/`** with the trailing slash.
 
 **Grammar: chaptered editorial** (uniqueness.md 2.2). Chosen because the ask was
-"one thing at a time", and this grammar is built out of exactly that: a
-full-stop intertitle, then one dense asymmetric spread, then the next
-intertitle. Nothing crossfades; chapters hard-cut between grounds.
+"one thing at a time", and this grammar is built out of exactly that: one dense
+asymmetric spread per chapter, each opening under a ruled chapter head, each on
+its own ground. Nothing crossfades; chapters hard-cut between grounds.
+
+The full stop between chapters used to be a pinned **intertitle** — the chapter
+title alone on an empty screen, held. It is a header now; see *"The intertitles
+became headers"* below for the measurement that decided it.
 
 ---
 
@@ -31,20 +35,25 @@ from six to one, and its divider labels were promoted to carry the naming.
 
 | Unit | Ground | Device | Span |
 |---|---|---|---|
-| Title page | Ivory | `flow` + `in` | flow |
-| Intertitle → Chapter one, the hotel slipper | Clay | prose | flow |
-| &nbsp;&nbsp;↳ the figures, held | Clay | `count` | 2.4 |
-| Intertitle → Chapter two, the Never-Ending Slipper | White | `scrub` | 2.6 |
-| Intertitle → Chapter three, why it holds up | Ivory | `reveal` | 2.6 |
-| &nbsp;&nbsp;↳ **the peak, still chapter three** | Ivory | **the reprint** | **4.6** |
-| Intertitle → Chapter four, our mission | Hemp | `flow` + `in` | flow |
-| Colophon | Olive | `flow` | flow |
+| Title page, with the two asks top right | Ivory | `flow` + `in` | flow |
+| The hotel slipper — story and figures | Clay | `count` | 3.0 |
+| *We thought there had to be a better way.* | Clay | `pin` | 1.5 |
+| *So we redesigned them.* | White | `pin` | 1.5 |
+| The Never-Ending Slipper | White | `scrub` | 2.6 |
+| Why it holds up — the claims, and the poolside frame | Ivory | `reveal` | 2.6 |
+| &nbsp;&nbsp;↳ **the peak, still the same chapter** | Ivory | **the reprint** | **4.6** |
+| Our mission | Hemp | `pin` + `in` | 2.8 |
+| Work with us | Olive | `flow` | flow |
 
-Twelve sections, **23.3vh** total, clear of the recorded 13.6–13.8vh band.
-Preview 1 runs to the same length in seven acts, so the two differ on shape
-rather than on size: twelve short chaptered units against seven long acts. Six device families,
-none twice in a row, exactly one `scrub` (this grammar's limit), peak has the
-largest span, and chapter four is quieter than it.
+The folio still names each chapter by its job — *the problem, the solution, the
+proof, the studio* — but the page itself no longer does; see below.
+
+Nine sections, **20.6vh** total at 1440×900, clear of the recorded 13.6–13.8vh
+band. It was twelve sections and 23.3vh before the intertitles became markers
+and chapters one and the colophon were each folded into a single beat: the same
+reading, 5.7 viewports shorter. Six device families, none twice in a row,
+exactly one `scrub` (this grammar's limit), peak has the largest span, and
+chapter four is quieter than it.
 
 ## The signature move: the reprint
 
@@ -457,6 +466,460 @@ not. Cueing is therefore not just timing within the pin, it decides what the
 reader sees *before* the pin — and the copy that sets up an act must be on the
 uncued side of that line.
 
+## Feedback round two
+
+Five notes came back on this build. Four of them are the same note in different
+places — *this beat is a whole screen and it should be a header* — and the fifth
+is the one thing the grammar had deliberately left out.
+
+### The intertitles became markers inside the sections
+
+Every chapter opened with a pinned intertitle: the title alone on an empty
+screen, held dead still for a little under half a viewport, with a viewport of
+stage sliding in before it and a viewport sliding out after. Five of them.
+
+Measured as page length that is **9.5 viewports of scroll whose only content is
+a chapter title**, on a page whose densest screens — the mission at 121 words,
+the peak with its margin column — were being trimmed to the pixel to fit inside
+a single stage. The page was spending its space on its emptiest screens.
+
+The first fix was a ruled head across the top of each spread. That solved the
+length and introduced a different problem: **a full-width rule with a title over
+it is a masthead**, and a masthead is page furniture that the chapter happens to
+sit under. Five identical bands, one per chapter, each announcing its section
+rather than belonging to it — and each one a separate grid row, which meant a
+separate wrapper (`.chapter` as a two-row grid) between the stage and the
+spread.
+
+So there is no band. The marker sits **inside the section's own first column**,
+at the head of the same stack as the headline and the copy, on that column's own
+spacing:
+
+* chapter one, first in `.spread__lead`, above *"Worn for moments, wasted
+  forever."*
+* chapter two, first in `.spread__text`, above the lede
+* chapter three, first in the claims column
+* chapter four, first in `.spread--quiet`
+* the colophon, first in `.colophon`
+
+The chapter names itself in its own voice and then keeps talking.
+
+**Label over title, not beside it**, and measurably so: set on one baseline a
+12.9px label against a 32.4px line leaves ~20px of air above the label and none
+below, so the small half hangs low and left off the big one, with 12.6px of gap
+doing nothing to separate two sizes that far apart. It read as lopsided because
+it was. Stacked, the two parts share a left edge and each gets its own line —
+which is what the phone was already doing by wrapping, and it read better there
+than it did anywhere the line fitted.
+
+It cannot be misread as an eyebrow running into the title, which is the failure
+the folio exists to avoid: the label ends in a colon and is set in the same
+micro-caps as the folio and the figure rubrics, so it reads as apparatus rather
+than as the first half of a sentence.
+
+The title sits at `--sc-t-lg`, two steps **below** the chapter's own headline —
+a marker names, a headline speaks. It was `xl` while the label sat beside it;
+stacked, `xl` put two display lines in a row above a third and chapter one read
+as "The hotel slipper." *and* "Worn for moments, wasted forever." competing.
+At `lg` the three-step hierarchy — micro-caps label, marker, headline — is
+unambiguous without needing the ~50px of separation that fixing it by spacing
+would have cost.
+
+The wrapper is gone with the band, so the spreads fill the stage themselves
+again, exactly as they did before any of this.
+
+Three measurements that came out of it:
+
+* A chapter carries ~50px more inside its stage than it did before it had a
+  marker at all. Block padding is `clamp(1rem, 3vh, 2.5rem)` at the head and the
+  row gap in a spread is `4.5vh` rather than the `6vw` gutter value doing double
+  duty — 80px of leading between blocks in a single-column spread was the
+  "too much space" note in miniature.
+* The foot padding is larger than the head's, at `clamp(2.75rem, 6vh, 4rem)`,
+  and that is not taste. The folio is fixed at the bottom-left of the viewport,
+  so a chapter that fills its stage prints its last line straight through it.
+  **The peak is the one spread that does not take this clearance**: its
+  impressions cascade to the middle of the sheet, not into the bottom-left
+  corner, and 45px it does not need is 45px that flows the signature move.
+* **The mission needed a tighter row rhythm.** Stacking the marker costs ~27px
+  even with the smaller title, and the mission is four blocks in one column —
+  marker, headline, the three "changed" lines, 121 words of prose. At the shared
+  4.5vh row gap that came to 931px inside a 900px stage and the guard flowed the
+  longest read on the page for 31 pixels. `.spread--quiet` takes `3vh` instead
+  and clears with ~39px to spare.
+* `.spread--claims` needs **explicit** grid placement now that the marker is a
+  third item in it, and that placement has to be scoped to the two-column case:
+  `grid-column: 2` inside a single-column grid does not clamp, it creates an
+  implicit second column. Unscoped, the phone layout collapsed to two columns
+  and set *"Why / it / holds / up."* one word per line.
+
+All five chapters still pin at 1440×900. The page is **20.6vh** against 23.3vh
+before the intertitles went: 17.6vh of chapters, plus the 3.0 the turn takes to
+land on two held screens of its own.
+
+### Chapter one is one chapter again
+
+The story and the figures were two separately held screens, and the split had
+put the story's own sentences *inside* the figures — *"It was one of those
+numbers that was difficult to forget about"* was sitting under 70,000, and *"So,
+once back in the UK, we reached out to hotels and spas"* under 120,000,000. Copy
+that is telling a story, set inside a device that presents facts.
+
+So they are one chapter, and the two kinds of writing are separated by column
+rather than by screen. The narrative runs continuously down the lead column, all
+three paragraphs and the turn. The figures keep the treatment that was working —
+display numeral, small-caps rubric, the national figure in ochre — and carry
+nothing but a number and what it counts.
+
+Four smaller decisions inside that:
+
+* The figures column reads **70,000, then 120,000,000, then the turn** — the
+  numbers, then the sentence that answers them. The couplet sits under the
+  figures rather than at the foot of the story column, and that is also the
+  only arrangement that puts it *after* the numbers on a phone: the two columns
+  stack in source order there, so a turn written into the story column arrived
+  before the figures it responds to.
+  (Briefly the two figures were held at opposite ends of the column instead, on
+  the reasoning that the distance between them was the escalation they
+  describe. It read as a movement and it was wrong twice: it set the couplet
+  level with the second number rather than under it, and it broke the phone
+  ordering.)
+* The numbers are set at `--sc-t-2xl`, one step down from the `3xl` they had
+  when they owned a screen. They are the chapter's evidence now, not its
+  headline — and at `3xl` the eleven nowrap glyphs of "120,000,000" run out of
+  their column between roughly 1000px and 1200px wide (464px of glyph in a
+  465px column).
+* The turn — *"We thought there had to be a better way. / So we redesigned
+  them."* — drops to `--sc-t-xl` for the same reason: the headline is the
+  chapter's statement and this is the answer to it. Set level with the headline
+  it wrapped to three lines, and those two extra lines were 43 of the pixels
+  that decided whether the chapter could be held still at all.
+* **The turn is not in this chapter at all.** *"We thought there had to be a
+  better way. / So we redesigned them."* is two full stops of its own between
+  chapters one and two — see below.
+Span is 3.0, down from 2.0 + 2.4.
+
+### The colophon is one beat
+
+*"Work with us."* and *"Still paying for thousands of disposable slippers every
+year?"* were two screens with a ground change between them, and they are one
+thought: the chapter head names the ask and the question is the ask. Set
+together, the reader meets the proposition and the reason for it in a single
+reading. The olive ground now cuts once, at the colophon, instead of twice.
+
+### The asks, and the one that stands
+
+This grammar bans a fixed bar and it bans a magnetic CTA, and the page had
+neither — which left it with no way to act on what it had just argued except the
+mailto links in the running text at the very bottom.
+
+Two asks now sit top right of the **title page**: *Get in touch*, and *Request a
+sample* in a hairline pill. A hairline, not a filled block: the page is paper,
+and a solid slab of accent above the fold would be louder than the headline
+beside it.
+
+They scroll away with the title page rather than riding over five hard-cut
+grounds. What persists is **the second pill, standing still** — the same element,
+same classes, same hairline — which appears once the title page has gone.
+
+This started as a back-to-top chevron and that was the wrong object. A chevron
+delivers *navigation* where this page needs *action*: a reader convinced at
+chapter three had twelve viewports to scroll before they could do anything about
+it. A dropdown was the other candidate and it has the same shape of problem in a
+different place — to be legible its collapsed trigger has to read "Contact" or
+similar, because nobody clicks a bare glyph hoping for a contact form, and once
+the trigger is a word you are hiding two short links behind a click to save
+roughly the width of one of them. A dropdown earns its keep at five items.
+
+So: one ask, always there, one tap. *Request a sample* rather than *Get in
+touch* — the specific, low-commitment one; the vaguer one is already set in the
+colophon's running text and again in its masthead.
+
+Two placements, both measured rather than chosen:
+
+* **Top right above 700px.** Below that the corner is not free: every chapter
+  opens with its head on that line, and the longest of them, *"The Never-Ending
+  Slipper."*, reaches x=410 in a 600px viewport while the pill starts at 418. At
+  700px there is ~70px of clearance and below it there is none.
+* **Foot right below 700px**, which is where a thumb is anyway, and one line
+  *above* the folio rather than beside it: side by side at 375px the folio's
+  chapter title runs to within 10px of the pill.
+
+It retires on the colophon, where both asks are set in the running text a few
+lines below it — a pill floating over them is the page asking twice. The
+olive-ground ink is kept as insurance for the frames where the colophon is on
+screen but hemp still owns it.
+
+Nothing manages the tab order: the hidden state is `visibility: hidden`, which
+takes the link out of it already, and the transition steps that property rather
+than easing it, so the link is never focusable while it is invisible.
+
+---
+
+## The chapter labels stopped being ordinals
+
+The chapter markers read *One, Two, Three, Four, Colophon*. Two problems with that, and
+the second one is the one that matters.
+
+"Colophon" is the correct printing term for a closing note about how a thing was
+made, and it is a word this page's audience — hotel and spa operators — has no
+reason to know. It was a grammar term escaping into the copy.
+
+The larger one: an ordinal tells the reader *where* they are and nothing about
+*what they are getting*. On a feature this long the label slot is the one place
+that can carry the argument's shape, and it was spending it on counting. So the
+labels name the job each chapter does:
+
+| | Label | Title |
+|---|---|---|
+| 1 | The problem: | The hotel slipper. |
+| 2 | The solution: | The Never-Ending Slipper. |
+| 3 | The proof: | Why it holds up. |
+| 4 | The studio: | Our mission. |
+| 5 | *(none)* | Work with us. |
+
+Two judgement calls in that table, both easy to change:
+
+* **"The proof:"** for chapter three is mine — the brief sketched problem,
+  solution and mission, and chapter three sits between solution and mission
+  doing the evidence. *The detail:* or *The case:* would work as well.
+* **"The studio:"** for chapter four, because *The mission: / Our mission.*
+  restates itself. It is also true to what the chapter is: the one place the
+  page talks about Studio Rowan rather than the product, which is why the
+  masthead's first row is *Studio* too.
+
+The last chapter takes **no label**. Every chapter before it is labelled with
+its job in the argument; this one is the studio asking, and a category word in
+front of it would be the page describing its own ask instead of making it. The
+title page is unlabelled for the mirror reason — it is not a step in the
+argument either — so the folio simply reads "STUDIO ROWAN" there, where it used
+to read "TITLE | STUDIO ROWAN".
+
+The folio takes the same labels, minus the colons: it reads `data-ch`, which is
+kept clean, while the colon is written into the head. Where the label is empty
+the separator rule goes with it (`.folio.is-unlabelled`), and the folio is now
+keyed on the label *and* the title together — keyed on the label alone, the
+colophon would have inherited whatever the title page left there, both being
+empty.
+
+### What the longest marker turned up
+
+*"The solution: The Never-Ending Slipper."* is the only marker long enough to
+wrap on a phone, and wrapping it cost 25px. That was enough to push chapter two
+past its stage — and measuring why turned up something that had been wrong since
+before any of this round:
+
+* **The scrub chapter had never fitted a small phone.** At 375×667 its copy,
+  plate and caption stack to 800px inside a 667px stage that clips: ~133px lost,
+  of which only 25 were the new marker. It was over by ~47px before this round.
+  It had been excluded from the stage-fit guard on the reasoning that *pinning
+  is how a scrub works at all* — true of the engine's scrub device, and not true
+  of this page, which has no `[data-sc-scrub]` or `[data-sc-sequence]` in the
+  markup at all. The spin is drawn by hand off `progress('ch2')`, and
+  `progress()` computes a flow act's p as readily as a pinned one. So the act
+  type was buying the pin and nothing else. Chapter two is in the guard now, and
+  flowed on a short phone the whole chapter is reachable and the slipper still
+  turns as the reader scrolls.
+* **The guard was measuring against the wrong height.** It compared content to
+  `innerHeight`; the engine sizes its stage `height: 100vh; height: 100svh`. On
+  a phone those are different numbers — `innerHeight` is the *large* viewport,
+  the one you get with the browser chrome hidden, and `100svh` is the small one
+  — so the guard had been overestimating the stage by roughly the height of an
+  address bar and letting that much content clip. Measured in an emulated
+  375×667 the two read 806 and 667. It now takes `Math.min(innerHeight,
+  documentElement.clientHeight)`, the conservative read, because the two
+  failures are not symmetrical: a chapter flowed that could have pinned loses a
+  full stop, while a chapter pinned that does not fit loses copy behind
+  `overflow: clip`.
+
+After both, nothing changes at 1440×900 (all five pinned) or at
+1280×720 (chapters four and five flow, as they always did). At 375×812 and
+375×667 the whole page flows, including chapter two.
+
+---
+
+## The label came off the page, and the proof got its evidence
+
+### One line, not two
+
+The chapter marker was a micro-caps label over a title: *THE PROBLEM: / The
+hotel slipper.* The label is gone from the page. It named the job each chapter
+does in the argument, and that naming now lives wholly in **the folio**, which
+is this grammar's designated place for it — one line in the margin, always on,
+never inside a heading where it can be read as part of one. The folio reads THE
+PROBLEM | THE HOTEL SLIPPER for the whole of chapter one; the page just says
+*The hotel slipper.*
+
+On the page the label was a second, smaller thing above the title that the title
+then had to be sized around — it is why the title had been pushed down to
+`--sc-t-lg`. With the label gone the title is back at `--sc-t-xl` and is simply
+the size it wants, one step below the chapter's own headline.
+
+### The proof spread
+
+The claim list is an argument about how the thing behaves in a wet, busy, public
+place — *waterproof, treaded sole, designed with wet poolside floors in mind* —
+and it was making that argument entirely in words, next to nothing. The poolside
+frame from prototype 06 is the evidence for it, so the claims read down the left
+of the spread and the photograph carries the right, where the reader can check
+one against the other. Argument first, evidence beside it — which is also plain
+source order, so the phone stacks it the same way.
+
+The summary paragraph is set **under** the image, as the figure's caption, in
+prose rather than in the small caption voice the other plates use — it is there
+to be read, not to label.
+
+Under, not over, and that is the measurement rather than the preference: the
+slippers sit low and centre-left in the frame, and the only region clear enough
+to carry type is the pool water in the top left. Type placed there is legible at
+this crop and lands on the slippers at any narrower one — and this grammar keeps
+media in its own column with a caption and never bleeds type across it. Under
+the image is the version of "well placed" that survives every viewport.
+
+Two mechanics worth recording:
+
+* No `order` juggling: the plate is second in source and second on screen, so
+  the phone's stacking order is the reading order — title → claims →
+  photograph → summary. (It was briefly set left with `order: -1`, which worked
+  but meant the visual and source orders disagreed for no gain.)
+* The image ships as WebP at 1402w and 800w, in `preview-2/media/`, keeping this
+  build self-contained. No AVIF: there is no AVIF encoder on the machine this
+  was built on. At a high device-pixel-ratio a phone will pull the 1402w file
+  (123KB) rather than the 800w (49KB); a 1100w step would close that gap if it
+  matters.
+
+### One thing that went wrong
+
+Rebuilding chapter three by string index **deleted the entire press section** —
+the signature move — because the closing-tag sequence the edit searched for
+first occurred after it rather than inside it. It was restored from the last
+commit and verified identical to it, character for character, bar the one
+`data-ch` value this round had changed. Recorded because the lesson is general:
+index-based surgery on this file needs a structural check afterwards, not just a
+look at the part that was meant to change. Tag balance and the act list are both
+cheap to assert.
+
+---
+
+## Act types are re-decided on resize
+
+Reported as a display bug: on a narrow window, chapter three's summary paragraph
+was sliced to one line, its claims list cut off mid-item, and the next chapter's
+copy painted over the rest. Reproduced by loading at 1440×900 and dragging the
+window to 478 wide — chapter three stayed pinned, with a sticky, `overflow:
+clip` stage 850px tall holding 1069px of spread. Everything past the stage was
+unreachable.
+
+The cause was a caveat that had been written down and accepted twice in this
+file: *"an act type is read at mount, so a window resized short after load keeps
+the act it was given; the engine has the same limit."* That is not a caveat. It
+is content the reader cannot get to, and the note was describing the bug rather
+than the constraint.
+
+So the decision runs again on resize, debounced. Re-deciding means touching
+engine state, because the engine reads the act type once at mount too: an act
+object's `pinned` is what its `layout()` uses to decide whether to set the
+section's height in `vh`, and what its update loop uses to choose the pinned or
+the flow progress formula. `sc.acts` is published, so `unpin()` and `repin()`
+flip it there — along with the `.sc-stage` class, `.sc-act--pinned`, the inline
+height and the `data-sc-*` attributes — rather than editing the vendored engine.
+
+Two details that are load-bearing:
+
+* **The authored configuration is captured before anything demotes it.** A
+  promotion has to restore a device, a span and a dwell, and by the time it runs
+  the attributes carrying them are long gone.
+* **`decideActs()` restores everything to its authored state first, then demotes
+  what does not fit.** Measured in the flowed state the numbers are ~80px short,
+  because a flowed spread has had its block padding removed — chapters would be
+  promoted straight back into clipping. Both passes run inside one task, so
+  nothing paints between them.
+
+Verified in both directions: loaded at 1440×900 and dragged to 478 wide, all
+five chapters demote and no section loses a pixel; loaded at 375×667 and dragged
+to 1440×900, all five promote, the page returns to 20.6vh and the press still
+builds its 29 impressions with the counter tracking them.
+
+---
+
+## The turn is two full stops
+
+*"We thought there had to be a better way."* / *"So we redesigned them."* is the
+hinge the whole page pivots on — the sentence where the reader stops being told
+about a problem and starts being shown an answer. It was a two-line couplet in
+the foot of chapter one's figures column, arriving on one cue and read as a
+single block in about half a second. The page never paused on it.
+
+It was then tried as two beats *inside* chapter one, cued apart at 0.50 and 0.75
+of the pinned act, so each line landed alone on a screen the act was already
+holding still. That worked, and it kept the numbers on screen beside the lines —
+but the lines were still furniture at the foot of a column rather than the thing
+the page had stopped for.
+
+So each line gets a screen: two short pinned acts, span 1.5, one statement held
+dead still for about half a viewport of scrolling. It is the old intertitle
+device, taken off the chapter titles — where five of them spent 9.5 viewports
+naming things the folio already names — and spent on the one place it earns
+something. These two cost 3.0, and the page runs to **20.6vh**.
+
+**The ground changes between them, not at the chapter boundary after.** Clay is
+the problem's colour and white is the product's, so the hard cut lands on *"So
+we redesigned them."* — on the word that changes the story rather than on the
+structural seam a screen later. The folio turns with it, from THE PROBLEM | THE
+HOTEL SLIPPER to THE SOLUTION | THE NEVER-ENDING SLIPPER, and chapter two then
+opens on a ground the reader is already standing on.
+
+`turn1` and `turn2` are in `MUTABLE`, the resize machinery's list, even though a
+one-line statement fits any stage and neither is ever demoted in practice. The
+list is the page's only answer to "may this be pinned?", and a section exempt
+from it is a section nobody is checking.
+
+---
+
+## The product's name is the main hit
+
+*"The Never-Ending Slipper."* was set at `--sc-t-xl`, one step below *"Worn for
+moments, wasted forever."* — the page's product name smaller than the problem it
+solves. It is the thing the whole argument is built to deliver, so it is now the
+largest line on the page after the title.
+
+Chapter two is also the only chapter that can take the size. Every other marker
+has a headline under it to defer to; chapter two leads with a lede rather than a
+statement, so nothing is competing.
+
+### Why it is sized to its column instead of to the scale
+
+The name has a shape it has to keep. "Never-Ending" is one word with a hyphen in
+it, and a hyphen is a legal break, so **every step on the type scale broke the
+line there**: "The Never- / Ending Slipper." at 1440, and three lines —
+"The Never- / Ending / Slipper." — between roughly 1100 and 1350. `text-wrap:
+balance` actively preferred that break, because splitting at the hyphen is the
+most even split available.
+
+So the compound is held together (`.nb { white-space: nowrap }`) and the size is
+bound to the measure rather than picked off the scale:
+
+```
+font-size: clamp(var(--sc-t-2xl), 5.6vw, 4.9rem);
+```
+
+The floor is a chapter headline — whatever else happens, the product's name is
+never smaller than the problem it solves, which is where this started. The
+ceiling sits just under the 5rem the `3xl` step would have given it.
+
+The text column also changes hands: `.spread--media` was `1fr / 1.15fr` with the
+plate as the wider half and is now `1.15fr / 1fr`. The name wants about 650px at
+1440 to set "The Never-Ending" whole; the plate is a 16:10 frame that reads
+perfectly well at 565px.
+
+Verified by reading back the rendered line boxes, not by eye: at 1920 the name
+sets on one line; at 1300, 1150, 1000, 880 and 375 it sets as "The Never-Ending
+/ Slipper."; at 800 and 600, where the spread is a single column, it is one line
+again. It never breaks inside the compound at any width, and no chapter loses a
+pixel to its stage.
+
+---
+
 ## Open items
 
 Everything still open on preview 1 applies here, because the copy and the
@@ -470,7 +933,15 @@ assets are the same:
 4. Raptor V2 Premium unlicensed; Outfit Light stands in behind `--display`.
 5. No Instagram handle supplied.
 
-One item specific to this build: the folio uses spelled-out chapter words
-("One", "Two") rather than an `01 / 06` counter, which scroll-craft bans
-outright. If a numeral folio is wanted it should stay a book folio and never
-become an x-of-y progress readout.
+One item specific to this build: the folio labels chapters by their job in the
+argument ("The problem", "The solution") rather than by position, and it is now
+the only place that naming appears. It is not a
+counter and should not become one — scroll-craft bans an `01 / 06` x-of-y
+progress readout outright. If numerals are ever wanted they have to stay a book
+folio.
+
+A second item specific to this build: only **one** ask persists past the title
+page. If both should, the standing pill is the place to grow — a pair, or a
+two-item cluster that picks up its ink from the ground, never a full-width bar,
+which this grammar bans. Note that at 375px a second pill will not fit beside
+the first at the foot, so that change is a stack, not a row.

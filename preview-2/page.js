@@ -25,35 +25,149 @@
   var clamp = function (x, a, b) { return x < a ? a : x > b ? b : x; };
   var clamp01 = function (x) { return clamp(x, 0, 1); };
 
-  /* Mobile act types, set BEFORE mount because the engine reads them once.
+  /* ------------------------------------------------------------------------
+     ACT TYPES
 
-     A pinned act sticks a stage one viewport tall. On a phone these spreads
-     stack to well over that, so the bottom of a pinned stage is content the
-     reader can never scroll to: the press tail measured 1.54:1 there, not
-     because of colour but because it was pinned off-screen. Editorial pages
-     want to flow on a phone anyway. The scrub chapter stays pinned, because
-     pinning is how a scrub works at all.
+     A pinned act sticks a stage exactly one viewport tall, and that stage
+     CLIPS. So a spread taller than the stage is copy nobody can scroll to, and
+     whether a chapter may be pinned is one question asked two ways:
 
-     ch4, the mission, is here for the same reason and by the same measurement:
-     its spread clears a 390x844 stage by about ten pixels and does not fit a
-     375x667 one at all. Chapter one's story (ch1s) is NOT here - it is 0.55
-     viewports tall, so it pins on a phone with room to spare, and it is the
-     one full stop this change buys on mobile as well as on the desktop. */
-  /* One demotion path, so both callers below leave the page in the same state.
-     The .is-unpinned class is what the stylesheet keys off: a section that is
-     no longer pinned needs its vertical padding back and its spread has to stop
-     claiming a stage's height, and neither of those follows from the act
-     attribute alone once .press has overridden the padding rule. */
-  function unpin(id) {
+       1. Is it on the phone list? Chapters three, four and five stack to well
+          over a viewport on any phone, and an editorial page wants to flow
+          there anyway. (Chapter one is not on the list - it carries head, story
+          and both figures now, so it is a measurement, not a guess.)
+       2. Does its spread fit the stage? Measured, at any width.
+
+     ch2, the scrub chapter, is included and used to be exempt on the reasoning
+     that pinning is how a scrub works at all. True of the ENGINE's scrub
+     device; not true of this page, which has no [data-sc-scrub] or
+     [data-sc-sequence] in the markup at all - the spin is drawn by hand off
+     progress('ch2'), and progress() computes a flow act's p as readily as a
+     pinned one. The act type was buying the pin and nothing else, and at
+     375x667 the pin cost 133px of clipped copy.
+
+     THE STAGE IS NOT innerHeight. The engine sizes it `height: 100vh; height:
+     100svh`. On a phone innerHeight is the LARGE viewport - the one you get
+     with the browser chrome hidden - and 100svh is the small one, so measuring
+     against innerHeight overestimates the stage by about the height of an
+     address bar and lets that much content clip. Measured in an emulated
+     375x667 the two read 806 and 667. The smaller of the pair is the
+     conservative read, and conservative is the right direction: a chapter
+     flowed that could have been pinned loses a full stop, a chapter pinned that
+     does not fit loses copy behind `overflow: clip`.
+
+     This is re-decided ON RESIZE, and that is a fix rather than a refinement.
+     It used to run once, with a note saying a window resized after load keeps
+     the act it was given. That is not a caveat, it is broken content: load at
+     1440x900 and drag the window to 478 wide and chapter three stayed pinned
+     with a sticky, clipping 850px stage over 1069px of spread - the claims cut
+     off mid-list and the summary reduced to one sliced line with the next
+     chapter painted over the rest of it.
+
+     Re-deciding means touching engine state, because the engine reads the act
+     type once at mount too: the act object's `pinned` is what its layout uses
+     to decide whether to set the section's height, and its update loop uses to
+     choose the pinned or the flow progress formula. `sc.acts` is published, so
+     these flip it there rather than editing the vendored engine.
+     ---------------------------------------------------------------------- */
+  /* turn1 and turn2 are the two held beats between chapters one and two. They
+     carry one line each and fit any stage, so they are never demoted in
+     practice - they are in the list because the list is the page's only answer
+     to "may this be pinned?", and a section that is exempt from it is a section
+     nobody is checking. */
+  var MUTABLE    = ['ch1s', 'turn1', 'turn2', 'ch2', 'ch3', 'ch4', 'ch5'];
+  var PHONE_FLOW = ['ch3', 'ch4', 'ch5'];
+
+  /* Declared before the first unpin() call, not with the mount below: `var` is
+     hoisted as undefined, and unpin() indexes it. */
+  var byId = {};
+
+  /* The authored configuration, captured before anything demotes it, so a
+     promotion has something to restore. */
+  var authored = {};
+  MUTABLE.forEach(function (id) {
     var el = document.getElementById(id);
-    if (!el || el.getAttribute('data-sc-act') === 'flow') return;
-    el.setAttribute('data-sc-act', 'flow');
-    el.removeAttribute('data-sc-span');
-    el.classList.add('is-unpinned');
+    if (!el) return;
+    authored[id] = {
+      el: el,
+      device: el.getAttribute('data-sc-act') || 'flow',
+      span: el.getAttribute('data-sc-span'),
+      dwell: el.getAttribute('data-sc-dwell')
+    };
+  });
+
+  function stageVh() {
+    return Math.min(innerHeight, document.documentElement.clientHeight);
   }
 
-  if (matchMedia('(max-width: 860px)').matches) {
-    ['ch1n', 'ch3', 'ch4', 'ch5'].forEach(unpin);
+  /* Measured in whatever state the section is currently in, which works both
+     ways round: pinned, the spread is height:100% of the stage and scrollHeight
+     reports the overflow past it; flowed, scrollHeight is simply the content.
+     Either way the number is "how tall this chapter wants to be". */
+  function fits(id) {
+    var a = authored[id];
+    if (!a || a.device === 'flow') return true;
+    if (PHONE_FLOW.indexOf(id) !== -1 && matchMedia('(max-width: 860px)').matches) return false;
+    var inner = a.el.querySelector('[data-sc-stage] > *');
+    if (!inner) return true;
+    return inner.scrollHeight <= stageVh();
+  }
+
+  /* The .is-unpinned class is what the stylesheet keys off: a section that is
+     no longer pinned needs its vertical padding back and its spread has to stop
+     claiming a stage's height, and neither follows from the act attribute alone
+     once .press has overridden the padding rule. The rest undoes what the
+     engine did at mount. */
+  function unpin(id) {
+    var a = authored[id];
+    if (!a || a.el.getAttribute('data-sc-act') === 'flow') return;
+    var el = a.el;
+    el.setAttribute('data-sc-act', 'flow');
+    el.removeAttribute('data-sc-span');
+    /* Meaningless on a flow act, and left behind it would be a lie about what
+       the section does. */
+    el.removeAttribute('data-sc-dwell');
+    el.classList.add('is-unpinned');
+    el.classList.remove('sc-act--pinned');
+    var stage = el.querySelector('[data-sc-stage]');
+    if (stage) stage.classList.remove('sc-stage');
+    el.style.height = '';
+    var act = byId[id];
+    if (act) { act.pinned = false; act.device = 'flow'; act.span = 0; }
+  }
+
+  function repin(id) {
+    var a = authored[id];
+    if (!a || a.device === 'flow') return;
+    var el = a.el;
+    if (el.getAttribute('data-sc-act') === a.device) return;
+    el.setAttribute('data-sc-act', a.device);
+    if (a.span) el.setAttribute('data-sc-span', a.span);
+    if (a.dwell) el.setAttribute('data-sc-dwell', a.dwell);
+    el.classList.remove('is-unpinned');
+    el.classList.add('sc-act--pinned');
+    var stage = el.querySelector('[data-sc-stage]');
+    if (stage) stage.classList.add('sc-stage');
+    var act = byId[id];
+    if (act) {
+      act.pinned = true;
+      act.device = a.device;
+      act.span = parseFloat(a.span) || 1.5;
+      act.stage = stage;
+    }
+  }
+
+  /* Restore everything to its authored state first, then demote what does not
+     fit, so the measurement is always taken against the composition the page is
+     written for. Measured in the flowed state it would be ~80px short - a
+     flowed spread has had its block padding removed - and chapters would be
+     promoted straight back into clipping.
+
+     Both passes run inside one task, so nothing paints between them. */
+  function decideActs() {
+    MUTABLE.forEach(repin);
+    void document.body.offsetHeight;
+    MUTABLE.forEach(function (id) { if (!fits(id)) unpin(id); });
   }
 
   /* The press's state, declared up here rather than with the rest of section 2
@@ -74,43 +188,20 @@
      free to run this early. */
   buildStack();
 
-  /* The general form of the same rule, measured rather than guessed.
-
-     A pinned stage is exactly one viewport tall and it clips, so a spread that
-     does not fit one is content nobody can reach - and "fits" is not a property
-     of the phone, it is a property of the viewport. The mission spread clears a
-     1440x900 stage and overflows a 1366x768 laptop by 42px, which no width
-     breakpoint would have caught. So: measure the spread while it is still an
-     ordinary block (the engine has not mounted, so height:100% against an
-     unsized stage is still auto) and demote the act if it will not fit.
-
-     ch5, the peak, is in this list and was clipping before any of this change.
-     Measured as VISIBLE content outside the stuck stage, at the point in the act
-     where it has been revealed: 54px at 1366x768, 67px at 1280x720, 76px at
-     1024x700 - the closing "They\'re better for guests / businesses / the planet"
-     lines, revealed and then unreachable behind overflow:clip. 1440x900 was
-     always fine, and still is: the peak stays pinned there.
-
-     The cost when the guard does fire is real - the signature move drops from a
-     4.6 viewport pin to roughly 2.3 viewports of flow - but unreachable copy is
-     not a trade, and the peak already flows on every phone. If it should stay
-     pinned on a short laptop, the fix is to make its margin column fit (~660px,
-     barely scaling with viewport height), not to remove the guard.
-
-     Like the list above, this runs once. An act type is read at mount, so a
-     window resized short after load keeps the act it was given; the engine has
-     the same limit and the mobile switch has always had it. */
-  ['ch1s', 'ch1n', 'ch3', 'ch4', 'ch5'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (!el || el.getAttribute('data-sc-act') !== 'pin') return;
-    var inner = el.querySelector('[data-sc-stage] > *');
-    if (!inner || inner.scrollHeight <= innerHeight) return;
-    unpin(id);
-  });
+  /* The first decision, before mount, while the engine still reads the
+     attributes. */
+  decideActs();
 
   var sc = ScrollCraft.mount(document.body);
-  var byId = {};
   sc.acts.forEach(function (a) { if (a.el.id) byId[a.el.id] = a; });
+
+  /* And again on resize. Debounced, because a drag fires this continuously and
+     every pass re-measures five chapters. */
+  var reflow = null;
+  addEventListener('resize', function () {
+    clearTimeout(reflow);
+    reflow = setTimeout(function () { decideActs(); sc.layout(); }, 180);
+  }, { passive: true });
 
   function progress(id) {
     var a = byId[id];
@@ -145,17 +236,34 @@
      heading gets read as part of the headline, which is exactly the failure
      this replaces.
      ---------------------------------------------------------------------- */
+  /* The standing ask's state, declared here rather than with the rest of
+     section 5, because the folio's observer below reaches into it and a `var`
+     assigned later in the body is hoisted as undefined. It is the same reason
+     the press's state is declared early. */
+  var ask = document.getElementById('ask');
+  var onColophon = false;
+  var askShown = null;
   var folio = document.getElementById('folio');
   var fN = folio.querySelector('.folio__n');
   var fT = folio.querySelector('.folio__t');
   var current = null;
 
+  /* Keyed on the pair, not on the label alone. The labels stopped being unique
+     when they stopped being ordinals: the title page and the colophon both
+     carry an empty one, because neither is a step in the argument and neither
+     takes a label on the page either. Keyed on the label, the colophon would
+     have inherited whatever the title page left in the folio. */
   function setFolio(n, t) {
-    if (n === current) return;
-    current = n;
+    var key = n + '|' + t;
+    if (key === current) return;
+    current = key;
     folio.classList.add('is-turning');
     setTimeout(function () {
       fN.textContent = n; fT.textContent = t;
+      /* The label's separator rule is drawn on the label itself, so an empty
+         label has to take the rule with it rather than leave a hairline
+         floating in front of the title. */
+      folio.classList.toggle('is-unlabelled', !n);
       folio.classList.remove('is-turning');
     }, 180);
   }
@@ -169,11 +277,18 @@
       var best = null, bestR = 0;
       seen.forEach(function (r, el) { if (r > bestR) { bestR = r; best = el; } });
       if (best) setFolio(best.getAttribute('data-ch'), best.getAttribute('data-ch-t'));
-      // The colophon is Olive; the folio has to change ink with it.
-      /* The colophon chapter is now two sections, its intertitle and its body,
-         and both sit on olive. Test the ground, not the one class. */
-      folio.classList.toggle('on-dark', !!(best && (best.classList.contains('page--colophon') ||
-                                                    best.classList.contains('inter--olive'))));
+      // The colophon is Olive; the folio changes ink with it.
+      var dark = !!(best && best.classList.contains('page--colophon'));
+      folio.classList.toggle('on-dark', dark);
+      /* The standing ask retires when the real one arrives: on the colophon
+         both asks are set in the running text a few lines below it, and a pill
+         floating over them is the page asking twice. Ink is switched as well,
+         for the frames where olive is on screen but has not won yet. */
+      if (ask) {
+        ask.classList.toggle('on-dark', dark);
+        onColophon = dark;
+        syncAsk();
+      }
     }, { threshold: [0, 0.15, 0.35, 0.6, 0.9] });
     chapters.forEach(function (c) { io.observe(c); });
   }
@@ -369,6 +484,35 @@
   if (loopEl && !lite && 'IntersectionObserver' in window) {
     new IntersectionObserver(function (en) { loopLive(en[0].isIntersecting); },
       { rootMargin: '20% 0px' }).observe(loopEl);
+  }
+
+  /* ------------------------------------------------------------------------
+     5. THE STANDING ASK
+     The page's one persistent control, and it is the ask itself rather than a
+     way back to it. It was a back-to-top chevron, which is navigation where
+     this page needs action: a reader convinced at chapter three had twelve
+     viewports to scroll before they could do anything about it.
+
+     Hidden in two places. On the title page, where the real pair is on screen
+     and this would be a third copy of one of them; and on the colophon, where
+     the asks are set in the running text (see the folio observer above).
+
+     Nothing here manages the tab order: the hidden state is `visibility:
+     hidden`, which takes the link out of it already, and the transition steps
+     that property rather than easing it so the link is never focusable while
+     it is invisible.
+     ---------------------------------------------------------------------- */
+  function syncAsk() {
+    if (!ask) return;
+    var want = scrollY > innerHeight * 0.75 && !onColophon;
+    if (want === askShown) return;
+    askShown = want;
+    ask.classList.toggle('is-on', want);
+  }
+
+  if (ask) {
+    addEventListener('scroll', syncAsk, { passive: true });
+    syncAsk();
   }
 
   /* ------------------------------------------------------------------------ */
