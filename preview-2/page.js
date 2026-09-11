@@ -3,10 +3,10 @@
    Chaptered editorial. Written against the engine's published act geometry;
    the engine in ./engine/ is vendored and never edited.
 
-     1. The folio    the navigation: one line in the margin, naming the chapter
-     2. The reprint  the signature move, in chapter five
-     3. The spin     chapter two's media plate, the one scrub this grammar allows
-     4. The loop     a small captioned plate in the peak's margin
+     1. The reprint  the signature move, in chapter five
+     2. The spin     chapter two's media plate, the one scrub this grammar allows
+     3. The loop     a small captioned plate in the peak's margin
+     4. The figures  70,000 and 120,000,000, ticking on entry rather than on scroll
 
    Assets are local: ./spin and ./media. This build is self-contained and can be
    moved, deployed or deleted without touching /preview/. They were shared with
@@ -76,7 +76,20 @@
      to "may this be pinned?", and a section that is exempt from it is a section
      nobody is checking. */
   var MUTABLE    = ['ch1s', 'turn1', 'turn2', 'ch2', 'ch3', 'ch4', 'ch5'];
-  var PHONE_FLOW = ['ch3', 'ch4', 'ch5'];
+  /* ch2 is on this list because of a measurement, not a composition. Its spread
+     was 11px over a 390x844 stage and stayed pinned on taller phones, so the
+     page held in different places on different devices - the cause of the half
+     join into chapter three. Reclaiming the folio's 27px of clearance tipped it
+     the other way and it began pinning on a 390 phone too. Either way it is the
+     wrong answer: the phone holds on the two turns and nothing else, by rule
+     rather than by whichever way a measurement happens to fall.
+
+     ch1s is here for the same reason and it is the same story: 919px of content
+     clears a 932px stage on a large phone and not a 844px one, so it held on
+     some phones and not others. The list is now every content chapter, which is
+     the rule stated plainly - on a phone, the only things that hold are the two
+     turns, because they are the only two short enough to hold anywhere. */
+  var PHONE_FLOW = ['ch1s', 'ch2', 'ch3', 'ch4', 'ch5'];
 
   /* Declared before the first unpin() call, not with the mount below: `var` is
      hoisted as undefined, and unpin() indexes it. */
@@ -176,7 +189,6 @@
      it hit `if (!stack) return` and silently built nothing. */
   var IMPRESSIONS = 30;
   var stack = document.getElementById('stack');
-  var counter = document.getElementById('impression');
   var marks = [];
   var lastShown = -1;
 
@@ -229,72 +241,15 @@
     }).observe(document.body);
   }
 
-  /* ------------------------------------------------------------------------
-     1. THE FOLIO
-     This grammar has no bar. One line in the margin says which chapter you are
-     reading, and it is the only place either world is named: an eyebrow over a
-     heading gets read as part of the headline, which is exactly the failure
-     this replaces.
+  /* Section 1 was the folio, and then the chapter observer that outlived it to
+     hand the standing ask off at the colophon. Both are gone: the page carries
+     no running label and no persistent control, so there is nothing here to
+     observe, and the data-ch / data-ch-t attributes the observer read have been
+     removed from the markup with it.
      ---------------------------------------------------------------------- */
-  /* The standing ask's state, declared here rather than with the rest of
-     section 5, because the folio's observer below reaches into it and a `var`
-     assigned later in the body is hoisted as undefined. It is the same reason
-     the press's state is declared early. */
-  var ask = document.getElementById('ask');
-  var onColophon = false;
-  var askShown = null;
-  var folio = document.getElementById('folio');
-  var fN = folio.querySelector('.folio__n');
-  var fT = folio.querySelector('.folio__t');
-  var current = null;
-
-  /* Keyed on the pair, not on the label alone. The labels stopped being unique
-     when they stopped being ordinals: the title page and the colophon both
-     carry an empty one, because neither is a step in the argument and neither
-     takes a label on the page either. Keyed on the label, the colophon would
-     have inherited whatever the title page left in the folio. */
-  function setFolio(n, t) {
-    var key = n + '|' + t;
-    if (key === current) return;
-    current = key;
-    folio.classList.add('is-turning');
-    setTimeout(function () {
-      fN.textContent = n; fT.textContent = t;
-      /* The label's separator rule is drawn on the label itself, so an empty
-         label has to take the rule with it rather than leave a hairline
-         floating in front of the title. */
-      folio.classList.toggle('is-unlabelled', !n);
-      folio.classList.remove('is-turning');
-    }, 180);
-  }
-
-  var chapters = [].slice.call(document.querySelectorAll('[data-ch]'));
-  if ('IntersectionObserver' in window) {
-    var seen = new Map();
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { seen.set(e.target, e.intersectionRatio); });
-      // The chapter occupying the most of the screen owns the folio.
-      var best = null, bestR = 0;
-      seen.forEach(function (r, el) { if (r > bestR) { bestR = r; best = el; } });
-      if (best) setFolio(best.getAttribute('data-ch'), best.getAttribute('data-ch-t'));
-      // The colophon is Olive; the folio changes ink with it.
-      var dark = !!(best && best.classList.contains('page--colophon'));
-      folio.classList.toggle('on-dark', dark);
-      /* The standing ask retires when the real one arrives: on the colophon
-         both asks are set in the running text a few lines below it, and a pill
-         floating over them is the page asking twice. Ink is switched as well,
-         for the frames where olive is on screen but has not won yet. */
-      if (ask) {
-        ask.classList.toggle('on-dark', dark);
-        onColophon = dark;
-        syncAsk();
-      }
-    }, { threshold: [0, 0.15, 0.35, 0.6, 0.9] });
-    chapters.forEach(function (c) { io.observe(c); });
-  }
 
   /* ------------------------------------------------------------------------
-     2. THE REPRINT  (chapter five, the peak)
+     1. THE REPRINT  (chapter five, the peak)
      The chapter prints itself again, and again. Each impression is set smaller
      and tighter than the last and stepped across the sheet, so the repetitions
      stack like proofs coming off a press. The smallest ones stop being
@@ -334,24 +289,22 @@
     var p = progress('ch5');
     /* Front-loaded: the run is complete well before the chapter ends, so the
        tail copy has a settled block to sit against rather than a moving one. */
-    /* marks holds impressions two upward; impression one is the cued .press__first
-       in the markup, so the readout is marks-shown + 1 and matches what is on
-       screen. The cascade starts at 0.12 rather than 0, AFTER impression one has
-       finished arriving (cued 0.05..0.10): started at 0 it raced its own first
-       line, and four impressions were already down before the setup sentence
-       that leads them was legible. */
+    /* marks holds impressions two upward; impression one is the cued
+       .press__first in the markup. The cascade starts at 0.12 rather than 0,
+       AFTER impression one has finished arriving (cued 0.05..0.10): started at
+       0 it raced its own first line, and four impressions were already down
+       before the setup sentence that leads them was legible. */
     var START = 0.12, END = 0.78;
     var n = Math.round(clamp01((p - START) / (END - START)) * marks.length);
     if (n === lastShown) return;
     for (var i = 0; i < marks.length; i++) {
       marks[i].style.opacity = i < n ? '1' : '0';
     }
-    if (counter) counter.textContent = String(n + 1);
     lastShown = n;
   }
 
   /* ------------------------------------------------------------------------
-     3. THE SPIN  (chapter two)
+     2. THE SPIN  (chapter two)
      ---------------------------------------------------------------------- */
   var COUNT = 87;
   var TIERS = [720, 1024, 1440];
@@ -451,7 +404,7 @@
   }
 
   /* ------------------------------------------------------------------------
-     4. THE LOOP
+     3. THE LOOP
      A small captioned plate in the peak's margin. It never goes full-bleed:
      this grammar keeps media in its own column, which is the clearest single
      difference from preview 1's ending.
@@ -487,32 +440,74 @@
   }
 
   /* ------------------------------------------------------------------------
-     5. THE STANDING ASK
-     The page's one persistent control, and it is the ask itself rather than a
-     way back to it. It was a back-to-top chevron, which is navigation where
-     this page needs action: a reader convinced at chapter three had twelve
-     viewports to scroll before they could do anything about it.
+     4. THE FIGURES
+     70,000 and 120,000,000 tick once, on their own, when they come into view.
 
-     Hidden in two places. On the title page, where the real pair is on screen
-     and this would be a third copy of one of them; and on the colophon, where
-     the asks are set in the running text (see the folio observer above).
+     They used to be the engine's [data-sc-count], scrubbed across a window of
+     chapter one's pinned act: the value climbed only while the reader kept
+     scrolling, and only arrived if they scrolled far enough. That makes the
+     reader perform the animation. It reads well with a flick and badly with
+     everything else - a trackpad nudge, a wheel click, a thumb dragged short -
+     and it is the sort of thing that makes a long page feel like work. A figure
+     is a fact, not a reward for scrolling.
 
-     Nothing here manages the tab order: the hidden state is `visibility:
-     hidden`, which takes the link out of it already, and the transition steps
-     that property rather than easing it so the link is never focusable while
-     it is invisible.
+     The engine has exactly this behaviour built in, and it cannot be used here:
+     its entry-counter path takes only counters that are NOT inside an act
+     (`!c.closest('[data-sc-act]')`), and both of these live inside chapter one.
+     There is no attribute to opt a counter out of scrubbing, and the engine is
+     vendored and never edited - so this is the engine's own idea, reimplemented
+     on our side of the line, against our own attribute so the engine ignores it.
+
+     The target is authored in the markup exactly as it should render, commas
+     and all, and the template drives the formatting - the same contract the
+     engine's counters use.
      ---------------------------------------------------------------------- */
-  function syncAsk() {
-    if (!ask) return;
-    var want = scrollY > innerHeight * 0.75 && !onColophon;
-    if (want === askShown) return;
-    askShown = want;
-    ask.classList.toggle('is-on', want);
+  var figures = [].slice.call(document.querySelectorAll('[data-count-to]'));
+
+  function countFmt(v, tpl) {
+    var out = String(Math.round(v));
+    if (tpl.indexOf(',') > -1) out = out.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return out;
   }
 
-  if (ask) {
-    addEventListener('scroll', syncAsk, { passive: true });
-    syncAsk();
+  function runCount(el) {
+    var tpl = el.getAttribute('data-count-to') || '0';
+    var to = parseFloat(tpl.replace(/,/g, '')) || 0;
+    var ms = parseFloat(el.getAttribute('data-count-ms')) || 1600;
+    /* Reduced motion gets the number, not the performance. */
+    if (reduce || ms <= 0) { el.textContent = countFmt(to, tpl); return; }
+    var t0 = null, last = null;
+    function frame(now) {
+      if (t0 === null) t0 = now;
+      var t = Math.min((now - t0) / ms, 1);
+      /* Cubic ease-out: fast enough at the start to read as a count rather than
+         a crawl, and slow at the end so the value lands rather than stopping. */
+      var out = countFmt(to * (1 - Math.pow(1 - t, 3)), tpl);
+      if (out !== last) { el.textContent = out; last = out; }
+      if (t < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  if (figures.length) {
+    if ('IntersectionObserver' in window) {
+      var fio = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          runCount(e.target);
+          fio.unobserve(e.target);
+        });
+        /* Fires once per figure and then stops watching it: a number that
+           re-runs every time it scrolls back into view is a distraction, and
+           the second reading is never the one that matters. */
+      }, { rootMargin: '0px 0px -10% 0px', threshold: 0.5 });
+      figures.forEach(function (el) { fio.observe(el); });
+    } else {
+      figures.forEach(function (el) {
+        el.textContent = countFmt(parseFloat((el.getAttribute('data-count-to') || '0').replace(/,/g, '')) || 0,
+                                  el.getAttribute('data-count-to') || '0');
+      });
+    }
   }
 
   /* ------------------------------------------------------------------------ */

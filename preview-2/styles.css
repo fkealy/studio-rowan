@@ -6,9 +6,10 @@
    grounds, never an interpolation. Media sits in its own column with a
    caption and never bleeds under type.
 
-   No fixed bar. The folio in the margin is the navigation, and it is also
-   where the naming of each world lives, so a heading never has to carry an
-   eyebrow that can be mistaken for part of the headline.
+   No fixed bar, and now no folio either. The page carries no running label at
+   all: the ground, the headline and the order of the argument are what say
+   where you are. A heading still never carries an eyebrow that can be mistaken
+   for part of the headline.
 
    Signature move: THE REPRINT (see .press, and page.js).
    Engine in ./engine/ is vendored and never edited.
@@ -70,29 +71,6 @@ a { color: inherit; }
 }
 .skip:focus { top: .75rem; }
 
-/* ------------------------------------------------------------------ folio --
-   The navigation. One line, in the margin, naming the chapter you are in.
-   Not a bar: no wordmark, no CTA, no full width. It updates as chapters pass.
-   -------------------------------------------------------------------------- */
-.folio {
-  position: fixed; left: var(--margin); bottom: clamp(1rem, 3vh, 2rem);
-  z-index: 40; display: flex; align-items: baseline; gap: .7rem;
-  font-size: var(--sc-t-xs); letter-spacing: .07em; text-transform: uppercase;
-  color: var(--sc-ink-soft); pointer-events: none;
-  transition: color var(--sc-d-slow) var(--sc-ease-out);
-}
-.folio__n {
-  padding-right: .7rem; border-right: 1px solid var(--hair);
-  color: var(--onyx);
-}
-/* The title page and the colophon carry no label - neither is a step in the
-   argument - so the separator goes with it. */
-.folio.is-unlabelled .folio__n { display: none; }
-.folio__t { transition: opacity var(--sc-d-base) var(--sc-ease-out); }
-.folio.is-turning .folio__t { opacity: 0; }
-.folio.on-dark { color: color-mix(in oklab, var(--hemp) 80%, transparent); }
-/* .folio__n pins itself to --onyx, which is all but invisible on olive. */
-.folio.on-dark .folio__n { color: var(--ivory); border-right-color: color-mix(in oklab, var(--ivory) 30%, transparent); }
 
 /* --------------------------------------------------------------- top asks --
    The two CTAs, top right, on the title page and nowhere else. Out of flow, so
@@ -124,60 +102,6 @@ a { color: inherit; }
   .topcta__a--key:hover { border-color: var(--apricot); color: var(--onyx); }
 }
 @media (max-width: 480px) { .topcta { font-size: var(--sc-t-xs); gap: .75rem; } }
-
-/* -------------------------------------------------------- the standing ask --
-   The only persistent thing on the page besides the folio, and it is the ask
-   itself rather than a way back to it: a chevron returning the reader to the
-   top delivered navigation where the page needed action.
-
-   It is literally the title page's pill - same classes, same hairline, same
-   size - so it reads as that object having stayed put rather than as a second
-   piece of furniture. One ask, not two: "Get in touch" is the vaguer of the
-   pair and is already set in the colophon's running text and its masthead, so
-   what persists is the specific, low-commitment one.
-   -------------------------------------------------------------------------- */
-.ask {
-  position: fixed; z-index: 40;
-  top: clamp(1rem, 3vh, 2rem); right: var(--margin);
-  background: color-mix(in oklab, var(--ivory) 72%, transparent);
-  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-  font-size: var(--sc-t-sm);
-  opacity: 0; visibility: hidden; transform: translateY(-.4rem);
-  transition: opacity var(--sc-d-base) var(--sc-ease-out),
-              transform var(--sc-d-base) var(--sc-ease-out),
-              visibility var(--sc-d-base) step-end,
-              border-color var(--sc-d-base) var(--sc-ease-out),
-              color var(--sc-d-base) var(--sc-ease-out),
-              background-color var(--sc-d-base) var(--sc-ease-out);
-}
-.ask.is-on {
-  opacity: 1; visibility: visible; transform: none;
-  transition-timing-function: var(--sc-ease-out), var(--sc-ease-out), step-start,
-                              var(--sc-ease-out), var(--sc-ease-out), var(--sc-ease-out);
-}
-/* The colophon is the one ground this should never be seen over, because the
-   asks are set in its own copy - so the ink here is insurance for the frames
-   where olive is on screen but hemp still owns it, not the normal case. */
-.ask.on-dark {
-  color: var(--ivory);
-  border-color: color-mix(in oklab, var(--ivory) 34%, transparent);
-  background: color-mix(in oklab, var(--olive) 72%, transparent);
-}
-/* Below ~700px the top-right corner is not free: every chapter opens with its
-   head on that line, and "The Never-Ending Slipper." - the longest of them -
-   reaches x=410 in a 600px viewport while the pill starts at 418. Measured at
-   700px there is ~70px of clearance and below it there is none, so that is the
-   move, not a phone breakpoint.
-
-   It goes to the foot instead, which is where a thumb is anyway, and sits one
-   line above the folio rather than beside it: side by side at this width the
-   folio's chapter title runs to within 10px of the pill. */
-@media (max-width: 700px) {
-  .ask {
-    font-size: var(--sc-t-xs);
-    top: auto; bottom: clamp(2.9rem, 8vh, 4.25rem);
-  }
-}
 
 /* ------------------------------------------------------------------- type -- */
 .d {
@@ -257,12 +181,12 @@ a { color: inherit; }
 }
 /* There is no label line on the page any more. It named the job each chapter
    does in the argument - problem, solution, proof, studio - and that naming has
-   moved wholly into the folio, which is this grammar's designated place for it:
-   one line in the margin, always on, never inside a heading where it can be
-   read as part of one. On the page it was a second, smaller thing above the
-   title that the title then had to be sized around. Gone, the title can simply
-   be the size it wants. (.chapter__n is still written by the folio's own
-   markup - see .folio__n.) */
+   moved into the folio, and has since gone with it: the page no longer names
+   the job anywhere. On the page it was a second, smaller thing above the title
+   that the title then had to be sized around. Gone, the title can simply be
+   the size it wants. The naming itself - problem, solution, proof, studio - is
+   no longer anywhere in the markup either: it lived on in data-ch attributes
+   after the folio went, and those went too once nothing read them. */
 /* Set below the chapter's own headline, deliberately. A marker names; the
    headline speaks. Sized level with the headline the page would have read as
    five titles. */
@@ -521,14 +445,6 @@ a { color: inherit; }
   grid-column: 2; display: grid; gap: var(--sc-5);
   border-left: 1px solid var(--hair); padding-left: clamp(1rem, 2.5vw, 2rem);
 }
-.press__count {
-  font-family: var(--display); font-weight: 300; font-size: var(--sc-t-2xl);
-  line-height: 1; font-variant-numeric: tabular-nums;
-}
-.press__rule {
-  font-size: var(--sc-t-xs); letter-spacing: .06em; text-transform: uppercase;
-  color: var(--sc-ink-soft); max-width: 22ch;
-}
 .plate--small video { width: 100%; height: auto; max-height: 26vh; object-fit: cover; }
 .press__tail {
   display: grid; gap: var(--sc-4); padding-top: var(--sc-5);
@@ -584,7 +500,70 @@ a.run {
   /* Flowing on a phone, so the stack sizes to its content. */
   .press__stack { min-height: 0; }
   .press__tail { border-top: 1px solid var(--hair); }
-  .folio { font-size: 10px; }
+
+
+  /* The breath between chapters. In two columns a spread's own width does the
+     separating: a chapter is a shape, and the next chapter is a different one.
+     Stacked into one column every chapter is the same measure as the one
+     before it, and the ~89px this padding resolved to on a phone was not a
+     long enough pause to say a new chapter had started. Worst at the join from
+     chapter three into the peak, where both grounds are ivory and there is no
+     colour change to carry the break.
+
+     Same air at every join, whether or not the ground changes, so the pause is
+     the page's and not the palette's. Pinned sections are excluded: a beat's
+     stage IS the viewport, and padding on the section would push its one line
+     off the centre it is composed on. */
+  .page:not([data-sc-act="pin"]):not([data-sc-act="scrub"]) {
+    padding-block: clamp(5.5rem, 15vh, 9.5rem);
+  }
+
+  /* THE PHONE'S FULL STOPS ARE MADE BY THE SCROLLER, NOT BY PINNING.
+
+     A pinned act can only hold what fits one stage, and a phone stage is 844px
+     against chapters that need 855 to 1342. That is arithmetic, not tuning: the
+     two turns hold because they are 57px and 30px of content, short by
+     construction. Everything else on the page is a whole spread, and a whole
+     spread never fits a phone. Chasing stops by trimming chapters until they
+     clear the stage buys a page that holds in different places on different
+     phones, which is the fault we just spent two rounds removing.
+
+     So the pause comes from somewhere else entirely. The scroller itself is
+     given a rhythm: every chapter is a snap point, and a flick comes to REST at
+     the head of a chapter instead of drifting to a stop wherever momentum ran
+     out. It is a pause made of where the page stops moving rather than of a
+     stage held still, so it costs no viewports of scroll, needs nothing to fit
+     anything, and works the same on every chapter regardless of height.
+
+     It also compounds with the pinned acts rather than fighting them: a snap
+     point at a pinned section's top IS its held composition, so flicking into
+     chapter three now rests exactly on the frame it holds.
+
+     `proximity`, never `mandatory`. Mandatory snapping forces a rest at every
+     point, and on the sections taller than the viewport - the peak at 1521px,
+     the colophon at 1048 - that would take away the reader's ability to stop
+     mid-chapter and read. Proximity only settles a flick that already ended
+     near a chapter head. scroll-snap-stop is left at `normal` on purpose too,
+     so one long flick can still cross several chapters; `always` would ration
+     the page out one chapter per gesture.
+
+     The engine already uses proximity snapping on its horizontal pan rail, so
+     this is the same instrument pointed down the page. Scoped to the phone:
+     on desktop the pinned acts are the rhythm and there is nothing to add. */
+  html { scroll-snap-type: y proximity; }
+  /* Flowed chapters only. A pinned act already IS a pause, and it is much
+     taller than the viewport with its content at the top, so a snap point at
+     its head is one the reader has to be pulled backwards to or forwards past:
+     coming to rest anywhere inside a held beat, the nearest snap point is the
+     NEXT chapter, and proximity snapping will finish the gesture for you and
+     cut the hold short. Snapping is for the sections that do not hold. */
+  .page:not([data-sc-act="pin"]):not([data-sc-act="scrub"]) { scroll-snap-align: start; }
+
+  /* The doubled join that used to live here is gone with the thing that needed
+     it. It gave the section after chapter two the whole join on its own,
+     because a scrub-pinned chapter two contributed no padding to it. Chapter
+     two is on the phone-flow list now and never pins at this width, so both
+     sides of every join are flowed sections paying half each. */
 }
 
 
@@ -600,11 +579,14 @@ a.run {
 /* The spread fills the stage again, now that the marker lives inside it rather
    than in a row above it.
 
-   The block padding is asymmetric, and the bottom half of it is not taste. The
-   folio is fixed at the bottom-left of the viewport, and a chapter that fills
-   its stage sets its last line straight through it - chapter one's closing
-   couplet was printing over "THE PROBLEM / THE HOTEL SLIPPER". The foot of the
-   frame has to clear the furniture standing in it. */
+   The block padding is symmetric again. It used to carry an extra ~27px at the
+   foot to clear the folio, which was fixed at the bottom-left of the viewport
+   and which a chapter filling its stage would set its last line straight
+   through - chapter one's closing couplet printed over "THE PROBLEM / THE
+   HOTEL SLIPPER". With the folio gone there is no furniture standing in the
+   frame, so the clearance goes with it: content that is centred in the stage
+   is now actually centred, and the stage budget gets the 27px back, which the
+   two chapters measuring exactly 900/900 can use. */
 .spread--media,
 .spread--claims,
 .spread--story,
@@ -612,7 +594,7 @@ a.run {
 .spread--press {
   height: 100%;
   align-content: center;
-  padding-block: clamp(1rem, 3vh, 2.5rem) clamp(2.75rem, 6vh, 4rem);
+  padding-block: clamp(1rem, 3vh, 2.5rem);
 }
 /* The press carries more in its margin column than the other spreads, so it
    gets a tighter frame: measured at 922px inside a 900px stage, which put the
@@ -624,11 +606,12 @@ a.run {
    Short laptops are a different problem and not a padding one: 54-76px of the
    closing "better for..." lines sat outside the stage there, revealed and
    unreachable behind overflow:clip. That is the guard's job, not this rule's. */
-/* The peak keeps a symmetric, tight frame and does NOT take the folio
-   clearance the other spreads take: its impressions cascade to the middle of
-   the sheet, not to the bottom-left corner, so there is nothing down there to
-   clear - and 45px of padding it does not need is 45px that flows the
-   signature move at the size the page is composed for. */
+/* The peak keeps its own tighter frame. It never took the folio clearance the
+   other spreads used to take - its impressions cascade to the middle of the
+   sheet, not to the bottom-left corner - and now that the clearance is gone
+   everywhere, this rule is simply the peak asking for less padding than the
+   others: 45px it does not need is 45px that flows the signature move at the
+   size the page is composed for. */
 .spread--press { padding-block: clamp(.35rem, 1vh, 1rem); gap: clamp(1.5rem, 4vw, 3.5rem); }
 .spread--press .press__margin { gap: clamp(.7rem, 1.6vh, 1rem); }
 
@@ -637,8 +620,14 @@ a.run {
      So does the mission: its spread is within ~10px of a 390x844 stage and
      taller than a 375x667 one, and a pinned stage clips what will not fit.
      Chapter one's story stays pinned on a phone - it is 0.55 viewports tall,
-     with room to spare on the shortest screen we check. */
+     with room to spare on the shortest screen we check.
+
+     Chapter three was briefly taken off the phone-flow list so it could hold
+     here, with the poolside plate moved out of its stage to make it fit. That
+     is reverted: the snap rule above gives the phone its pause without needing
+     anything to fit a stage, which is the better trade. */
   .spread--claims, .spread--press, .spread--quiet { height: auto; align-content: start; }
+
 }
 /* A section demoted to flow - by the phone list or by the measured guard, both
    of which go through unpin() - gets its section padding back and must stop

@@ -24,25 +24,24 @@
 
 <a class="skip" href="#main">Skip to content</a>
 
-<!-- The folio. No fixed bar, by grammar: one line in the margin naming the
-     chapter you are in, updating as chapters pass. This is where the "which
-     world is this?" label belongs, permanently and unambiguously, rather than
-     as an eyebrow over a heading where it reads as part of the headline. -->
-<p class="folio" id="folio" aria-hidden="true"><span class="folio__n">Title</span><span class="folio__t">Studio Rowan</span></p>
-
 <main id="main">
 
   <!-- ===================================================== TITLE PAGE
        Type on the paper ground. No media above the fold: the media starts
        in chapter one. Not centred, by grammar. -->
-  <section class="page page--title" data-sc-act="flow" data-ch="" data-ch-t="Studio Rowan" aria-labelledby="t">
+  <section class="page page--title" data-sc-act="flow" aria-labelledby="t">
 
-    <!-- The asks, top right, on the title page only. Not a fixed bar: this
+    <!-- One ask, top right, on the title page only. Not a fixed bar: this
          grammar has none, and a bar riding over five hard-cut grounds has to
-         restate its ink on each. What persists instead is the second of these
-         pills, standing still: see the #ask element below the page. -->
+         restate its ink on each. Nothing persists past this screen either - the
+         standing pill that used to follow the reader down the page is gone.
+
+         "Get in touch" went with it. It was the vaguer of the two and it is
+         already set twice in the colophon, in the running text and in the
+         masthead, so on the title page it was a second, softer ask competing
+         with the specific one next to it. The page asks once here and once at
+         the end, and the end is where the reader has a reason to answer. -->
     <nav class="topcta" aria-label="Primary">
-      <a class="topcta__a" href="mailto:hi@studiorowan.com?subject=Working%20with%20Studio%20Rowan">Get in touch</a>
       <a class="topcta__a topcta__a--key" href="mailto:hi@studiorowan.com?subject=Sample%20request">Request a sample</a>
     </nav>
 
@@ -69,15 +68,16 @@
        presents facts. So: the narrative runs continuously down the lead
        column, and the two numbers stand alone in their own column as the
        figures they are. -->
-  <section class="page page--clay" data-sc-act="pin" data-sc-span="3.0" id="ch1s" data-ch="The problem" data-ch-t="The hotel slipper" aria-labelledby="c1">
+  <section class="page page--clay" data-sc-act="pin" data-sc-span="2.2" id="ch1s" aria-labelledby="c1">
     <div data-sc-stage>
       <div class="spread spread--story">
-        <div class="spread__lead">
-          <header class="chapter" data-sc-in>
+        <!-- One arrival, same reasoning as the mission below. -->
+        <div class="spread__lead" data-sc-in>
+          <header class="chapter">
             <h2 class="chapter__t" id="c1">The hotel slipper.</h2>
           </header>
-          <h3 class="d d--md" data-sc-in>Worn for moments, wasted forever.</h3>
-          <div class="prose" data-sc-in data-sc-stagger="70">
+          <h3 class="d d--md">Worn for moments, wasted forever.</h3>
+          <div class="prose">
             <p>It was summertime in the Swiss Alps. The moon was shining, and the campfire was crackling. A group of friends sat by a lake, beers in hand, chatting about work. One of them managed a hotel and mentioned, almost in passing, that the hotel got through 70,000 pairs of disposable slippers a year.</p>
             <p><strong>70,000 pairs.</strong> Used once, often for a matter of minutes, and thrown away. It was one of those numbers that was difficult to forget about.</p>
             <p>So, once back in the UK, we reached out to hotels and spas and quickly realised that this was not an isolated issue. Disposable slippers are used in enormous quantities across the hospitality industry.</p>
@@ -85,20 +85,31 @@
         </div>
 
         <!-- Figures, and nothing but: each is a number and what it counts.
-             They are still cued rather than revealed on entry, because a
-             counter has to be on screen before it runs: cued, the figure
-             arrives as the pin engages and the number climbs while the page
-             is held still, which is the only way the value lands.
 
-             The couplet that used to close this column is two held screens of
-             its own now; see below. -->
+             THESE NUMBERS ARE NOT DRIVEN BY SCROLL. They used to be: the engine
+             scrubbed each one across a window of the pinned act, so the value
+             only climbed while the reader kept scrolling and only reached its
+             target if they scrolled far enough. That asks the reader to perform
+             the animation. It suits a flick and punishes everything else - a
+             trackpad nudge, a mouse wheel, a thumb dragged short - and it is
+             the kind of thing that makes a long page feel like work.
+
+             They tick once, on their own, when they come into view. page.js
+             owns that (see THE FIGURES); the engine's own entry-counter path
+             only applies to counters outside an act, and these are inside one.
+
+             Uncued for the same reason the turns are: a cue holds an element at
+             zero for the whole of a pinned stage's entry slide, so a figure
+             that ticks on entry would have run its whole count behind an
+             invisible element and be sitting on its final value by the time it
+             appeared. Present from the moment the act is. -->
         <div class="spread__figs">
-          <div class="fig" data-sc-cue="0 1 0.05 0">
-            <p class="fig__n" data-sc-count="0 70,000" data-sc-count-at="0.08 0.44">0</p>
+          <div class="fig">
+            <p class="fig__n" data-count-to="70,000">0</p>
             <p class="fig__r">Pairs binned by one hotel, in one year</p>
           </div>
-          <div class="fig" data-sc-cue="0.06 1 0.05 0">
-            <p class="fig__n fig__n--soft" data-sc-count="0 120,000,000" data-sc-count-at="0.14 0.5">0</p>
+          <div class="fig">
+            <p class="fig__n fig__n--soft" data-count-to="120,000,000">0</p>
             <p class="fig__r">Pairs sent to landfill in America, every year</p>
             <cite>Figure not yet sourced. Carried for this preview only.</cite>
           </div>
@@ -119,37 +130,64 @@
        So each line gets a screen and the page holds still on it. This is the
        device that came off the chapter titles, spent on the one place it earns
        something: five intertitles cost 9.5 viewports to name things the folio
-       already names, and these two cost 3.0 to land the argument's turn.
+       named anyway (the folio has since gone too), and these two cost 3.0 to
+       land the argument's turn.
 
        The ground changes BETWEEN them, not at the chapter boundary after. Clay
        is the problem's colour and white is the product's, so the hard cut lands
        on "So we redesigned them." - on the word that changes the story rather
-       than on the structural seam a screen later. The folio turns with it. -->
-  <section class="page beat beat--clay" data-sc-act="pin" data-sc-span="1.5" id="turn1" data-ch="The problem" data-ch-t="The hotel slipper">
+       than on the structural seam a screen later. -->
+  <!-- UNCUED, and this is the whole point of the beat. A cue is clamped to p=0
+       for the stage's entire entry slide, so the cued version spent a viewport
+       of scrolling on an empty ground, blinked the line on for 422px, and took
+       it away again: the line was on screen for 20% of the 2110px the beat
+       cost, and "flash and disappear" is exactly what that is. Uncued, the line
+       is painted for the whole time the stage is on screen. It rides up into
+       the frame, stops dead, and rides off - and the stopping is the full stop,
+       rather than a fade standing in for one.
+
+       This is the same fault, and the same fix, as the press's setup line: see
+       "The press printed its echo before its setup". The rule is worth stating
+       once more - on a pinned act, an uncued element is visible for the entire
+       entry slide and a cued one is not.
+
+       span 1.9, not 1.5. 1.9 is the value the intertitles shipped at when this
+       device was measured (see "The full stops now stop"), and it buys 0.9
+       viewports of dead-still hold against 1.5's 0.5. At 1.5 with the cue's
+       ramps the line was at full strength for 0.37 viewports - barely half the
+       0.69 that table recorded as working. -->
+  <section class="page beat beat--clay" data-sc-act="pin" data-sc-span="1.9" id="turn1">
     <div data-sc-stage class="beat__stage">
-      <p class="d d--lg" data-sc-cue="0 1 0.1 0.16">We thought there had to be a better way.</p>
+      <p class="d d--lg">We thought there had to be a better way.</p>
     </div>
   </section>
 
-  <section class="page beat beat--white" data-sc-act="pin" data-sc-span="1.5" id="turn2" data-ch="The solution" data-ch-t="The Never-Ending Slipper">
+  <section class="page beat beat--white" data-sc-act="pin" data-sc-span="1.9" id="turn2">
     <div data-sc-stage class="beat__stage">
-      <p class="d d--lg" data-sc-cue="0 1 0.1 0.16">So we redesigned them.</p>
+      <p class="d d--lg">So we redesigned them.</p>
     </div>
   </section>
 
   <!-- ===================================================== CHAPTER TWO -->
-  <section class="page page--white" data-sc-act="scrub" data-sc-span="2.6" data-sc-dwell="0.3" id="ch2" data-ch="The solution" data-ch-t="The Never-Ending Slipper" aria-labelledby="c2">
+  <section class="page page--white" data-sc-act="scrub" data-sc-span="2.2" data-sc-dwell="0.3" id="ch2" aria-labelledby="c2">
     <div data-sc-stage>
       <div class="spread spread--media">
         <div class="spread__text">
           <header class="chapter" data-sc-in>
             <h2 class="chapter__t chapter__t--hero" id="c2">The <span class="nb">Never-Ending</span> Slipper.</h2>
           </header>
-          <p class="lede" data-sc-cue="0 1 0.04 0">A better hotel slipper, designed for a world with less waste.</p>
-          <div class="prose">
-            <p data-sc-cue="0.08 1 0.06 0">The conventional hotel slipper isn&rsquo;t just wasteful. <strong>It&rsquo;s not particularly good at being a slipper.</strong></p>
-            <p data-sc-cue="0.24 1 0.06 0">They offer little support. Limited sizing. They aren&rsquo;t particularly comfortable. And despite spending much of their (very short) lives around pools and spas, they aren&rsquo;t even waterproof.</p>
-            <p data-sc-cue="0.44 1 0.08 0">We saw an opportunity to change that.</p>
+          <!-- One cue for the lede and one for the prose block, both at 0, so
+               the argument arrives whole. It used to be four cues at 0, 0.08,
+               0.24 and 0.44: the paragraphs printed themselves one at a time
+               across nearly half the act, which made a 62-word read into a
+               performance and left the reader waiting on the scroll for the
+               sentence that finishes the thought. Copy this short is one
+               breath, not four. -->
+          <p class="lede" data-sc-cue="0 1 0.05 0">A better hotel slipper, designed for a world with less waste.</p>
+          <div class="prose" data-sc-cue="0 1 0.05 0">
+            <p>The conventional hotel slipper isn&rsquo;t just wasteful. <strong>It&rsquo;s not particularly good at being a slipper.</strong></p>
+            <p>They offer little support. Limited sizing. They aren&rsquo;t particularly comfortable. And despite spending much of their (very short) lives around pools and spas, they aren&rsquo;t even waterproof.</p>
+            <p>We saw an opportunity to change that.</p>
           </div>
         </div>
 
@@ -171,7 +209,7 @@
   </section>
 
   <!-- ===================================================== CHAPTER THREE -->
-  <section class="page page--ivory" data-sc-act="pin" data-sc-span="2.6" id="ch3" data-ch="The proof" data-ch-t="Why it holds up" aria-labelledby="c3">
+  <section class="page page--ivory" data-sc-act="pin" data-sc-span="1.9" id="ch3" aria-labelledby="c3">
     <div data-sc-stage>
       <!-- The proof spread. The claim list is an argument about how the thing
            behaves in a wet, busy, public place, and it was making that argument
@@ -188,25 +226,31 @@
            caption and never bleeds type across it; under the image is the
            version of "well placed" that survives every viewport. -->
       <div class="spread spread--claims">
-        <div class="proof">
-          <header class="chapter" data-sc-in>
+        <!-- One reveal for the heading and the claims together. The claims do
+             not need a device of their own: they are four short labels under
+             the heading that introduces them, and the heading's arrival is the
+             only entrance the block wants. So `data-sc-in` sits on .proof and
+             not on the header, which is what makes them one arrival rather
+             than two that happen to be close. -->
+        <div class="proof" data-sc-in>
+          <header class="chapter">
             <h2 class="chapter__t" id="c3">Why it holds up.</h2>
           </header>
 
           <ol class="claims">
-            <li class="claim" data-sc-reveal="left" data-sc-reveal-at="0.06 0.28">
+            <li class="claim">
               <i aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="397.50 286.03 165.00 165.00" fill="currentColor"><path fill-rule="nonzero" d="M480.00 430.40 C514.17 430.40 541.88 402.70 541.88 368.53 C507.70 368.53 480.00 396.23 480.00 430.40Z"/><path fill-rule="nonzero" d="M418.13 368.53 C418.13 402.70 445.83 430.40 480.00 430.40 C480.00 396.23 452.30 368.53 418.13 368.53Z"/><path fill-rule="nonzero" d="M480.00 368.53 C514.17 368.53 541.88 340.83 541.88 306.65 C507.70 306.65 480.00 334.36 480.00 368.53Z"/><path fill-rule="nonzero" d="M418.13 306.65 C418.13 340.83 445.83 368.53 480.00 368.53 C480.00 334.36 452.30 306.65 418.13 306.65Z"/><path fill-rule="nonzero" d="M480.00 416.65 C506.58 416.65 528.13 395.11 528.13 368.53 C501.55 368.53 480.00 390.07 480.00 416.65Z"/><path fill-rule="nonzero" d="M431.88 368.53 C431.88 395.11 453.42 416.65 480.00 416.65 C480.00 390.07 458.45 368.53 431.88 368.53Z"/><path fill-rule="nonzero" d="M480.00 368.53 C506.58 368.53 528.13 346.98 528.13 320.40 C501.55 320.40 480.00 341.95 480.00 368.53Z"/><path fill-rule="nonzero" d="M431.88 320.40 C431.88 346.98 453.42 368.53 480.00 368.53 C480.00 341.95 458.45 320.40 431.88 320.40Z"/></svg></i>
               <div><b>Recycled EVA foam</b><span>Made from what already exists.</span></div>
             </li>
-            <li class="claim" data-sc-reveal="left" data-sc-reveal-at="0.24 0.46">
+            <li class="claim">
               <i aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="1033.68 286.03 165.00 165.00" fill="currentColor"><path fill-rule="nonzero" d="M1137.35 368.23 C1144.37 384.13 1133.71 402.61 1117.05 403.00 C1116.86 403.01 1116.67 403.01 1116.48 403.01 C1116.09 403.01 1115.71 403.00 1115.32 402.98 C1098.97 402.19 1088.68 384.05 1095.48 368.39 L1116.26 320.51 L1137.35 368.23Z"/></svg></i>
               <div><b>Waterproof</b><span>Built for pools and spas, not in spite of them.</span></div>
             </li>
-            <li class="claim" data-sc-reveal="left" data-sc-reveal-at="0.42 0.64">
+            <li class="claim">
               <i aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="1353.68 286.03 165.00 165.00" fill="currentColor"><path fill-rule="nonzero" d="M1476.22 395.92 C1474.52 392.70 1471.68 391.54 1468.72 389.73 C1467.82 389.17 1466.86 388.68 1465.87 388.23 C1466.74 387.75 1467.56 387.19 1468.29 386.53 C1470.30 384.73 1471.60 382.03 1471.11 379.43 C1470.76 377.57 1469.53 375.94 1468.02 374.74 C1466.50 373.54 1464.70 372.71 1462.89 371.98 C1460.51 371.01 1458.07 370.19 1455.60 369.49 C1455.95 369.22 1456.28 368.94 1456.59 368.65 C1459.78 365.66 1459.56 360.48 1456.13 357.78 C1452.70 355.08 1447.08 353.24 1440.71 352.25 C1449.97 350.72 1457.16 346.35 1452.97 339.15 C1452.29 337.97 1451.27 337.02 1450.05 336.42 C1441.51 332.20 1426.11 334.32 1417.86 339.10 C1416.34 339.97 1415.15 341.36 1414.65 343.05 C1413.37 347.31 1417.13 350.18 1422.77 351.66 C1417.20 352.14 1412.02 353.25 1408.12 354.99 C1402.46 357.53 1402.44 365.59 1408.08 368.17 C1409.90 369.00 1411.93 369.77 1414.10 370.46 C1413.01 370.96 1411.94 371.52 1410.91 372.13 C1409.19 373.15 1407.47 374.45 1406.88 376.30 C1406.19 378.49 1407.31 380.91 1409.06 382.45 C1410.01 383.29 1411.12 383.92 1412.29 384.44 C1406.79 385.87 1401.36 388.11 1397.74 392.00 C1396.21 393.65 1395.09 395.72 1394.90 397.93 C1394.58 401.69 1397.03 405.28 1400.23 407.47 C1403.59 409.78 1407.41 410.52 1411.22 411.72 C1415.37 413.03 1419.60 414.07 1423.88 414.86 C1432.44 416.44 1441.21 416.98 1449.91 416.46 C1452.70 416.29 1455.48 416.02 1458.24 415.63 C1460.35 415.34 1462.47 414.98 1464.52 414.42 C1466.07 414.00 1467.58 413.47 1469.02 412.78 C1472.38 411.17 1475.35 408.58 1476.70 405.22 C1477.90 402.24 1477.72 398.77 1476.22 395.92Z"/></svg></i>
               <div><b>Supportive, wider fit</b><span>Comfortable for a wider range of guests.</span></div>
             </li>
-            <li class="claim" data-sc-reveal="left" data-sc-reveal-at="0.6 0.82">
+            <li class="claim">
               <i aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="1033.68 639.20 165.00 165.00" fill="currentColor"><path fill-rule="nonzero" d="M1095.56 749.56H1109.31V763.31H1095.56Z M1095.56 722.06H1109.31V735.81H1095.56Z M1095.56 694.56H1109.31V708.31H1095.56Z M1123.06 749.56H1136.81V763.31H1123.06Z M1123.06 722.06H1136.81V735.81H1123.06Z M1123.06 694.56H1136.81V708.31H1123.06Z M1150.56 769.83 L1150.56 687.68 C1150.56 683.89 1147.48 680.81 1143.68 680.81 L1088.68 680.81 C1084.89 680.81 1081.81 683.89 1081.81 687.68 L1081.81 769.83 L1068.02 769.83 L1068.02 774.15 L1164.34 774.15 L1164.34 769.83 L1150.56 769.83Z"/><path fill-rule="nonzero" d="M1116.18 659.83 L1117.81 664.82 L1123.06 664.82 L1118.81 667.91 L1120.43 672.91 L1116.18 669.82 L1111.93 672.91 L1113.55 667.91 L1109.30 664.82 L1114.56 664.82 L1116.18 659.83Z"/><path fill-rule="nonzero" d="M1102.43 662.05 L1104.06 667.05 L1109.31 667.05 L1105.06 670.14 L1106.68 675.14 L1102.43 672.05 L1098.18 675.14 L1099.80 670.14 L1095.55 667.05 L1100.81 667.05 L1102.43 662.05Z"/><path fill-rule="nonzero" d="M1129.93 662.05 L1131.56 667.05 L1136.81 667.05 L1132.56 670.14 L1134.18 675.14 L1129.93 672.05 L1125.68 675.14 L1127.30 670.14 L1123.05 667.05 L1128.31 667.05 L1129.93 662.05Z"/></svg></i>
               <div><b>Treaded sole</b><span>Designed with wet, poolside floors in mind.</span></div>
             </li>
@@ -228,7 +272,7 @@
        THE PEAK. Largest span on the page. The signature move lives here:
        the chapter reprints itself, impression after impression, until the
        repetitions are the page. -->
-  <section class="page page--ivory press" data-sc-act="pin" data-sc-span="4.6" id="ch5" data-ch="The proof" data-ch-t="Why it holds up">
+  <section class="page page--ivory press" data-sc-act="pin" data-sc-span="4.6" id="ch5">
     <div data-sc-stage>
       <div class="spread spread--press">
         <div class="press__lead">
@@ -250,21 +294,34 @@
         <div class="press__stack" id="stack" aria-hidden="true"></div>
         <p class="sr-only">And again. And again. Every wash keeps another disposable pair out of landfill.</p>
 
+        <!-- The margin carried a live impression count and the line "One pair.
+             Every impression is one wash." above the video. Both are gone. In
+             one column the margin stops being a margin and falls UNDER the
+             cascade, so the count read as a caption to the impressions rather
+             than a reading of them, and restated in digits the thing the
+             stack had just said in type. The cascade is the count. -->
         <aside class="press__margin">
-          <!-- Arrives with impression one. The readout is impressions + 1, so
-               before impression one is on screen there is nothing for it to be
-               true about; cued here it agrees with the page at every frame. -->
-          <p class="press__count" data-sc-cue="0.05 1 0.05 0"><span id="impression">1</span></p>
-          <p class="press__rule">One pair. Every impression is one wash.</p>
           <figure class="plate plate--small">
             <video id="loopv" muted loop playsinline preload="none"
                    poster="./media/slide-loop-poster.webp" width="1440" height="1440"></video>
             <figcaption>The same pair, turning.</figcaption>
           </figure>
 
+          <!-- Uncued, like the plate above it. This was two cues 0.18 of the act
+               apart, then one cue at 0.5; both were a timing for a block that
+               does not want one. The margin is a single column of one thing -
+               the pair turning, and what that turning is worth - and the plate
+               has never been cued, so a cue here only ever held the copy at
+               zero opacity for half the act while the thing it captions sat
+               above it at full strength. Uncued, the whole margin paints with
+               the act and reads as one object, which is what it is.
+
+               Note this is not the same as cueing it at 0: a cue is clamped to
+               p=0 for the stage's whole entry slide, so cued-at-0 still arrives
+               a viewport of scrolling after an uncued sibling. -->
           <div class="press__tail">
-            <p class="prose" data-sc-cue="0.5 1 0.1 0">Every wash keeps another disposable pair out of landfill, and brings down the environmental and financial cost.</p>
-            <p class="betters" data-sc-cue="0.68 1 0.1 0">
+            <p class="prose">Every wash keeps another disposable pair out of landfill, and brings down the environmental and financial cost.</p>
+            <p class="betters">
               <span>They&rsquo;re better for guests.</span>
               <span>Better for businesses.</span>
               <span>Better for the planet.</span>
@@ -283,19 +340,27 @@
        scrolled through. It flows again on a phone (see page.js): the spread is
        within ~10px of a 390x844 stage and taller than a 375x667 one, and a
        pinned stage clips what will not fit. -->
-  <section class="page page--hemp" data-sc-act="pin" data-sc-span="2.8" id="ch4" data-ch="The studio" data-ch-t="Our mission" aria-labelledby="c4">
+  <section class="page page--hemp" data-sc-act="pin" data-sc-span="2.0" id="ch4" aria-labelledby="c4">
     <div data-sc-stage>
-      <div class="spread spread--quiet">
-        <header class="chapter" data-sc-in>
+      <!-- One arrival for the whole chapter. This screen used to carry four
+           data-sc-in elements, two of them staggering their children at 90ms
+           and 70ms - ten separate entrances on one screen. Staggering
+           everything emphasises nothing: when the heading, the three "changed"
+           lines and three paragraphs all arrive in sequence, the sequence is
+           the only thing the reader notices, and the line that should land
+           ("And it's important that we change too.") arrives last and reads as
+           the end of an animation rather than the end of an argument. -->
+      <div class="spread spread--quiet" data-sc-in>
+        <header class="chapter">
           <h2 class="chapter__t" id="c4">Our mission.</h2>
         </header>
-        <h3 class="d d--md" data-sc-in>We don&rsquo;t think the world has a waste problem. We think it has design problems.</h3>
-        <ol class="changed" data-sc-in data-sc-stagger="90">
+        <h3 class="d d--md">We don&rsquo;t think the world has a waste problem. We think it has design problems.</h3>
+        <ol class="changed">
           <li>But times have changed.</li>
           <li>The world has changed.</li>
           <li>And it&rsquo;s important that we change too.</li>
         </ol>
-        <div class="prose" data-sc-in data-sc-stagger="70">
+        <div class="prose">
           <p>Many of the products and systems we use today were designed decades ago and, at the time, they made sense for the world they existed in.</p>
           <p>Our mission is to re-examine outdated products and systems that create unnecessary waste and design better alternatives. Alternatives that aren&rsquo;t just better for the planet, but better for people, business and budgets too.</p>
           <p>Because we don&rsquo;t want sustainability to be the only improvement we make. <strong>We want our products and systems to be better than they were before as well as better for the planet.</strong></p>
@@ -317,23 +382,26 @@
        asks that ARE buttons live at the top of the page, where they were asked
        for, and one of them stands by for the rest of the scroll - it retires
        here, because both asks are set in the paragraph below. -->
-  <section class="page page--colophon" data-sc-act="flow" data-ch="" data-ch-t="Work with us" aria-labelledby="c5">
-    <div class="colophon">
+  <section class="page page--colophon" data-sc-act="flow" aria-labelledby="c5">
+    <!-- One arrival, same reasoning as the mission. The masthead is inside this
+         wrapper, so it must NOT keep a data-sc-in of its own: two nested ones
+         both write opacity to the same subtree. -->
+    <div class="colophon" data-sc-in>
       <!-- No label over this one. Every chapter before it is labelled with the
            job it does in the argument; this is the studio asking, and a
            category word in front of it would be the page describing its own
            ask instead of making it. -->
-      <header class="chapter" data-sc-in>
+      <header class="chapter">
         <h2 class="chapter__t" id="c5">Work with us.</h2>
       </header>
 
-      <h3 class="d d--md" id="c6" data-sc-in>Still paying for thousands of disposable slippers every year?</h3>
-      <div class="prose" data-sc-in data-sc-stagger="70">
+      <h3 class="d d--md" id="c6">Still paying for thousands of disposable slippers every year?</h3>
+      <div class="prose">
         <p>We&rsquo;d love to help you change that. If your hotel, spa or hospitality group is interested in replacing its current slipper system with something designed for the world we live in now, <a class="run" href="mailto:hi@studiorowan.com?subject=Working%20with%20Studio%20Rowan">get in touch</a>, or <a class="run" href="mailto:hi@studiorowan.com?subject=Sample%20request">request a sample pair</a>.</p>
         <p class="colophon__tag">Let&rsquo;s leave less behind.</p>
       </div>
 
-      <dl class="masthead" data-sc-in>
+      <dl class="masthead">
         <div><dt>Studio</dt><dd>Studio Rowan, London, UK</dd></div>
         <div><dt>Product</dt><dd>The Never-Ending Slipper, recycled EVA</dd></div>
         <div><dt>Contact</dt><dd><a href="mailto:hi@studiorowan.com">hi@studiorowan.com</a></dd></div>
@@ -351,9 +419,6 @@
      chapter three had twelve viewports to scroll before they could act. Hidden
      while the title page is on screen, where the real one is already visible,
      and again on the colophon, where the asks are set in the running text. -->
-<a class="ask topcta__a topcta__a--key" id="ask"
-   href="mailto:hi@studiorowan.com?subject=Sample%20request">Request a sample</a>
-
 <script src="./engine/scrollcraft.js"></script>
 <script src="./page.js"></script>
 </body>

@@ -40,7 +40,8 @@ from six to one, and its divider labels were promoted to carry the naming.
 | *We thought there had to be a better way.* | Clay | `pin` | 1.5 |
 | *So we redesigned them.* | White | `pin` | 1.5 |
 | The Never-Ending Slipper | White | `scrub` | 2.6 |
-| Why it holds up — the claims, and the poolside frame | Ivory | `reveal` | 2.6 |
+| Why it holds up — the claims | Ivory | `pin` + `in` | 2.6 |
+| &nbsp;&nbsp;↳ the poolside frame (its own section on a phone) | Ivory | `flow` | flow |
 | &nbsp;&nbsp;↳ **the peak, still the same chapter** | Ivory | **the reprint** | **4.6** |
 | Our mission | Hemp | `pin` + `in` | 2.8 |
 | Work with us | Olive | `flow` | flow |
@@ -65,10 +66,10 @@ impressions stop being readable and become texture. That is the argument made
 of the page's own material: one pair, over and over, until the repetition is
 the whole page, and the texture at the bottom is the rhyme with 70,000.
 
-The margin carries the impression number and one line, *"One pair. Every
-impression is one wash."* Deliberately **not** a countdown: that is preview 1's
-wash line, and a signature move that appears on two builds is not a signature
-move.
+The margin carried the impression number and one line, *"One pair. Every
+impression is one wash."* Both have since been cut — see *The count came off
+the press*, below. The margin is now the turning-slipper loop and the tail
+copy, and the cascade is the only reading of how many.
 
 ## Deliberate differences from preview 1
 
@@ -250,9 +251,8 @@ happen.
 The line and the first "And again." now live **inside** the press, at the head
 of the stack. The heading *is* impression one: it is real markup styled to
 match the generated impressions exactly, and the cascade continues from it
-rather than starting again below it. The readout is `impressions shown + 1`, so
-at the top of the act it reads 1 with one line on screen, and it agrees with
-the page from the first frame to the last.
+rather than starting again below it. (The readout that used to track this was
+later cut; the cascade is the count.)
 
 That also removed a section (twelve to eleven) and 1.3 viewports of scroll.
 
@@ -457,8 +457,7 @@ The line that leads an act arrives *with* the act, so `.press__setup` is no
 longer cued at all. "And again." is cued instead (0.05..0.10), and it is now the
 first thing on that screen that moves. The cascade starts at 0.12 rather than 0,
 because started at 0 it raced its own first line: four impressions were already
-down before the setup was legible. The readout is cued with impression one, so
-it never counts something that is not on screen.
+down before the setup was legible.
 
 **The general rule, worth carrying to any build on this engine:** on a pinned
 act, an uncued element is visible for the entire entry slide and a cued one is
@@ -838,7 +837,7 @@ Two details that are load-bearing:
 Verified in both directions: loaded at 1440×900 and dragged to 478 wide, all
 five chapters demote and no section loses a pixel; loaded at 375×667 and dragged
 to 1440×900, all five promote, the page returns to 20.6vh and the press still
-builds its 29 impressions with the counter tracking them.
+builds its 29 impressions.
 
 ---
 
@@ -920,6 +919,698 @@ pixel to its stage.
 
 ---
 
+## The count came off the press
+
+Read on a phone, the press margin stops being a margin. The two-column spread
+folds to one, and everything that sat *beside* the cascade falls *under* it —
+so the impression count and the line *"One pair. Every impression is one wash."*
+arrived immediately after the last "And again.", reading as a caption to the
+impressions rather than a reading of them. Worse, it restated in digits the
+thing the stack had just spent a full act saying in type: the reader watched
+thirty repetitions print, and was then told the number was thirty.
+
+The count was composed for a margin, and the phone has no margin. Rather than
+hide it under a breakpoint and leave two builds of the same section to keep in
+agreement, both elements are gone at every width. The cascade is the count.
+
+What this bought on the desktop composition, which was not the reason for it
+but is worth recording: the press margin now top-aligns with the stack — the
+turning-slipper loop starts on the same line as impression one — and the spread
+measures 900px inside a 900px stage with nothing clipped. The peak's stage fit
+has been the most fragile measurement on this page (see *Act types are
+re-decided on resize*); removing ~100px from the margin column gives it
+headroom it did not have.
+
+Removed: `.press__count` and `.press__rule` in the markup and the stylesheet,
+and the `#impression` lookup and readout write in `printFrame()`. `IMPRESSIONS`
+and the cascade itself are untouched.
+
+---
+
+## The breath between chapters, on a phone
+
+In two columns a chapter is a *shape*: the next chapter is a different shape,
+and the change of composition does the separating before any spacing has to.
+Stacked into one column every chapter becomes the same measure as the one
+before it, and the only thing left to say "a new chapter started here" is
+vertical space and the change of ground.
+
+`.page`'s padding resolved to about 89px a side on a 812px phone — roughly
+178px between chapters, which was not a long enough pause to register as a
+break. It was worst at the join from chapter three into the peak, where both
+sections are ivory: no colour change, so the gap read as dead space in the
+middle of a chapter rather than the end of one.
+
+Under 860px, flowed sections now take `clamp(5.5rem, 15vh, 9.5rem)` — about
+122px a side at 812px tall, ~244px between chapters, and about 37% more air at
+every screen height we check. The same amount at every join, whether or not the
+ground changes, so the pause belongs to the page and not to the palette.
+
+Pinned sections are excluded by selector, not left to specificity:
+
+```css
+.page:not([data-sc-act="pin"]):not([data-sc-act="scrub"])
+```
+
+A beat's stage *is* the viewport and its one line is composed on the centre of
+it; section padding would push that line off-centre, and the `[data-sc-act]`
+rule that zeroes this padding sits earlier in the file than the mobile block,
+so an unqualified `.page` here would have won and broken both turns. The
+attribute is the right thing to test because `unpin()` rewrites it to `flow`:
+a section demoted by the phone list or by the measured guard picks the padding
+up on its own, and one that stays pinned never does.
+
+Verified at 375×667, 390×844 and 768×1024: the title page still measures
+exactly 100vh at every one (its content is short enough to absorb the extra
+padding inside `min-height`), both turns stay at zero, and every flowed section
+gets the same figure.
+
+---
+
+## The copy stopped arriving one line at a time
+
+Three blocks were choreographed when they should simply have been present. Each
+was a set of sentences that argue together, cut into pieces that arrived
+separately, so the reader met a thought half-finished and had to scroll for the
+rest of it.
+
+| Block | Was | Now |
+| --- | --- | --- |
+| Chapter two: the lede and its three paragraphs | four cues at `0`, `0.08`, `0.24`, `0.44` | one cue at `0` on the lede, one on `.prose` |
+| Why it holds up: the four claims | four wipes at `0.06`, `0.24`, `0.42`, `0.6` | no device of their own — one `data-sc-in` on `.proof` |
+| The press tail: the cost line and the "better for..." lines | cues at `0.5` and `0.68` | no cue at all — it paints with the act, like the plate above it |
+
+Chapter two was the worst of them. Sixty-two words of argument — *it's wasteful,
+it's not even good at the job, here is why, so we changed it* — were dealt out
+across 44% of the act. The paragraph that lands the point (*"We saw an
+opportunity to change that."*) was invisible until the reader had scrolled
+almost halfway through a 2.6-viewport section, by which time the paragraph it
+answers was old news. Copy this short is one breath.
+
+The claims were the same mistake in a different shape. Four four-word claims are
+a **set**: the reader's eye goes down them and compares them, which it cannot do
+while the last one is still hidden. Syncing the four wipes was the first fix and
+it was still one fix too many — the list did not want an entrance at all. Four
+short labels under the heading that introduces them arrive *with* that heading,
+so `data-sc-reveal` came off all four `li`s and `data-sc-in` moved from the
+`.chapter` header up onto `.proof`, which wraps the header and the list. Moving
+it rather than adding it is the point: two `data-sc-in` elements would be two
+arrivals that merely happen to be close, and nesting one inside the other would
+have had both writing opacity to the same subtree. `ch3` no longer uses the
+`reveal` device at all, and the page has no `data-sc-reveal` left on it.
+
+Two mechanical notes, both worth carrying:
+
+- **Cue the container, not the children.** Chapter two's `.prose` carries one
+  cue and its paragraphs carry none. Opacity inherits, so the block fades as one
+  object. `.press__tail` went the same way first and then lost its cue entirely
+  — see below.
+- **A cue on a parent and `data-sc-in` on a child both write opacity**, so they
+  must not be nested. That is why chapter two's cue went on `.prose` rather than
+  on `.spread__text`, which contains the `data-sc-in` chapter header.
+
+What is deliberately untouched: the `data-sc-stagger` blocks in chapter one,
+the mission and the colophon. Those stagger *within* a flow reveal, over 70-90ms
+— a settling, not a scroll-scrubbed wait, and the reader never has to move to
+finish a sentence.
+
+**The press tail then lost its cue altogether.** Collapsing two cues into one
+was still a timing for a block that does not want one. The press margin is a
+single column of one thing — the pair turning, and what that turning is worth —
+and `.plate--small` above it has never been cued. A cue on the tail could only
+ever hold the copy at zero opacity for half the act while the thing it captions
+sat above it at full strength. Uncued, the whole margin paints with the act and
+reads as one object, which is what it is.
+
+That is *not* the same as cueing it at `0`. A cue is clamped to `p = 0` for the
+stage's entire entry slide, so a cued-at-0 element still arrives a viewport of
+scrolling after an uncued sibling — the trap this build already fell into once
+with `.press__setup` (see *The press printed its echo before its setup*).
+
+Verified by driving `ScrollCraft.instances[0].read()` at sampled progress
+values rather than by scrolling, which is the reliable way to check cue timing:
+in chapter two the lede and the prose go 0 → 1 together within `p < 0.02`; all
+four claims report identical `clip-path` at every sample; and the press plate
+and tail both read opacity 1 at every sample from `p = 0` to `0.8`. On a phone,
+where these sections flow, each block reads fully arrived by the time it is
+centred in the viewport.
+
+---
+
+## Half a join into "Why it holds up"
+
+A join is made by two sections, and a pinned section contributes nothing to it:
+its stage *is* the viewport, so it has no padding to give. For the turn beats
+that is correct — their line fades out by `p = 0.16` and the rest of the span is
+already air. Chapter two is different. It is the page's only `scrub` act, and a
+scrub holds its content in the stage to the last frame: it ends with the spread
+still on screen, and the next chapter starts immediately underneath it. *"Why it
+holds up."* arrived on half a join.
+
+The reason it survived the breath work is that **it only happens on a tall
+phone**. Chapter two is the one content chapter not on the phone-flow list, so
+it is demoted by measurement rather than by rule:
+
+| Viewport | Chapter two | Join into chapter three | A normal join |
+| --- | --- | --- | --- |
+| 390×844 | flows | 253px | 253px |
+| 414×896 | stays pinned | 134px | 269px |
+| 430×932 | stays pinned | 140px | 280px |
+
+The same page, a different pause, depending on which phone you read it on — and
+375×667 and 390×844, the two sizes this build checks by habit, are both on the
+correct side of it.
+
+The following section now carries the whole join by itself:
+
+```css
+[data-sc-act="scrub"] + .page:not([data-sc-act="pin"]):not([data-sc-act="scrub"]) {
+  padding-top: clamp(11rem, 30vh, 19rem);
+}
+```
+
+Three things about that rule are deliberate. **30vh is exactly twice** the
+`15vh` the breath rule uses, so this join measures the same as every other one
+rather than merely bigger — 279.6px against 279.6px at 430×932, 268.8 against
+268.8 at 414×896. **It is keyed to the attribute**, which means it applies only
+when chapter two really did stay pinned: `unpin()` rewrites the attribute to
+`flow`, so on a phone where chapter two flows the selector stops matching and
+the ordinary pair of paddings makes the join, with no double-up. And the
+**specificity is written to beat the breath rule** (0,4,0 against 0,3,0) rather
+than to rely on sitting later in the file.
+
+It is scoped to the one act type that needs it. A `pin` beat followed by a
+flowed section is left alone on purpose: adding a quarter of a viewport to the
+end of a beat that has already faded to an empty stage would be padding dead
+space with more dead space.
+
+---
+
+## The phone got its hold back at "Why it holds up"
+
+> **Superseded.** The hold described here was reverted, and `#ch3p` and
+> `placePlate()` deleted with it — see *The phone's pause is made by the
+> scroller*, below. Kept because the measurements are still the argument for
+> why a phone cannot hold a chapter.
+
+
+Chapter three is written to **hold**. Pinned, the page stops and the four claims
+sit still while you read them — that holding is the chapter, not decoration on
+it. On a phone it did not hold at all: `ch3` was on `PHONE_FLOW`, so it was
+demoted to a flow act and scrolled past like body text. Two rounds of spacing
+work went into this join before the actual complaint became clear, and neither
+could have fixed it, because the missing thing was never whitespace.
+
+It was on that list for a good reason. A pinned stage is exactly one viewport
+and clips what will not fit, and the claims spread measures **1039px against an
+844px stage**. But that is a measurement of a spread with the poolside plate
+still in it:
+
+| Part | Height at 390×844 |
+| --- | --- |
+| heading + the four claims (`.proof`) | 549px |
+| grid gap | 38px |
+| poolside plate (image 280 + caption 147) | 439px |
+| the stage it has to fit | 844px |
+
+The claims are not the problem. The plate is, and no amount of trimming fixes
+it: even capping the image the way the press's small plate is capped leaves the
+spread ~180px over, and the caption is the chapter's summary paragraph, so it
+cannot go either. The poolside frame is the *evidence* for the treaded-sole
+claim, and the only way to fit it inside the held frame was to reduce it to a
+thumbnail on the one screen where it has something to prove.
+
+So on a phone the plate leaves the stage. It moves — the same element, not a
+copy — into `#ch3p`, an empty ivory section that sits directly after chapter
+three and is `hidden` at every other width. `placePlate()` in page.js owns the
+move and runs immediately before `decideActs()` in both places it is called,
+because where the plate is *is* the measurement the guard takes. With the plate
+out, the stage holds 625px and chapter three comes off `PHONE_FLOW` entirely: it
+goes through the measured guard like every other chapter.
+
+Measured after the change — 609/667, 625/844, 584/932 — it pins on every phone
+checked, and on a screen too short for even the claims it would flow instead of
+clipping, which is the whole reason the guard exists.
+
+Three details worth keeping:
+
+- **It is a move, not a copy.** The image is fetched once, the figure keeps its
+  `data-sc-in` observation (`IntersectionObserver` tracks the element, not where
+  it sits in the tree), and there is no second `alt` string to keep in agreement
+  with the first.
+- **Restoring it is an `appendChild` back onto the spread**, which is its
+  authored position: `.proof` is the spread's only other child and comes first.
+  Verified across a full round trip, run twice — the child order comes back as
+  `[.proof, .plate--proof]`, `#ch3p` empties and re-hides, and there is still
+  exactly one `.plate--proof` in the document.
+- **`#ch3p` carries no `data-ch`.** It is not a step in the argument, it is the
+  same chapter continuing, and the folio is hidden at this width regardless.
+
+The join rule from the previous section grew a second selector for this and then
+lost it again — see *The held frame had to fill its stage*, below. Extending it
+to a `pin` was wrong: a held stage centres its spread, so it already ends in half
+a stage of air and pays into the join with that.
+
+---
+
+## The folio comes off on a phone
+
+The folio is a margin note, and a phone has no margin. Fixed to the bottom-left
+of a 390px viewport it stops being *beside* the reading and sits *on top of* it,
+over whatever line happens to be at the foot of the screen. It had been shrunk
+to 10px at this width, which made it small enough to ignore without making it
+stop overlapping — the wrong half of the problem.
+
+It is hidden in CSS and deliberately **not** switched off in page.js. The
+observer is cheap, and leaving it running keeps the label correct for a reader
+who turns the phone into landscape past 860px, where the folio comes back.
+Killed in script it would return blank, or naming whichever chapter was last on
+screen in portrait. It is already `aria-hidden`, so nothing changes for a screen
+reader either way.
+
+Worth noting what this does *not* undo: the pinned spreads still take the
+asymmetric bottom padding that exists to clear the folio's furniture. On a phone
+that clearance is no longer buying anything, but the spreads that take it are
+flowed at this width and have their block padding zeroed anyway, so there is
+nothing to reclaim.
+
+---
+
+## The held frame had to fill its stage
+
+> **Superseded.** Both fixes here applied to a mobile pin that no longer
+> exists. The distinction it draws between a held act and a scrub is still
+> live: it is why the scrub join rule survived the revert.
+
+
+Giving chapter three its hold back left 927px of empty ivory between the last
+claim and the poolside frame at 714×1217. Two causes, both introduced by the
+change that gave it the hold:
+
+**The spread was top-aligned in a stage it no longer flowed through.** The
+phone's `.spread--claims, .spread--press, .spread--quiet { height: auto;
+align-content: start }` was written when all three of those chapters flowed on a
+phone — "so there is no stage to fill" is what the comment said, and it was true
+when it was written. Chapter three now pins, and that rule parked 594px of
+claims at the top of a 1217px stage and left 623px of dead ivory beneath them.
+
+The fix is keyed to `.sc-act--pinned`, not to the act attribute:
+
+```css
+.sc-act--pinned .spread--claims { height: 100%; align-content: center; }
+```
+
+The class is written by the engine at mount and by `repin()`/`unpin()`, so it
+means *this section is holding right now* — exactly the condition that wants a
+filled stage. The attribute would have been wrong twice over: it survives on the
+no-JS page where nothing ever pins, and it is the thing `unpin()` rewrites.
+
+**And the join rule was doubling a gap that was already too big.** Extending it
+from `scrub` to `[data-sc-act="pin"]:not(.beat)` looked right — a pin also
+contributes no padding — but it is not the same case, and the distinction is
+worth keeping:
+
+> A **held** act pays into the join with its own empty stage: it centres its
+> spread, so it ends in half a stage of air. A **scrub** does not — the next
+> section starts the moment its last frame does.
+
+So the second selector came off and the plate's host section takes the ordinary
+breath. Measured after both fixes, the gap from the last claim to the frame:
+
+| Viewport | Was | Now |
+| --- | --- | --- |
+| 375×667 | 331px | 159px |
+| 390×844 | 472px | 273px |
+| 714×1217 | 927px | 514px |
+
+At 714×1217 the remaining 514px is not a gap so much as the bottom half of a
+centred held frame — there is 362px above the heading to match it. A 594px block
+in a 1217px stage floats, and that is what pinning means; the turn beats do the
+same thing with a single line. On the phone sizes the page is actually composed
+for, the frame reads tight: 149px above the heading and 146px below the last
+claim at 390×844.
+
+---
+
+## The phone's pause is made by the scroller
+
+Three rounds of work went into giving the phone a pinned hold, and the whole
+approach was the wrong instrument. A pinned act can only hold what fits one
+stage. The stage is 844px. Measured the way the guard measures them — flowed
+height plus the ~75px of block padding a spread gets back when repinned:
+
+| Section | Needs | Over an 844px stage by |
+| --- | --- | --- |
+| `turn1` *"We thought there had to be a better way."* | 57px | — holds |
+| `turn2` *"So we redesigned them."* | 30px | — holds |
+| `ch2` The Never-Ending Slipper | 855px | 11px |
+| `ch4` Our mission | 885px | 41px |
+| `ch1s` The hotel slipper | 919px | 75px |
+| `ch5` The peak | 1342px | 498px |
+
+The turns are not stops because they are tuned well. They are stops because they
+are 57px and 30px — **short by construction**, so they fit any phone. Every
+other chapter is a whole spread, and a whole spread never fits a phone. Chapter
+three was only made to hold by carrying the poolside plate out of its stage, and
+the machinery that did it (`#ch3p`, `placePlate()`, and its resize handling) was
+the source of every bug in this stretch: the half join, the top-aligned stage,
+the 927px void. `ch2` misses by 11px and `ch4` by 41px, and closing those gaps
+would have bought a page that holds in different places on different phones.
+
+**So the pause is made somewhere else.** The scroller is given a rhythm instead:
+
+```css
+html { scroll-snap-type: y proximity; }
+.page { scroll-snap-align: start; }
+```
+
+A flick now comes to REST at the head of a chapter rather than drifting to a
+stop wherever momentum ran out. It is a pause made of *where the page stops
+moving* rather than of a stage held still, so it costs no viewports, needs
+nothing to fit anything, and works identically on a 57px beat and a 1342px peak.
+It compounds with the pins rather than fighting them: a snap point at a pinned
+section's top *is* its held composition.
+
+`proximity`, never `mandatory` — mandatory would force a rest at every point and
+take away the reader's ability to stop mid-chapter on the sections taller than
+the viewport. `scroll-snap-stop` stays at `normal`, so one long flick can still
+cross several chapters rather than rationing the page out one per gesture. The
+engine already uses proximity snapping on its horizontal pan rail; this is the
+same instrument pointed down the page.
+
+With the pause coming from the scroller, chapter three goes back on
+`PHONE_FLOW`, the plate goes back into the claims spread at every width, and
+`#ch3p` / `placePlate()` / `.sc-act--pinned .spread--claims` / `.page[hidden]`
+are all deleted. The phone keeps exactly two holds, the two that were never a
+problem.
+
+**What deliberately survived the revert:** the scrub join rule. With chapter
+three flowing again, chapter two still scrub-pins on a tall phone and still
+contributes nothing to the join beneath it — so the rule is load-bearing again
+for the reason it was written. Measured at 430×932 after the revert: 279.6px
+into chapter three against a 279.6px normal join.
+
+| | Before | After |
+| --- | --- | --- |
+| Phone page length | 14.2 viewports | 12.3 |
+| Phone holds | turn1, turn2, ch3 | turn1, turn2 |
+| Desktop | — | untouched, 20.6vh, ch3 still pins 900/900 |
+
+The one thing no measurement here settles is whether the snap *feels* right,
+which is the only question that matters about it. Snap is a tactile quality and
+it has to be judged on a real phone, not in an emulated viewport.
+
+---
+
+## The folio came off, and took three things with it
+
+The folio was the page's only per-section furniture: one fixed line at the
+bottom-left naming the chapter you were in. It is gone at every width, and the
+page now carries no running label at all — the ground, the headline and the
+order of the argument are what say where you are.
+
+Three consequences, in order of how much they mattered:
+
+**The chapter observer survived it.** The observer that drove the folio was also
+doing the standing ask's handoff at the colophon — when olive wins the screen,
+the pill retires because both asks are set in the running text a few lines
+below. That logic stayed; only the folio half was cut. Verified at the colophon
+after the change: `on-dark` true, pill opacity 0, visibility hidden.
+
+**The block padding went symmetric.** Pinned spreads carried an extra ~27px at
+the foot purely to clear the folio, which a chapter filling its stage would
+otherwise set its last line straight through. With no furniture in the frame the
+clearance is dead weight: content centred in a stage is now actually centred,
+and the stage budget gets 27px back.
+
+**Which promoted chapters nobody asked to promote.** That reclaimed 27px tipped
+`ch2` — 11px over an 844px stage — into fitting, so it started pinning on a
+390px phone, and `ch1s` was already pinning on a 430×932 one at 919px against a
+932px stage. Both are the same fault: a page that holds in different places
+depending on which phone you are holding. `PHONE_FLOW` is now every content
+chapter:
+
+```js
+var PHONE_FLOW = ['ch1s', 'ch2', 'ch3', 'ch4', 'ch5'];
+```
+
+which states the rule plainly instead of leaving it to a measurement: **on a
+phone, the only things that hold are the two turns, because they are the only
+two short enough to hold anywhere.** Verified at 375×667, 390×844 and 430×932 —
+`turn1` and `turn2` at all three, nothing else.
+
+With `ch2` never scrub-pinning at this width, the doubled join rule finally had
+nothing to do and came out too. Both sides of every phone join are flowed
+sections paying half each.
+
+### Snapping had to come off the held acts
+
+The snap points went on every `.page`, which was wrong for a pinned act. A held
+act is much taller than the viewport with its content at the top, so coming to
+rest anywhere inside one, the nearest snap point is the *next chapter* — and
+proximity snapping finishes the gesture for you and cuts the hold short. Snap is
+for the sections that do not hold:
+
+```css
+.page:not([data-sc-act="pin"]):not([data-sc-act="scrub"]) { scroll-snap-align: start; }
+```
+
+For the record, the two turns' own timing, measured at 390×844: span 1.5 gives
+**422px** of hold, and the cue `0 1 0.1 0.16` spends 42px fading in, **312px at
+full strength**, and 68px fading out. The fade-out is 16% of the hold — quick,
+but identical on both turns, so it is not what makes one feel shorter than the
+other. The dials, if the hold still reads short: `span` 1.5 → 1.9 buys 0.9
+viewports instead of 0.5, and `rampOut` 0.16 → 0.06 turns the exit from a fade
+into something closer to a cut.
+
+---
+
+## Ten entrances on one screen
+
+The mission screen carried four `data-sc-in` elements, two of them staggering
+their children at 90ms and 70ms: ten separate entrances on one screen. Staggering
+everything emphasises nothing — when the heading, the three "changed" lines and
+three paragraphs all arrive in sequence, the sequence is the only thing the
+reader notices, and *"And it's important that we change too."* arrives last and
+reads as the end of an animation rather than the end of an argument.
+
+One `data-sc-in` on the spread now, none on the children. The same fault was on
+two more screens and got the same treatment: chapter one's story
+(`.spread__lead`) and the colophon. **There is no `data-sc-stagger` left on the
+page.**
+
+One trap inside that change: the colophon's masthead had its own `data-sc-in`,
+and wrapping the colophon put it *inside* another — two nested reveals writing
+opacity to the same subtree. It came off. The page has ten reveals left and none
+of them nest.
+
+---
+
+## Nothing is fixed to the viewport any more
+
+Two asks came off: the **standing pill** that followed the reader down the page,
+and **"Get in touch"** on the title page.
+
+The pill was the page's one persistent control, and it was already failing on a
+phone. Below 700px it moved to the foot of the frame, where it sat on top of the
+running text — the mission's closing paragraph read *"that create unneces⟨Request
+a sample⟩ and design better alternatives."* The offset it used had been chosen to
+clear the folio, and when the folio went the pill was left floating over body
+copy with nothing to relate to.
+
+"Get in touch" was the vaguer of the title page's pair, and it is already set
+twice in the colophon — once in the running text and once in the masthead. On
+the title page it was a second, softer ask competing with the specific one
+beside it.
+
+So the page asks **once at the top and once at the end**, and the end is where
+the reader has a reason to answer:
+
+| Where | Ask |
+| --- | --- |
+| Title page | *Request a sample* |
+| Colophon, in running text | *get in touch* / *request a sample pair* |
+| Colophon, masthead | `hi@studiorowan.com` |
+
+**The page now has zero `position: fixed` elements.** Measured at 390×844 and
+1440×900: nothing rides over the grounds at all. That is the grammar's own
+position — *no fixed bar* — arrived at completely rather than partially.
+
+### What this deleted downstream
+
+Removing the pill emptied two things that were only still alive to serve it:
+
+- **`syncAsk()` and its scroll listener.** The pill appeared past 0.75 of a
+  viewport and retired on the colophon; both rules go with the element.
+- **The chapter observer.** It had already lost the folio and was kept solely
+  for the colophon handoff. With no pill to hand off to, the whole
+  `IntersectionObserver` over `[data-ch]` is gone, and `page.js` section 1 with
+  it — the remaining sections renumber to reprint / spin / loop.
+
+The `data-ch` and `data-ch-t` attributes went with it — eighteen of them across
+nine sections. They had no consumer left, not even as a selector, and they were
+the last record of the chapter naming: *the problem, the solution, the proof,
+the studio*. That naming is now nowhere in the build except in these notes.
+
+It is worth being explicit that this was a deliberate deletion rather than a
+tidy-up, because the naming was a real piece of editorial work — it replaced
+ordinals precisely so the folio would say what each chapter was *for* rather
+than where it sat. The folio is what gave it somewhere to be said. With no
+folio, the labels were data addressed to nobody.
+
+---
+
+## The turn was cued, so it flashed
+
+*"So we redesigned them."* read as a blink: you scrolled, the line appeared, and
+it was gone. Two rounds went looking for the cause in the wrong places — first
+the fade-out's length, then the scroll-snap that had just been added. It was
+neither. It was the cue.
+
+**A cue is clamped to `p = 0` for the stage's entire entry slide.** A pinned
+stage is on screen for a viewport of scrolling before the pin engages and a
+viewport after it releases, and for both of those the cued line sits at opacity
+zero. Measured at 390×844 before the fix:
+
+| | |
+| --- | --- |
+| Scroll spent on the beat | 2110px |
+| Line on screen for | **422px — 20% of it** |
+| Of which at full strength | 312px (0.37 viewports) |
+
+The other 80% was an empty ground sliding in and out. "Flash and disappear" is a
+precise description of a line that is absent for four fifths of its own section.
+
+The fix is to take the cue off. Uncued, the line is painted the whole time the
+stage is on screen: it rides up into the frame, **stops dead**, and rides off.
+The stopping is the full stop — a fade was standing in for a gesture the pin
+already performs better.
+
+This is the same fault and the same fix as the press's setup line (*The press
+printed its echo before its setup*), and it is the second time this build has
+been caught by it, so the rule is worth stating plainly one more time:
+
+> On a pinned act, an **uncued** element is visible for the entire entry slide.
+> A **cued** one is not — including one cued at `0`.
+
+The span went 1.5 → **1.9** at the same time. 1.9 is the value the intertitles
+shipped at when this device was measured in *The full stops now stop*; at 1.5,
+with the cue's ramps, the line was at full strength for 0.37 viewports against
+the 0.69 that table recorded as working. Both turns now hold dead still for
+**0.9 viewports** — 760px at 390×844, 810px at 1440×900.
+
+| | Before | After |
+| --- | --- | --- |
+| Line on screen | 422px (20% of the beat) | 2448px (**100%**) |
+| Dead still | 0.5 viewports, 0.37 at full strength | **0.9 viewports** |
+| Page, desktop | 20.6vh | 21.4vh |
+| Page, phone | 12.3vh | 13.1vh |
+
+The 0.8vh both turns cost is the whole price, and it buys the page's two hinge
+statements going from barely-seen to unmissable. The clay→white cut still lands
+between them, on *"So we redesigned them."*, unchanged.
+
+---
+
+## The figures play; they are not scrolled
+
+70,000 and 120,000,000 were `data-sc-count`, scrubbed across a window of chapter
+one's pinned act: the value climbed only while the reader kept scrolling, and
+only arrived if they scrolled far enough. That makes the reader perform the
+animation. It reads well with a flick and badly with everything else — a
+trackpad nudge, a wheel click, a thumb dragged short — and feedback was that the
+page felt like work. **A figure is a fact, not a reward for scrolling.**
+
+They now tick once, on their own, over 1600ms when they come into view.
+
+The engine has exactly this behaviour and it could not be used: its
+entry-counter path takes only counters that are **not** inside an act
+(`!c.closest('[data-sc-act]')`), and both of these live inside chapter one.
+There is no attribute to opt a counter out of scrubbing, and the engine is
+vendored and never edited — so it is reimplemented in page.js against our own
+`data-count-to`, which the engine ignores. Same authoring contract as the
+engine's: write the target exactly as it should render, commas and all, and the
+template drives the formatting. Reduced motion gets the number without the
+performance.
+
+The two `.fig` wrappers were uncued at the same time, and for the reason this
+build keeps relearning: a cue holds an element at zero for the whole of a pinned
+stage's entry slide, so a figure that ticks on entry would have run its entire
+count behind an invisible element and been sitting on its final value by the
+time it appeared.
+
+Verified by scrolling into view **once** and then not scrolling at all: both
+land on 70,000 and 120,000,000.
+
+---
+
+## The scroll budget, trimmed
+
+The feedback was that the scroll is exhausting. The instinct is to make scroll
+more sensitive, or to take the gesture and step the page a section at a time.
+Both are wrong, and it is worth writing down why, because the reasoning is what
+generalises.
+
+**Neither is what the sites this page is measured against do.** Apple's product
+pages are native scroll with `position: sticky` and scroll-linked transforms —
+structurally what this engine does. They do not intercept the wheel. What they
+are disciplined about is two other things: scrubbing only when *the motion is
+the content* (a product rotating, an exploded view) and playing everything else
+on entry; and keeping the scroll budget honest.
+
+Taking the gesture instead breaks more than it fixes: one trackpad flick fires
+dozens of wheel events, so it needs debouncing and then feels laggy or skips; a
+wheel notch is not a flick; keyboard paging and find-in-page stop reaching
+content; iOS rubber-banding fights it. It also turns the page into a slideshow,
+and these sections are not slides — the peak's cascade, the mission and the
+colophon are all taller than a viewport, so it would need scrolling *inside* a
+step and the model would contradict itself.
+
+And sensitivity is not the fault. **The fault is the budget**, and it is
+measurable. At 1440×900 before the trim:
+
+| | Viewports |
+| --- | --- |
+| Page | 21.5 |
+| Spent holding or scrubbing | **12.4 — 58%** |
+| Advancing to new content | 9.1 |
+
+More than half the scrolling produced nothing new. Sensitivity would only make
+the same 12.4 viewports pass faster while taking control away from the reader.
+
+Four spans came down. Nothing was deleted and no composition changed:
+
+| Act | Span | Held, before → after |
+| --- | --- | --- |
+| `ch1s` the story | 3.0 → **2.2** | 2.0 → 1.2 |
+| `ch2` the spin | 2.6 → **2.2** | 1.6 → 1.2 |
+| `ch3` the claims | 2.6 → **1.9** | 1.6 → 0.9 |
+| `ch4` the mission | 2.8 → **2.0** | 1.8 → 1.0 |
+
+| | Before | After |
+| --- | --- | --- |
+| Page | 21.5vh | **18.7vh** |
+| Holding | 12.4 (58%) | **9.7 (52%)** |
+
+Two notes on why these four. `ch1s` was the cheapest of them to cut *because of
+the change above*: its span had been sized partly so the counters could finish
+scrubbing — the second ran to `p = 0.5` — and they do not scrub any more.
+`ch2` was cut least because it is the one scrub on the page and its motion IS
+the content, which is exactly the case that earns a budget. The spin is
+normalised (`progress('ch2') × 86`), so it still runs all 87 frames; it simply
+turns faster per pixel — 12.4px per frame against 16.6, still clear of where a
+scrub goes steppy.
+
+**The peak was not touched.** At 3.6 viewports it is now 37% of all the holding
+left on the page, and it is the obvious next lever if 18.7vh is still too long —
+but it is the signature move, and it is the one act where the holding is the
+argument.
+
+None of this changes the phone, where every one of these chapters flows and only
+the two turns hold: 13.1vh, 1.8 viewports of holding, unchanged.
+
+---
+
 ## Open items
 
 Everything still open on preview 1 applies here, because the copy and the
@@ -933,12 +1624,12 @@ assets are the same:
 4. Raptor V2 Premium unlicensed; Outfit Light stands in behind `--display`.
 5. No Instagram handle supplied.
 
-One item specific to this build: the folio labels chapters by their job in the
-argument ("The problem", "The solution") rather than by position, and it is now
-the only place that naming appears. It is not a
-counter and should not become one — scroll-craft bans an `01 / 06` x-of-y
-progress readout outright. If numerals are ever wanted they have to stay a book
-folio.
+One item specific to this build: the folio is gone, and with it the naming of
+what each chapter does in the argument ("The problem", "The solution"). The
+`data-ch` attributes that carried it have been removed too, so the labels now
+survive only in these notes — see *Nothing is fixed to the viewport any more*.
+If a running label is ever wanted back it has to return as a book folio:
+scroll-craft bans an `01 / 06` x-of-y progress readout outright.
 
 A second item specific to this build: only **one** ask persists past the title
 page. If both should, the standing pill is the place to grow — a pair, or a
