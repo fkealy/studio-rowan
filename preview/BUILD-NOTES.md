@@ -296,9 +296,10 @@ with the counting.
    invented statistics in a counter outright.
 2. **The treaded-sole claim has no evidence.** Either shoot sequence B, supply a
    single underside still, or reword the claim.
-3. **Contact is `hi@studiorowan.com`** (guidelines + prototypes). The live
-   holding page uses `info@studiorowan.co.uk`. Four occurrences in
-   `index.html`; still unresolved.
+3. ~~**Contact is `hi@studiorowan.com`** (guidelines + prototypes). The live
+   holding page uses `info@studiorowan.co.uk`.~~ **Resolved** — this preview now
+   uses `info@studiorowan.co.uk`, matching the live holding page and preview 2.
+   The guidelines and the prototypes still carry the old address.
 4. **Raptor V2 Premium is still unlicensed.** Outfit Light 300 is vendored at
    `/fonts/outfit.woff2` (SIL OFL) behind `--display`. When the licence lands,
    self-host the woff2 and change that one variable.

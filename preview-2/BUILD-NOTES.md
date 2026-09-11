@@ -1430,7 +1430,7 @@ the reader has a reason to answer:
 | --- | --- |
 | Title page | *Request a sample* |
 | Colophon, in running text | *get in touch* / *request a sample pair* |
-| Colophon, masthead | `hi@studiorowan.com` |
+| Colophon, masthead | `info@studiorowan.co.uk` |
 
 **The page now has zero `position: fixed` elements.** Measured at 390×844 and
 1440×900: nothing rides over the grounds at all. That is the grammar's own
@@ -1907,8 +1907,10 @@ assets are the same:
 1. The **120,000,000 figure ships uncited**, on an explicit decision, for this
    preview only. Marked in the markup with a visible note.
 2. The **treaded-sole claim has no visual evidence** (no sequence B).
-3. Contact is `hi@studiorowan.com`; the holding page uses
-   `info@studiorowan.co.uk`.
+3. ~~Contact is `hi@studiorowan.com`; the holding page uses
+   `info@studiorowan.co.uk`.~~ **Resolved** — both previews now use
+   `info@studiorowan.co.uk`, matching the live holding page. The guidelines and
+   the prototypes still carry the old address.
 4. Raptor V2 Premium unlicensed; Outfit Light stands in behind `--display`.
 5. No Instagram handle supplied.
 
