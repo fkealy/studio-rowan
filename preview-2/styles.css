@@ -108,17 +108,16 @@ a { color: inherit; }
 .folio.on-dark .folio__n { color: var(--ivory); border-right-color: color-mix(in oklab, var(--ivory) 30%, transparent); }
 
 /* --------------------------------------------------------------- top asks --
-   The two CTAs, top right, on the title page and nowhere else. Out of flow, so
-   they do not push the title composition around; the title page is the
-   containing block for them (see .page--title).
+   The two CTAs, on the title page and nowhere else. IN FLOW, in the masthead
+   line beside the wordmark - see .title__head. They were absolutely positioned
+   top right so that they could not push the title composition around, and the
+   cost of that was a bare top-left corner opposite two pills.
    -------------------------------------------------------------------------- */
 .topcta {
-  position: absolute; z-index: 30;
-  top: max(clamp(1.25rem, 4vh, 2.75rem), env(safe-area-inset-top, 0px));
-  right: var(--gutter-r);
   display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end;
   gap: clamp(.9rem, 2.2vw, 2rem);
   font-size: var(--sc-t-sm);
+  margin-left: auto;   /* hard right whether it shares the head's line or wraps below it */
 }
 .topcta__a {
   text-decoration: none; color: var(--sc-ink-soft); white-space: nowrap;
@@ -240,8 +239,16 @@ a { color: inherit; }
 /* 100svh, not 100vh: on a phone 100vh is the viewport WITH the browser chrome
    hidden, so a title page sized to it starts life taller than the screen and
    pushes its own imprint line under the address bar. The svh is the height the
-   reader actually has on arrival. */
-.page--title   { background: var(--ivory); min-height: 100vh; min-height: 100svh; display: flex; align-items: center; }
+   reader actually has on arrival.
+
+   Two rows: the masthead line, then everything else. The page was one flex box
+   centring a single stack, which put the whole title page in the upper three
+   quarters of the screen with a quarter of nothing under it. */
+.page--title {
+  background: var(--ivory); min-height: 100vh; min-height: 100svh;
+  display: grid; grid-template-rows: auto 1fr;
+  row-gap: clamp(1.5rem, 4vh, 3rem);
+}
 .page--clay    { background: var(--clay); }
 .page--white   { background: var(--white); }
 .page--ivory   { background: var(--ivory); }
@@ -321,13 +328,28 @@ a { color: inherit; }
 
 /* ------------------------------------------------------------- title page -- */
 .page--title { position: relative; }
-.sheet { width: 100%; }
-.title__mark { width: clamp(150px, 20vw, 270px); color: var(--onyx); margin-bottom: clamp(3rem, 9vh, 7rem); }
+/* The head: the house on the left, the business of the page on the right. It
+   wraps on a phone, where the wordmark's 150px floor and the 258px pair of asks
+   will not share a 350px measure, and `margin-left: auto` on .topcta keeps the
+   asks hard right on whichever line they land on. */
+.title__head {
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: clamp(.9rem, 2.5vh, 1.5rem) clamp(1rem, 3vw, 2.5rem);
+}
+/* The middle and the foot. The title block takes the free height and sits
+   optically in it; the imprint prints on the foot, which is what an imprint
+   does. The row gap is a floor under the separation, so a short screen closes
+   the gap rather than losing the rule into the copy above it. */
+.sheet {
+  width: 100%; display: grid; grid-template-rows: 1fr auto;
+  row-gap: clamp(2rem, 6vh, 4rem);
+}
+.title__block { align-self: center; display: grid; gap: var(--sc-6); }
+.title__mark { width: clamp(150px, 20vw, 270px); color: var(--onyx); }
 .title__mark svg { width: 100%; height: auto; }
 .page--title h1 { max-width: 15ch; }
-.page--title .lede { margin-top: var(--sc-6); }
 .imprint {
-  margin-top: clamp(3rem, 9vh, 7rem); display: flex; gap: var(--sc-6);
+  display: flex; gap: var(--sc-6);
   font-size: var(--sc-t-xs); letter-spacing: .07em; text-transform: uppercase;
   color: var(--sc-ink-soft); border-top: 1px solid var(--hair); padding-top: var(--sc-4);
 }
@@ -737,8 +759,18 @@ a.run {
    which unpin() rewrites, so this follows the phone list and the measured guard
    without having to be told about either.
    -------------------------------------------------------------------------- */
+/* The title page is excluded, and as a :not() rather than a rule of its own:
+   `.page[data-sc-act="flow"]` is two selectors to `.page--title`'s one, so an
+   override written separately loses the cascade and the band stays.
+
+   It carries no furniture. The standing ask is hidden while the title page is
+   on screen, and the folio is off it entirely - it is not a chapter, and the
+   only thing it could name there is the wordmark already set at the head. A
+   band reserved for furniture that is not there is just the foot of the page
+   pushed up, and on this page it was pushing the whole title composition off
+   centre. */
 @media (max-width: 860px) {
-  .page[data-sc-act="flow"] { padding-bottom: clamp(7rem, 15vh, 9rem); }
+  .page[data-sc-act="flow"]:not(.page--title) { padding-bottom: clamp(7rem, 15vh, 9rem); }
 }
 
 /* Where a flowed section runs media the full width of the measure, the folio

@@ -284,20 +284,32 @@
     }, 180);
   }
 
-  /* The folio stands down while the reader is reading, on a phone, on the same
-     signal as the standing ask - and for the same reason. Below 860px it is not
-     in a margin, because at that width there is no margin: it is one line in
-     the bottom-left corner of the column, and the column is the whole screen.
-     Measured at 430x932 it printed through a figure's caption; at 375x667 it
-     ran through the masthead and across a photograph of a swimming pool.
+  /* On a phone the folio ANNOUNCES and retires. It does not stand.
 
-     A running head names the chapter you are in. That is a question a reader
-     asks when they stop, or when the chapter turns - never in the middle of a
-     sentence - so those are the two moments it is on screen for. Nothing
-     changes above 860px, where it sits in real margin over nothing. */
-  var ANNOUNCE = 1700;
+     A running head belongs in a margin, and below 860px there is no margin:
+     it is one line in the bottom-left corner of the column, and the column is
+     the whole screen. Standing there it crosses whatever is passing - measured,
+     it printed through a figure's citation at 430x932 and ran through the
+     masthead and across a photograph of a swimming pool at 375x667. It was
+     stood down while the reader was scrolling and brought back on a pause,
+     which sounded right and is not: a phone reader pauses every couple of
+     seconds, so "on a pause" is most of the time, and the clash was still
+     there for most of the page.
+
+     What it is actually for is the turn. It names the chapter you have just
+     entered - that is the whole job, and the job is done in a couple of
+     seconds. So it arrives with the chapter, holds, and goes; the chapter's own
+     head is on the page above it for anyone who needs reminding after that.
+     Nothing changes above 860px, where it sits in real margin over nothing and
+     stays put.
+
+     It is off the title page at every width. The title page is not a step in
+     the argument - it carries no label, so the folio reads only "STUDIO
+     ROWAN" there, which is the wordmark set at the head of the same screen. */
+  var ANNOUNCE = 2600;
   var announcing = false;
   var announceT = null;
+  var onTitle = true;
 
   function announce() {
     announcing = true;
@@ -308,8 +320,8 @@
 
   function syncFolio() {
     if (!folio) return;
-    var quiet = matchMedia('(max-width: 860px)').matches && reading && !announcing;
-    folio.classList.toggle('is-away', quiet);
+    var phone = matchMedia('(max-width: 860px)').matches;
+    folio.classList.toggle('is-away', onTitle || (phone && !announcing));
   }
 
   var chapters = [].slice.call(document.querySelectorAll('[data-ch]'));
@@ -324,6 +336,8 @@
       // The colophon is Olive; the folio changes ink with it.
       var dark = !!(best && best.classList.contains('page--colophon'));
       folio.classList.toggle('on-dark', dark);
+      onTitle = !!(best && best.classList.contains('page--title'));
+      syncFolio();
       /* The standing ask retires when the real one arrives: on the colophon
          both asks are set in the running text a few lines below it, and a pill
          floating over them is the page asking twice. Ink is switched as well,
@@ -661,9 +675,8 @@
     reading = y > lastY + 2;
     lastY = y;
     clearTimeout(settle);
-    settle = setTimeout(function () { reading = false; syncAsk(); syncFolio(); }, IDLE);
+    settle = setTimeout(function () { reading = false; syncAsk(); }, IDLE);
     syncAsk();
-    syncFolio();
   }
 
   addEventListener('scroll', onScroll, { passive: true });

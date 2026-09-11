@@ -1176,6 +1176,76 @@ wrong order, and lied about being ready.
 
 ---
 
+## The hero, and the folio, on a real phone
+
+Two things reported from an actual device, both right, and both about the same
+underlying thing: composition that was decided on a wide screen and never
+re-decided for a narrow one.
+
+### The title page was hanging in space
+
+Measured at four phone sizes plus 1440x900. Below the imprint there was
+**28-33 per cent of the screen with nothing in it** - 259px at 390x844 - while
+above the masthead there were 34px. The whole title page sat in the upper three
+quarters and the biggest single element on it was the void underneath.
+
+Two causes, and the second is the interesting one.
+
+**The imprint was centred with the block it belongs under.** An imprint is a
+foot-line; centred with the title it is a foot-line floating in the middle of
+the page, and everything below it is left over. The title page is three zones
+now - head, title, imprint - with the imprint printing on the foot where it
+belongs and the title taking the middle to itself. What remains under it is the
+page's own bottom gutter, 11 per cent at every size, which is margin rather
+than void.
+
+**The top-left corner was empty opposite two pills.** The asks were absolutely
+positioned top right, deliberately, "so they do not push the title composition
+around" - and the wordmark was down in the stack with the headline, where it
+read as the first line of the headline block rather than as the house setting
+it. The wordmark and the asks hold the same line now, which is what a title
+page's head IS: the name of the house on the left, the business of the page on
+the right. On a phone the asks wrap to a second line and stay hard right - the
+wordmark's 150px floor and the 258px pair will not share a 350px measure - so
+the head is one block in the corner at every width.
+
+The furniture band from the mobile audit was also landing on this page and
+pushing the composition further off centre. The title page carries no
+furniture - the standing ask is hidden while it is on screen, and the folio is
+off it entirely - so it is excluded. As a `:not()` rather than a rule of its
+own: `.page[data-sc-act="flow"]` is two selectors to `.page--title`'s one, and
+an override written separately loses the cascade silently. It did, first time.
+
+### The folio does not stand on a phone any more
+
+A running head belongs in a margin, and below 860px there is no margin - it is
+one line in the bottom-left corner of the column and the column is the whole
+screen. The mobile audit stood it down while the reader was scrolling and
+brought it back on a pause, which sounded right and is not: a phone reader
+pauses every couple of seconds, so "on a pause" is most of the time and the
+clash was still there for most of the page.
+
+What it is actually for is the turn. It names the chapter you have just entered,
+and that job is finished in a couple of seconds. So on a phone it arrives with
+the chapter, holds for 2.6s, and goes - the chapter's own head is on the page
+above it for anyone who needs reminding after that. Above 860px nothing changes:
+it sits in real margin, over nothing, and stays put.
+
+And it is **off the title page at every width**. The title page is not a step in
+the argument, so it carries no label and the folio read only "STUDIO ROWAN"
+there - which is the wordmark, set at the head of the same screen. It was also
+about to collide with the imprint once that moved to the foot.
+
+**What is left, and it is a judgement rather than a defect:** the announcement
+still crosses the copy for its 2.6 seconds, five times over a fourteen-viewport
+read. That is a chapter card doing its job rather than furniture in the way, but
+if it is still one thing too many on a phone the honest alternative is no folio
+below 860px at all - the cost being that the argument-role labels ("The
+problem", "The proof") then exist only on wide screens, since the page
+deliberately has nowhere else to put them.
+
+---
+
 ## Open items
 
 Everything still open on preview 1 applies here, because the copy and the
