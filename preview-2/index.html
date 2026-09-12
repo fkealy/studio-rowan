@@ -254,18 +254,27 @@
            caption and never bleeds type across it; under the image is the
            version of "well placed" that survives every viewport. -->
       <div class="spread spread--claims">
-        <!-- One reveal for the heading and the claims together. The claims do
-             not need a device of their own: they are four short labels under
-             the heading that introduces them, and the heading's arrival is the
-             only entrance the block wants. So `data-sc-in` sits on .proof and
-             not on the header, which is what makes them one arrival rather
-             than two that happen to be close. -->
-        <div class="proof" data-sc-in>
-          <header class="chapter">
+        <!-- Two arrivals, not one. The heading lands, then the claims count
+             themselves in underneath it - each one rising as its rule draws
+             across, 90ms apart. They are a LIST OF FOUR ASSERTIONS and the
+             cascade is the reader being handed them one at a time rather than
+             a paragraph of four labels appearing at once; the rule wiping in
+             ahead of each line is the page doing in motion what the hairlines
+             already do in layout, which is separate the claims from each other.
+
+             Not the engine's `data-sc-stagger`: that writes one inline
+             transition-delay per child, so the icon inside a claim cannot be
+             offset from the claim's own arrival - all four icons would fire
+             together while their lines were still 270ms apart. The delays are
+             CSS instead (`--d` per :nth-child in styles.css), which lets each
+             claim's icon follow its own line by 110ms. `data-sc-in` here is
+             only the trigger; .claims itself does not move. -->
+        <div class="proof">
+          <header class="chapter" data-sc-in>
             <h2 class="chapter__t" id="c3">Why it holds up.</h2>
           </header>
 
-          <ol class="claims">
+          <ol class="claims" data-sc-in>
             <li class="claim">
               <i aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="397.50 286.03 165.00 165.00" fill="currentColor"><path fill-rule="nonzero" d="M480.00 430.40 C514.17 430.40 541.88 402.70 541.88 368.53 C507.70 368.53 480.00 396.23 480.00 430.40Z"/><path fill-rule="nonzero" d="M418.13 368.53 C418.13 402.70 445.83 430.40 480.00 430.40 C480.00 396.23 452.30 368.53 418.13 368.53Z"/><path fill-rule="nonzero" d="M480.00 368.53 C514.17 368.53 541.88 340.83 541.88 306.65 C507.70 306.65 480.00 334.36 480.00 368.53Z"/><path fill-rule="nonzero" d="M418.13 306.65 C418.13 340.83 445.83 368.53 480.00 368.53 C480.00 334.36 452.30 306.65 418.13 306.65Z"/><path fill-rule="nonzero" d="M480.00 416.65 C506.58 416.65 528.13 395.11 528.13 368.53 C501.55 368.53 480.00 390.07 480.00 416.65Z"/><path fill-rule="nonzero" d="M431.88 368.53 C431.88 395.11 453.42 416.65 480.00 416.65 C480.00 390.07 458.45 368.53 431.88 368.53Z"/><path fill-rule="nonzero" d="M480.00 368.53 C506.58 368.53 528.13 346.98 528.13 320.40 C501.55 320.40 480.00 341.95 480.00 368.53Z"/><path fill-rule="nonzero" d="M431.88 320.40 C431.88 346.98 453.42 368.53 480.00 368.53 C480.00 341.95 458.45 320.40 431.88 320.40Z"/></svg></i>
               <div><b>Recycled EVA foam</b><span>Made from what already exists.</span></div>

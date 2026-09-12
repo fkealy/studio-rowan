@@ -409,6 +409,60 @@ a { color: inherit; }
 .claim i svg { width: 100%; height: 100%; }
 .claim b { display: block; font-weight: 500; font-size: var(--sc-t-lg); }
 .claim span { display: block; color: var(--sc-ink-soft); margin-top: .1rem; }
+
+/* The claims cascade in, one at a time.
+   `data-sc-in` on the <ol> is the trigger and nothing else - the list itself
+   must not fade or lift, or every claim would carry the container's motion on
+   top of its own and the cascade would read as one block sliding with a blur
+   in it. So the generic flow-reveal rule is neutralised on .claims and the
+   entrance is rebuilt on the items below.
+   Specificity note: `.claims[data-sc-in]` (0,2,0) has to out-rank the engine's
+   `[data-sc-in]` (0,1,0), and it does. */
+.claims[data-sc-in] { opacity: 1; transform: none; transition: none; }
+
+/* Each claim: the rule draws across, the line rises into the space under it,
+   the icon follows its own line a beat later. Three things, one gesture -
+   the hairline arriving first is what makes it read as the list being ruled
+   off rather than four boxes fading up.
+   `--d` is the claim's place in the queue. 90ms apart is close enough that the
+   four still read as one list (270ms end to end, under a third of a second)
+   and far enough apart to be a sequence rather than a smear. The 80ms on the
+   first one is head room for the heading: on a tall screen the header and the
+   list cross the observer in the same frame, and without it the h2 and the
+   first claim would arrive together. */
+.claim { --d: 80ms; position: relative; }
+.claim:nth-child(2) { --d: 170ms; }
+.claim:nth-child(3) { --d: 260ms; }
+.claim:nth-child(4) { --d: 350ms; }
+
+/* The rules are drawn by pseudo-elements, not by the borders: a border can
+   only fade, and a fading line has no direction. These wipe from the left,
+   which is the direction the claim is read in. The borders stay in the box
+   model (they hold the spacing) and go transparent until their line arrives. */
+.claim { border-top-color: transparent; }
+.claim:last-child { border-bottom-color: transparent; }
+.claim::before, .claim:last-child::after {
+  content: ""; position: absolute; inset-inline: 0; height: 1px;
+  background: var(--hair); transform: scaleX(0); transform-origin: left center;
+  transition: transform 780ms var(--sc-ease-out); transition-delay: var(--d);
+}
+.claim::before { top: -1px; }
+.claim:last-child::after { bottom: -1px; transition-delay: calc(var(--d) + 90ms); }
+
+.claim > div, .claim > i {
+  opacity: 0; transform: translate3d(0, 14px, 0);
+  transition: opacity 620ms var(--sc-ease-out), transform 620ms var(--sc-ease-out);
+  transition-delay: var(--d);
+}
+/* The icon is the one thing here that is a mark rather than words, so it is
+   allowed a little more: it settles up from 0.92 behind its own line. Held to
+   the same 620ms so it lands with the sentence it belongs to, not after it. */
+.claim > i { transform: translate3d(0, 10px, 0) scale(.92); transform-origin: left center; transition-delay: calc(var(--d) + 110ms); }
+
+.claims.sc-in .claim::before,
+.claims.sc-in .claim:last-child::after { transform: none; }
+.claims.sc-in .claim > div,
+.claims.sc-in .claim > i { opacity: 1; transform: none; }
 /* The proof plate's caption is the chapter's summary paragraph, so it is set as
    prose rather than in the small caption voice the other plates use - it is
    there to be read, not to label. Under the image, never over it: over the
@@ -693,4 +747,16 @@ html:not(.js) .press__stack::before {
   .plate__frame canvas { display: none; }
   .plate__frame img { opacity: 1 !important; }
   .plate__load { display: none; }
+
+  /* The claims cascade, gentler - the engine's rule for flow reveals does not
+     reach these selectors, so it is restated here on the same terms: opacity
+     still carries the arrival, every position change is dropped, and the queue
+     collapses. A 350ms stagger is a sequence the reader has to wait through,
+     which is the thing this mode is asking us not to do. */
+  .claim > div, .claim > i {
+    transform: none; transition-duration: 220ms; transition-delay: 0ms;
+  }
+  .claim { border-top-color: var(--hair); }
+  .claim:last-child { border-bottom-color: var(--hair); }
+  .claim::before, .claim:last-child::after { display: none; }
 }

@@ -997,7 +997,7 @@ rest of it.
 | Block | Was | Now |
 | --- | --- | --- |
 | Chapter two: the lede and its three paragraphs | four cues at `0`, `0.08`, `0.24`, `0.44` | one cue at `0` on the lede, one on `.prose` |
-| Why it holds up: the four claims | four wipes at `0.06`, `0.24`, `0.42`, `0.6` | no device of their own — one `data-sc-in` on `.proof` |
+| Why it holds up: the four claims | four wipes at `0.06`, `0.24`, `0.42`, `0.6` | one `data-sc-in` on `.proof` — then, later, a 90ms time-based cascade; see *The claims count themselves in* |
 | The press tail: the cost line and the "better for..." lines | cues at `0.5` and `0.68` | no cue at all — it paints with the act, like the plate above it |
 
 Chapter two was the worst of them. Sixty-two words of argument — *it's wasteful,
@@ -1054,6 +1054,71 @@ four claims report identical `clip-path` at every sample; and the press plate
 and tail both read opacity 1 at every sample from `p = 0` to `0.8`. On a phone,
 where these sections flow, each block reads fully arrived by the time it is
 centred in the viewport.
+
+---
+
+## The claims count themselves in
+
+The four claims have an entrance again — but the thing that was taken out and
+the thing that is back are not the same device, and the distinction is the whole
+of it.
+
+What was removed was **four scroll-scrubbed wipes across 0.06 → 0.6 of a pinned
+2.6-viewport act**: the reader had to keep scrolling — well over a viewport of
+it — to finish reading a list of four short labels, and could not compare the
+four until the last one had been dragged into existence. What is here now is a
+**time-based cascade, 90ms apart, 350ms end to end**, fired once when the list
+crosses the observer. Nobody waits for it and nobody scrolls through it; it is
+finished in a third of a second whether the reader moves again or not.
+
+That is the same species as the `data-sc-stagger` blocks this build already
+keeps in chapter one, the mission and the colophon — a settling, not a wait —
+and the paragraph above that calls those "deliberately untouched" is the
+argument for this one too.
+
+Three things move per claim, and they are one gesture, not three:
+
+| Part | Motion | Offset from the claim's slot |
+| --- | --- | --- |
+| the rule above it | `scaleX(0 → 1)` from the left, 780ms | `--d` |
+| the label and its line | 14px rise + fade, 620ms | `--d` |
+| the icon | 10px rise, `scale(.92 → 1)` + fade, 620ms | `--d + 110ms` |
+
+The rule arriving *ahead* of the words is what makes it read as the list ruling
+itself off rather than four boxes fading up: the page is doing in motion what
+the hairlines already do in layout. The rules are drawn by pseudo-elements
+rather than by the `border-top` they sit on — a border can only fade, and a
+fading line has no direction — so the borders stay in the box model to hold the
+spacing and go transparent until their line arrives. `.claim:last-child` closes
+the list with its bottom rule at `--d + 90ms`, last of everything.
+
+**Not `data-sc-stagger`.** The engine's stagger writes one inline
+`transition-delay` per child of the cued element, which can offset the claims
+from each other but cannot offset anything *inside* a claim: all four icons
+would fire together while their own lines were still 270ms apart. So the delays
+are CSS — `--d` per `:nth-child` — and `data-sc-in` on the `<ol>` is a trigger
+and nothing else. `.claims[data-sc-in]` neutralises the engine's own opacity and
+lift on the container, because a container that lifts while its children lift
+is the compounding this build spent a whole section removing.
+
+`data-sc-in` moved back off `.proof` and onto the `.chapter` header, so the
+heading and the list are two arrivals rather than a nested pair writing opacity
+to the same subtree — the trap named two sections up. The first claim carries
+80ms of head room for exactly this reason: on a tall screen the header and the
+list cross the observer in the same frame, and without it the h2 and the first
+claim would land together.
+
+Reduced motion restates the block on the engine's terms — opacity still carries
+the arrival, every position change is dropped, durations fall to 220ms and the
+queue collapses to zero, because a 350ms sequence is a sequence the reader has
+to wait through. The rules go back to being plain borders there.
+
+Verified by reading `getAnimations({subtree: true})` off the list rather than by
+sampling opacity, which is the reliable way to check a time-based cascade: 21
+transitions, delays `80 / 170 / 260 / 350` for the rules and labels, `190 / 280
+/ 370 / 460` for the icons, and the closing bottom rule at `440`. Held at
+`currentTime = 500ms`, the section shows claims one and two settled, three
+part-way and four still faint, with each rule shorter than the one above it.
 
 ---
 
