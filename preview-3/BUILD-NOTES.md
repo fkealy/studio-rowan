@@ -2318,6 +2318,81 @@ cannot outpace a reader when the section is on screen far longer than that, but
 it wants an eye.
 
 
+## Feedback round three (preview 3)
+
+Seven notes. What changed, and the one thing still open.
+
+**1 + 2. The asks are buttons, and there are two of them, twice.** The single
+ask top right was an apricot dot and a line of plain type, and it did not read
+as something to press. It is a pill now (`.btn`): *Start with a sample box*
+filled, *Get in touch* outlined. The pair stands top right at a compact size
+and again, full size, under the lede. Top right comes off under 700px, where
+the full-size pair is on the same screen. The filled one goes to `#sample`, the
+form at the foot of the page.
+
+**3. "So, where did it all begin?"** heads the story. *"It was summertime in the
+Swiss Alps."* is back at the head of the paragraph it opens.
+
+**4. "So we redesigned them." lights a word at a time** on its way up the
+screen, the same reading the mission gets (`data-words`, page.js THE LIT
+LINES). It used to fade in whole once the pin engaged, 0.08 of the act before
+the sheet began to leave, so it appeared suddenly and was already travelling
+off the top by the time it had been read. Measured at 1440x900: first word at
+300px before the pin, all four lit as the stage comes to rest.
+
+**5. The slipper is behind the sheet, not after it.** The name and the plate
+were timed to fade in at 0.59 of the act, after the sheet had cleared the frame,
+so the reader scrolled a full viewport of growing white before the product
+showed. They are untimed now and the sheet uncovers them as it leaves. The lede
+and prose follow as the sheet's trailing edge passes them (0.36 of the act, was
+0.69) and the spin starts at 0.50 (was 0.58).
+
+**6. The mission statement is static.** It was sticky, so it slid down the page
+with the reader - and, stuck, it stopped moving up the screen, which is the one
+thing its lighting measured. That was the "design" delay: the window ended on
+the statement's BOTTOM edge reaching 45% of the screen, which a statement stuck
+at 18vh never did, so the last two words stayed dark until the column let go.
+The window is measured on the top edge only now.
+
+**7. The colophon is the sample box form.** Proposition left, form right,
+masthead under both. *"Still paying for thousands of disposable slippers every
+year?"* is out of the page for now; it is the natural heading for the savings
+calculator if that goes ahead.
+
+### The savings calculator
+
+The top half of the colophon (`#save`), above the ask row (`#sample`), on the
+same olive sheet. It was a section of its own on hemp for one round, with its
+own display heading and its own button, and competed with the form under it;
+now the question is the section's h2, the sample box is an h3 a step smaller,
+and the only button is the form's submit.
+
+Two inputs - pairs a year or a month, and price per pair - against the
+studio's GBP 0.25 per stay (`OURS_PER_STAY` in page.js, quoted in the
+footnote with "our conservative assumptions"). The 10 washes at 60C is what
+has been TESTED so far, not the lifespan the GBP 0.25 rests on, so it is a
+separate sentence in the footnote and not part of the cost claim. The markup
+carries the worked example for the page's own hotel, 70,000 pairs at GBP 1.
+Someone already paying under GBP 0.25 is told they would pay more, not shown a
+negative saving.
+
+### The form's backend
+
+`/functions/api/sample-request.js`, a Cloudflare Pages Function at the REPO
+ROOT (Pages only looks for `/functions` there, so it cannot live inside
+`preview-3/`). It emails each request through Resend with the visitor as
+`reply_to`. It needs `RESEND_API_KEY` (as a secret) and `SAMPLE_FROM` (a sender
+on a domain verified in Resend) set on the Pages project; `SAMPLE_TO` is
+optional.
+
+**Switched off for now.** The studio chose to keep the email-app handoff rather
+than set up a sending service, so `SAMPLE_ENDPOINT` in page.js is empty and the
+page never calls the function. Deployed unconfigured, the function answers 503
+and sends nothing. To switch on: set the variables, set `SAMPLE_ENDPOINT` to
+`/api/sample-request`.
+
+---
+
 ## Open items
 
 Everything still open on preview 1 applies here, because the copy and the

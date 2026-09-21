@@ -72,48 +72,65 @@ a { color: inherit; }
 .skip:focus { top: .75rem; }
 
 
+/* ---------------------------------------------------------------- buttons --
+   One button, used for every ask on the page: the pair top right, the pair
+   under the lede, and the form's submit. A pill with a real edge and a real
+   fill, because the thing it replaced - an apricot dot and a line of plain
+   type - did not read as something to press.
+
+   Two weights. The plain one is an outline in the section's own ink. `--key`
+   is filled with that ink and set in the ground's colour, with the apricot dot
+   carried over from the old ask as the one spot of accent above the fold. Both
+   are written against --sc-ink, so they re-ink themselves on any ground the
+   way the type does; --btn-on is the one thing a ground has to supply, and
+   both grounds that carry buttons are olive.
+   -------------------------------------------------------------------------- */
+.btn {
+  --btn-on: var(--olive);
+  display: inline-flex; align-items: center; justify-content: center; gap: .6rem;
+  min-height: 3rem; padding: .7rem 1.5rem; border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--sc-ink) 55%, transparent);
+  background: transparent; color: var(--sc-ink);
+  font: inherit; font-size: var(--sc-t-sm); font-weight: 500; line-height: 1.2;
+  letter-spacing: .005em; text-decoration: none; white-space: nowrap; cursor: pointer;
+  transition: background-color var(--sc-d-fast) var(--sc-ease-out),
+              border-color var(--sc-d-fast) var(--sc-ease-out),
+              color var(--sc-d-fast) var(--sc-ease-out);
+}
+.btn--key { background: var(--sc-ink); border-color: var(--sc-ink); color: var(--btn-on); }
+.btn--key::before {
+  content: ""; flex: none; width: .5rem; height: .5rem; border-radius: 50%;
+  background: var(--apricot);
+  transition: background-color var(--sc-d-fast) var(--sc-ease-out);
+}
+.btn--sm { min-height: 2.5rem; padding: .5rem 1.15rem; font-size: var(--sc-t-xs); }
+.btn[disabled] { opacity: .6; cursor: progress; }
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover { background: color-mix(in oklab, var(--sc-ink) 14%, transparent); border-color: var(--sc-ink); }
+  .btn--key:hover { background: var(--apricot); border-color: var(--apricot); color: var(--onyx); }
+  .btn--key:hover::before { background: var(--onyx); }
+}
+.btn:active { transform: translateY(1px); }
+
 /* --------------------------------------------------------------- top asks --
-   The two CTAs, top right, on the title page and nowhere else. Out of flow, so
-   they do not push the title composition around; the title page is the
-   containing block for them (see .page--title).
+   The compact pair, top right, on the title page and nowhere else. Out of
+   flow, so they do not push the title composition around; the title page is
+   the containing block for them (see .page--title). Off under 700px: the
+   full-size pair under the lede is on the same screen there, and two pills
+   across a 375px header sit on top of the wordmark.
    -------------------------------------------------------------------------- */
 .topcta {
   position: absolute; z-index: 30;
   top: clamp(1.25rem, 4vh, 2.75rem); right: var(--margin);
-  display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end;
-  gap: clamp(.9rem, 2.2vw, 2rem);
-  font-size: var(--sc-t-sm);
+  display: flex; align-items: center; justify-content: flex-end; gap: .6rem;
 }
-.topcta__a {
-  text-decoration: none; color: var(--sc-ink-soft); white-space: nowrap;
-  transition: color var(--sc-d-fast) var(--sc-ease-out);
-}
-/* Prototype 02's ask: an apricot dot and a plain line of type, underlined on
-   hover. It was a hairline pill, which was right on ivory - a quiet outline on
-   paper - and wrong here: over the field the pill's border is one more thin
-   pale shape among 70,000, and its box traps a rectangle of dots behind the
-   label. The dot is the only apricot above the fold, so it carries the ask on
-   its own, and the label sits on the olive like everything else on the page.
-   The prototype underlined an inner span; this draws the same 1px line as a
-   background on the link, grown from zero on hover and inset past the dot, so
-   the markup stays the one the other previews share. */
-.topcta__a--key {
-  display: inline-flex; align-items: center; gap: .55rem;
-  color: var(--sc-ink); padding-block: .5rem;
-  background:
-    linear-gradient(currentColor, currentColor) no-repeat
-    calc(.5rem + .55rem) calc(100% - .35rem) / 0 1px;
-  transition: background-size var(--sc-d-fast) var(--sc-ease-out);
-}
-.topcta__a--key::before {
-  content: ""; flex: none; width: .5rem; height: .5rem; border-radius: 50%;
-  background: var(--apricot);
-}
-@media (hover: hover) and (pointer: fine) {
-  .topcta__a:hover { color: var(--sc-ink); }
-  .topcta__a--key:hover { background-size: calc(100% - 1.05rem) 1px; }
-}
-@media (max-width: 480px) { .topcta { font-size: var(--sc-t-xs); gap: .75rem; } }
+@media (max-width: 700px) { .topcta { display: none; } }
+
+/* The full-size pair, under the lede. Wraps to a stack rather than shrinking:
+   at 375px the two do not fit one line, and a full-width pair of buttons is
+   the phone's own idiom anyway. */
+.asks { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: clamp(1.75rem, 4.5vh, 2.75rem); }
+@media (max-width: 480px) { .asks .btn { flex: 1 1 100%; } }
 
 /* ------------------------------------------------------------------- type -- */
 .d {
@@ -562,59 +579,36 @@ a { color: inherit; }
    the sheet SCROLLING, at the speed the reader is scrolling it, and a page
    that held it still would never show the chapter behind it. */
 
-/* ------------------------------------------------------- the four reveals --
-   The couplet's second line, the chapter's name, and the writing. All four are
-   timed here rather than with `data-sc-cue`, and scoped to the pinned state,
-   for one reason: THEY ONLY MEAN ANYTHING AGAINST THE HINGE.
+/* ------------------------------------------------------------ the reveals --
+   WHAT IS BEHIND THE SHEET IS ALREADY THERE. The chapter's name and the
+   slipper are not timed: they stand on the white from the first frame and the
+   sheet uncovers them as it scrolls off, which is the whole reason for having
+   a sheet. They used to wait until it had cleared the frame (0.59 of the act)
+   and then fade in, so the reader scrolled a full viewport watching an empty
+   white screen grow from the bottom, and only then was shown the product. The
+   sheet leaves upward, so the object is uncovered before its name - the plate
+   is centred in the right column, the name stands at the top of the left.
 
-   A cue is the engine's, and the engine honours it whether the act is pinned
-   or flowed. Below 860px this chapter flows - there is no sheet, no cut and no
-   reveal to stage - and cues written for the pinned timeline held the heading,
-   the lede and the prose at zero opacity, still occupying every pixel of their
-   layout, for the first half of the section's life. The phone opened chapter
-   two on a screen of nothing with the slipper a viewport below it. Flowed, the
-   chapter is now simply a chapter, which is the correct reading of it.
+   The couplet's second line is not timed here either: it lights a word at a
+   time off its own position on the screen (page.js, THE LIT LINES), so it is
+   read on the way in rather than appearing once the pin engages and leaving
+   a moment later.
 
-   `--sc-p` and not `--t` on purpose: these are positions in the ACT, not in the
-   lift. Three of them land after the lift has finished, so measuring them
-   against it would put them past 1. Like a cue, they are clamped to zero for
-   the whole of the stage's entry slide, which is what keeps the first line of
-   the couplet - the one thing that must be readable during the slide - uncued
-   and untouched by any of this.
+   That leaves the writing, which IS timed, and scoped to the pinned state for
+   the reason it always was: a timing written against the hinge only means
+   anything where there is a hinge. Below 860px this chapter flows and is
+   simply a chapter. `--sc-p` and not `--t`: a position in the ACT, not in the
+   lift. It starts as the sheet's trailing edge passes the lede, so the
+   reveal frame is still the name and the object, and the writing follows it.
    -------------------------------------------------------------------------- */
-.sc-ready #ch2:not(.is-unpinned) :is(.hinge__a, .chapter, .plate, .lede, .prose) {
+.sc-ready #ch2:not(.is-unpinned) :is(.lede, .prose) {
+  --in: clamp(0, (var(--sc-p, 0) - 0.36) / 0.06, 1);
   opacity: var(--in, 1);
   transform: translateY(calc((1 - var(--in, 1)) * 1.1rem));
   will-change: opacity, transform;
 }
-/* Under the question, once the pin has engaged. */
-.sc-ready #ch2:not(.is-unpinned) .hinge__a {
-  --in: clamp(0, (var(--sc-p, 0) - 0.02) / 0.06, 1);
-}
-/* After the sheet has left the frame entirely, taking the couplet that stood
-   here with it: 0.59 is about four hundredths past the end of the lift, so the name
-   lands on white that has had a moment to itself rather than on a crossfade
-   with the sentence it answers. */
-/* THE PLATE SHARES THIS WINDOW. It used to be untimed: the sheet cleared the
-   frame from the bottom, so the slipper was uncovered first and stood alone
-   on white for a few hundredths of the act until its name arrived. The idea
-   was that an object already standing there is a thing being shown. In
-   practice it read as the asset hanging about waiting for its heading. The
-   name and the object are one arrival, so they are on one clock: same start,
-   same length, same rise. */
-.sc-ready #ch2:not(.is-unpinned) :is(.chapter, .plate) {
-  --in: clamp(0, (var(--sc-p, 0) - 0.59) / 0.05, 1);
-}
-/* Later still. Arriving with the name they would put sixty words of prose in
-   the reveal frame beside the product; the reveal is the name and the object,
-   and the writing follows it. */
-.sc-ready #ch2:not(.is-unpinned) :is(.lede, .prose) {
-  --in: clamp(0, (var(--sc-p, 0) - 0.69) / 0.06, 1);
-}
 @media (prefers-reduced-motion: reduce) {
-  .sc-ready #ch2:not(.is-unpinned) :is(.hinge__a, .chapter, .plate, .lede, .prose) {
-    transform: none;
-  }
+  .sc-ready #ch2:not(.is-unpinned) :is(.lede, .prose) { transform: none; }
 }
 
 /* Media column. Never bleeds under type; always carries a caption. */
@@ -814,7 +808,13 @@ a { color: inherit; }
    statement rather than a figure and needs the width to set in four lines.
    The list's last rule is the gap to the prose. */
 .ch--mission { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: start; }
-.ch--mission .ch__num { top: 18vh; }
+/* STATIC. Every other .ch holds its left column sticky while the telling runs
+   past, and the statement did too - so it slid down the page with the reader,
+   and, stuck, it stopped moving up the screen, which is the one thing its
+   word-by-word lighting measures: the last words stayed dark until the column
+   let go. It is a statement, it stands where it is set, and it finishes
+   lighting on its way up like any other line. */
+.ch--mission .ch__num { position: static; }
 .ch--mission .changed { max-width: 50ch; margin-bottom: clamp(1.75rem, 4vh, 2.75rem); }
 /* TWO COLUMNS ONLY WHERE THE STATEMENT FITS ONE. It is a 16ch line at 3xl,
    about 610px, and it needs to set in four or five lines to read as a
@@ -867,11 +867,13 @@ a { color: inherit; }
   max-width: 16ch; text-wrap: balance;
 }
 .mission .hi { color: var(--apricot); }
-.mission .w { display: inline-block; transition: opacity .25s linear; }
-/* Dimmed only once page.js has split the sentence AND is going to light it:
-   the class is set by the script, so no script means no dimming. */
-.mission.is-scrub .w { opacity: .15; }
-.mission.is-scrub .w.on { opacity: 1; }
+/* THE LIT LINES. A display line that lights a word at a time as it comes up
+   the screen: the mission statement, and the couplet's answer on the hinge.
+   Dimmed only once page.js has split the line AND is going to light it - the
+   class is set by the script, so no script means no dimming. */
+[data-words] .w { display: inline-block; transition: opacity .25s linear; }
+[data-words].is-scrub .w { opacity: .15; }
+[data-words].is-scrub .w.on { opacity: 1; }
 
 .changed { list-style: none; }
 .changed li {
@@ -981,14 +983,120 @@ a { color: inherit; }
 .betters span { display: block; color: var(--sc-ink-soft); }
 .betters .key { color: var(--onyx); font-weight: 500; }
 
-/* --------------------------------------------------------------- colophon --
-   Small type. The ask is a line of running text, not a button island, and
-   there is no magnet: both are this grammar's bans.
+/* ------------------------------------------------------------- the saving --
+   The calculator: the top half of the colophon. Inputs on the left, the
+   answer on the right, the same left-asks / right-tells shape as the story,
+   the mission and the ask row under it, whose columns it shares. A rule
+   closes it, and the ask stands on the rule.
+
+   The fields are the form's ruled fields (.f). Apricot is the product's side
+   of the comparison - the one bar - and nothing else, so the accent on this
+   sheet is spent on the saving itself.
    -------------------------------------------------------------------------- */
-.colophon { display: grid; gap: clamp(2rem, 5vh, 3.5rem); max-width: 64rem; }
-.colophon h2 { max-width: 20ch; }
-.colophon .prose { color: var(--sc-ink-soft); max-width: 46ch; }
-.colophon .prose strong { color: var(--sc-ink); }
+.calc {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: clamp(2rem, 6vw, 6rem); align-items: start;
+  border-bottom: 1px solid color-mix(in oklab, var(--ivory) 30%, transparent);
+  padding-bottom: clamp(2.5rem, 7vh, 4.5rem);
+}
+.calc__ask { display: grid; gap: clamp(1.75rem, 4.5vh, 2.75rem); }
+.calc .chapter { margin-bottom: 0; }
+.calc h2 { max-width: 16ch; }
+.calc__inputs { display: grid; gap: clamp(1.25rem, 3vh, 1.75rem); max-width: 26rem; }
+/* A field with something standing on its rule beside the input: the
+   year/month switch after it, or the currency sign before it. The rule is
+   the wrapper's, so it runs under both. */
+.f__joined {
+  display: flex; align-items: center; gap: .75rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--sc-ink) 45%, transparent);
+  transition: border-color var(--sc-d-fast) var(--sc-ease-out);
+}
+.f__joined:focus-within { border-bottom-color: var(--apricot); box-shadow: 0 1px 0 var(--apricot); }
+.f__joined input[type="text"] {
+  border-bottom: 0; box-shadow: none !important; flex: 1 1 auto; min-width: 0;
+  font-family: var(--display); font-weight: 300; font-size: var(--sc-t-xl);
+  letter-spacing: var(--sc-track-tight); font-variant-numeric: tabular-nums; padding: .3rem 0;
+}
+.f__joined--pre { gap: .35rem; }
+.f__joined--pre > span {
+  font-family: var(--display); font-weight: 300; font-size: var(--sc-t-xl); color: var(--sc-ink-soft);
+}
+.seg { display: flex; flex: none; border: 1px solid color-mix(in oklab, var(--sc-ink) 40%, transparent); border-radius: 999px; padding: 2px; }
+.f .seg label { letter-spacing: 0; text-transform: none; cursor: pointer; position: relative; }
+.seg input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.seg span {
+  display: block; padding: .4rem .85rem; border-radius: 999px; white-space: nowrap;
+  font-size: var(--sc-t-xs); color: var(--sc-ink-soft);
+  transition: background-color var(--sc-d-fast) var(--sc-ease-out), color var(--sc-d-fast) var(--sc-ease-out);
+}
+.seg input:checked + span { background: var(--sc-ink); color: var(--olive); }
+.seg input:focus-visible + span { outline: 2px solid var(--apricot); outline-offset: 2px; }
+
+.calc__out { display: grid; gap: clamp(1.25rem, 3vh, 1.75rem); }
+.calc__label {
+  font-size: var(--sc-t-xs); letter-spacing: .1em; text-transform: uppercase; color: var(--sc-ink-soft);
+}
+/* The answer, at the size the opening 70,000 is set - it is the same kind of
+   number. nowrap + tabular so it does not jitter as the reader types. */
+.calc__big {
+  font-family: var(--display); font-weight: 300; color: var(--hemp);
+  font-size: clamp(2.6rem, 6.2vw, 6.4rem); line-height: .95; letter-spacing: -.04em;
+  font-variant-numeric: tabular-nums; white-space: nowrap; margin-top: -.5rem;
+}
+.calc__big small {
+  font-family: var(--sc-font-text); font-size: var(--sc-t-base); letter-spacing: 0;
+  color: var(--sc-ink-soft); white-space: nowrap;
+}
+/* Two bars on one scale: what they spend now is always the full measure, and
+   ours is set against it, so the gap between the two IS the saving. Widths
+   are written by page.js through the CSSOM (--w); the defaults here are the
+   worked example's. */
+.bars { display: grid; gap: var(--sc-4); border-top: 1px solid color-mix(in oklab, var(--ivory) 30%, transparent); padding-top: var(--sc-5); }
+.bar dt { font-size: var(--sc-t-sm); color: var(--sc-ink-soft); margin-bottom: .4rem; }
+.bar dd { display: flex; align-items: center; gap: .85rem; }
+.bar__fill {
+  --w: 1; flex: 0 0 auto; height: .9rem; width: calc(var(--w) * (100% - 7.5rem)); min-width: 3px;
+  background: color-mix(in oklab, var(--ivory) 32%, transparent);
+  transition: width 420ms var(--sc-ease-out);
+}
+.bar--ours .bar__fill { --w: .25; background: var(--apricot); }
+.bar b { font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* The second saving, as a pair of figures on a rule: smaller than the money,
+   larger than the prose, so the sheet reads money first and waste second. */
+.calc__waste {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sc-4) clamp(1.25rem, 3vw, 2.5rem);
+  border-top: 1px solid color-mix(in oklab, var(--ivory) 30%, transparent); padding-top: var(--sc-5);
+}
+.calc__waste dt {
+  font-size: var(--sc-t-xs); letter-spacing: .07em; text-transform: uppercase;
+  color: var(--sc-ink-soft); margin-bottom: .35rem;
+}
+.calc__waste b {
+  font-family: var(--display); font-weight: 300; font-size: var(--sc-t-xl);
+  letter-spacing: var(--sc-track-tight); font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.calc__waste span { font-size: var(--sc-t-sm); color: var(--sc-ink-soft); white-space: nowrap; }
+@media (max-width: 480px) { .calc__waste { grid-template-columns: minmax(0, 1fr); } }
+.calc__note { font-size: var(--sc-t-xs); color: var(--sc-ink-soft); max-width: 46ch; }
+@media (max-width: 860px) { .calc { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { .bar__fill { transition: none; } }
+
+/* --------------------------------------------------------------- colophon --
+   The ask, and it is a form now: the proposition on the left, the form on the
+   right, the masthead under both. Still no magnet and no button island - the
+   one button here is the form's own submit.
+   -------------------------------------------------------------------------- */
+.colophon { display: grid; gap: clamp(2.5rem, 7vh, 4.5rem); max-width: 72rem; }
+.colophon__ask {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: clamp(2rem, 6vw, 6rem); align-items: start;
+}
+.colophon__mast { display: grid; gap: clamp(1.5rem, 4vh, 2.5rem); }
+.colophon__pitch { display: grid; gap: clamp(1.25rem, 3vh, 2rem); align-content: start; }
+.colophon .chapter { margin-bottom: 0; }
+.colophon h2 { max-width: 16ch; }
+.colophon h3 { max-width: 14ch; }
+.colophon .prose { color: var(--sc-ink-soft); max-width: 42ch; }
 .colophon__tag { color: var(--sc-ink); font-size: var(--sc-t-lg); }
 a.run {
   color: var(--sc-ink); text-decoration: underline;
@@ -999,6 +1107,74 @@ a.run {
   a.run:hover { text-decoration-color: var(--apricot); }
 }
 .colophon :focus-visible { outline-color: var(--hemp); }
+
+/* THE FORM. Set like the rest of the page rather than like a web form: fields
+   are ruled, not boxed - a label in the masthead's micro-caps over a line to
+   write on - so the column reads as a printed reply slip. 1rem type in the
+   fields and not a step smaller: under 16px iOS zooms the page on focus. */
+.sample { display: grid; gap: clamp(1.25rem, 3vh, 1.75rem); }
+.field-row {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.25rem, 3vh, 1.75rem) clamp(1.25rem, 3vw, 2.5rem);
+}
+.f { display: grid; gap: .35rem; align-content: start; }
+.f label {
+  font-size: var(--sc-t-xs); letter-spacing: .07em; text-transform: uppercase;
+  color: var(--sc-ink-soft);
+}
+.f__opt { letter-spacing: 0; text-transform: none; opacity: .75; margin-left: .4em; }
+.f small { font-size: var(--sc-t-xs); color: var(--sc-ink-soft); }
+.f input, .f select, .f textarea {
+  width: 100%; font: inherit; font-size: 1rem; line-height: 1.4; color: var(--sc-ink);
+  background: transparent; border: 0; border-radius: 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--sc-ink) 45%, transparent);
+  padding: .55rem 0; appearance: none; -webkit-appearance: none;
+  transition: border-color var(--sc-d-fast) var(--sc-ease-out);
+}
+.f textarea { resize: vertical; min-height: 4.5rem; }
+/* The select's own arrow went with `appearance`; this is the replacement, an
+   ivory chevron as a data URI (img-src allows data:). */
+.f select {
+  padding-right: 1.5rem; cursor: pointer;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23F6F5F2' stroke-width='1.4'/%3E%3C/svg%3E") no-repeat right .15rem center / .7rem auto;
+}
+/* The closed select shows its placeholder until a month is chosen. */
+.f select:invalid { color: var(--sc-ink-soft); }
+.f select option { color: var(--onyx); background: var(--ivory); }
+@media (hover: hover) and (pointer: fine) {
+  .f :is(input, select, textarea):hover { border-bottom-color: var(--sc-ink); }
+}
+.f :is(input, select, textarea):focus-visible {
+  outline: 0; border-bottom-color: var(--apricot); box-shadow: 0 1px 0 var(--apricot);
+}
+/* Only after a submit has been tried (page.js sets .is-tried): a form that
+   marks every empty field wrong before the reader has typed is scolding. */
+.sample.is-tried :is(input, select, textarea):invalid {
+  border-bottom-color: var(--apricot); box-shadow: 0 1px 0 var(--apricot);
+}
+/* Autofill paints its own pale ground under ivory type. */
+.f input:-webkit-autofill {
+  -webkit-text-fill-color: var(--ivory); caret-color: var(--ivory);
+  box-shadow: 0 0 0 100px var(--olive) inset; transition: background-color 9999s;
+}
+.sample__trap { position: absolute; left: -200vw; width: 1px; height: 1px; overflow: hidden; }
+.sample__foot { display: flex; align-items: center; flex-wrap: wrap; gap: .75rem 1.25rem; margin-top: .5rem; }
+.sample__err { font-size: var(--sc-t-sm); color: var(--hemp); }
+.sample__done { display: grid; gap: var(--sc-4); align-content: start; }
+.sample__done:focus { outline: 0; }
+.sample__done-note { color: var(--sc-ink-soft); max-width: 40ch; }
+[hidden] { display: none !important; }
+/* With script, the form is the ask and this line is not needed. */
+.js .sample__nojs { display: none; }
+.sample__nojs { color: var(--sc-ink-soft); max-width: 42ch; }
+
+@media (max-width: 860px) {
+  .colophon__ask { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 480px) {
+  .field-row { grid-template-columns: minmax(0, 1fr); }
+  .sample__foot .btn { flex: 1 1 100%; }
+}
 
 .masthead {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
@@ -1173,6 +1349,12 @@ a.run {
 html:not(.js) [data-sc-cue],
 html:not(.js) [data-sc-in],
 html:not(.js) [data-sc-stagger] > * { opacity: 1 !important; transform: none !important; }
+/* The form cannot submit without script (the CSP is form-action 'none'), so it
+   steps aside for the mailto line under it. */
+html:not(.js) .sample { display: none; }
+/* The calculator stands as its worked example; inputs that cannot compute
+   would be a lie about what the page does. */
+html:not(.js) .calc__inputs { display: none; }
 /* Without JS the press prints nothing, so the sr-only line carries the beat. */
 html:not(.js) .press__stack::before {
   content: "And again. And again. And again.";

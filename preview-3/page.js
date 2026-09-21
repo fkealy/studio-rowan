@@ -7,6 +7,7 @@
      2. The spin     chapter two's media plate, the one scrub this grammar allows
      3. The field    70,000 dots drifting on the title page's olive ground
      4. The figures  70,000 and 120,000,000, ticking on entry rather than on scroll
+     5. The sample form  the colophon's ask; see the note there about its backend
 
    Assets are local: ./spin and ./media. This build is self-contained and can be
    moved, deployed or deleted without touching /preview/. They were shared with
@@ -390,7 +391,7 @@
      2. THE SPIN  (chapter two)
      ---------------------------------------------------------------------- */
   var COUNT = 87;
-  var SPIN_START = 0.58;   /* was 0.62 of a 3.5 act; see --lift in styles.css */
+  var SPIN_START = 0.5;    /* the sheet has cleared the plate by here; see --lift in styles.css */
   var TIERS = [720, 1024, 1440];
   var BASE = './spin/';
 
@@ -672,15 +673,30 @@
   })();
 
   /* ------------------------------------------------------------------------
-     THE MISSION  (prototype 02's statement)
-     The sentence lights one word at a time as it crosses the screen. The
-     prototype did it with GSAP's ScrollTrigger scrubbing a stagger from
-     "top 78%" to "bottom 45%"; this is the same window, read straight off
-     the element's rect, because the build carries no GSAP and one sentence
-     does not justify it. With reduced motion nothing is split or dimmed.
+     THE LIT LINES  (the mission statement, and the hinge's answer)
+     A display line lights one word at a time as it comes up the screen. The
+     prototype did it with GSAP's ScrollTrigger scrubbing a stagger; this reads
+     the line's own rect, because the build carries no GSAP and two sentences
+     do not justify it. With reduced motion nothing is split or dimmed.
+
+     THE WINDOW IS MEASURED ON THE LINE'S TOP EDGE AND NOTHING ELSE: it starts
+     lighting when the top crosses `from` of the screen height and is fully lit
+     by `to`. It used to end on the BOTTOM edge reaching 45%, which a tall
+     statement in a sticky column never did - it stuck at 18vh with its foot at
+     54% and the last two words stayed dark until the column released. The
+     statement is static now (styles.css) and this no longer depends on how
+     tall the line sets.
+
+     The hinge's answer finishes higher up the window than the mission does,
+     because it has a deadline: the sheet it is printed on slides up into the
+     pin with its top edge around 54% of the screen, and it should be fully lit
+     as it comes to rest, so the hold is spent reading it rather than watching
+     it arrive.
      ---------------------------------------------------------------------- */
-  var missionEl = document.querySelector('[data-words]');
-  if (missionEl && !reduce) (function () {
+  var LIT = { mission: [0.86, 0.36], hinge: [0.96, 0.60] };
+  var litEls = reduce ? [] : [].slice.call(document.querySelectorAll('[data-words]'));
+  litEls.forEach(function (el) {
+    var win = LIT[el.getAttribute('data-words')] || LIT.mission;
     (function walk(node) {
       Array.prototype.slice.call(node.childNodes).forEach(function (n) {
         if (n.nodeType === 3) {
@@ -694,23 +710,32 @@
           n.parentNode.replaceChild(frag, n);
         } else if (n.nodeType === 1) walk(n);
       });
-    })(missionEl);
-    var words = missionEl.querySelectorAll('.w'), lit = -1;
-    missionEl.classList.add('is-scrub');
+    })(el);
+    var words = el.querySelectorAll('.w'), lit = -1;
+    el.classList.add('is-scrub');
     function light() {
-      var r = missionEl.getBoundingClientRect(), vh = window.innerHeight;
-      var start = vh * 0.78, end = vh * 0.45;            /* top 78% -> bottom 45% */
-      var p = clamp01((start - r.top) / ((start - r.top) - (end - r.bottom) || 1));
-      if (r.bottom <= end) p = 1;
+      var vh = window.innerHeight, top = el.getBoundingClientRect().top;
+      var p = clamp01((vh * win[0] - top) / (vh * (win[0] - win[1])));
       var n = Math.round(p * words.length);
       if (n === lit) return; lit = n;
       for (var i = 0; i < words.length; i++) words[i].classList.toggle('on', i < n);
     }
-    window.addEventListener('scroll', light, { passive: true });
-    document.body.addEventListener('scroll', light, { passive: true });
-    window.addEventListener('resize', light);
+    /* Two frames, not none. The hinge's answer rides a sheet the ENGINE moves,
+       and the engine writes that position in its own frame callback - so read
+       straight off the scroll event, the last event of a gesture measured the
+       line where it had been a frame earlier and could leave it a word short
+       for good. The second frame is after the engine's, whichever order the
+       two were registered in. */
+    var queued = false;
+    function ask() {
+      if (queued) return; queued = true;
+      requestAnimationFrame(function () { requestAnimationFrame(function () { queued = false; light(); }); });
+    }
+    window.addEventListener('scroll', ask, { passive: true });
+    document.body.addEventListener('scroll', ask, { passive: true });
+    window.addEventListener('resize', ask);
     light();
-  })();
+  });
 
   /* ------------------------------------------------------------------------
      THE CLAIMS  (chapter three)
@@ -814,6 +839,144 @@
       });
     }
   }
+
+  /* ------------------------------------------------------------------------
+     THE SAVING  (the calculator above the form)
+     Two numbers in, three out. What they spend now is pairs x price; what they
+     would spend is pairs x OURS_PER_STAY, one pair of disposables being one
+     guest stay; the saving is the difference. OURS_PER_STAY is the studio's
+     all-in estimate and is the same figure the footnote quotes.
+
+     Computed on every keystroke, from whatever digits are in the field - the
+     inputs are text, not type=number, so "70,000" and "1,50" are both things a
+     person may type and both are read. Blank or nonsense reads as zero, never
+     NaN. The pairs field is re-grouped with commas on blur, not while typing,
+     because rewriting a field under the caret moves the caret.
+     ---------------------------------------------------------------------- */
+  var OURS_PER_STAY = 0.25;
+  /* Grams in one pair of disposables, for the waste figure. The footnote quotes
+     it; change both together. */
+  var WASTE_G_PER_PAIR = 50;
+  var calc = document.getElementById('calc');
+  if (calc) (function () {
+    var pairsEl = document.getElementById('c-pairs'), costEl = document.getElementById('c-cost');
+    var out = { save: 'calc-save', now: 'calc-now', ours: 'calc-ours', pairs: 'calc-pairs', waste: 'calc-waste' };
+    Object.keys(out).forEach(function (k) { out[k] = document.getElementById(out[k]); });
+    var barOurs = document.getElementById('bar-ours');
+    var label = document.querySelector('.calc__label');
+    var gbp = function (v) { return '\u00A3' + Math.round(v).toLocaleString('en-GB'); };
+
+    function compute() {
+      var per = +(calc.querySelector('input[name="per"]:checked') || {}).value || 1;
+      var pairs = (parseInt(pairsEl.value.replace(/[^\d]/g, ''), 10) || 0) * per;
+      var cost = parseFloat(costEl.value.replace(',', '.').replace(/[^\d.]/g, '')) || 0;
+      var now = pairs * cost, ours = pairs * OURS_PER_STAY, save = now - ours;
+      /* Someone already paying less than we cost per stay is told so plainly;
+         the waste line under it is still true for them. */
+      label.textContent = save >= 0 ? 'You could save' : 'On cost alone, you would pay';
+      out.save.textContent = gbp(Math.abs(save)) + (save < 0 ? ' more' : '');
+      out.now.textContent = gbp(now); out.ours.textContent = gbp(ours);
+      out.pairs.textContent = pairs.toLocaleString('en-GB');
+      /* Kilograms until there is a tonne of it, then tonnes to one decimal:
+         "3,500 kg" is a number, "3.5 tonnes" is a skip full of slippers. */
+      var kg = pairs * WASTE_G_PER_PAIR / 1000;
+      out.waste.textContent = kg < 1000 ? Math.round(kg).toLocaleString('en-GB') + ' kg'
+        : (Math.round(kg / 100) / 10).toLocaleString('en-GB') + (kg < 1050 ? ' tonne' : ' tonnes');
+      var top = Math.max(now, ours) || 1;
+      document.getElementById('bar-now').style.setProperty('--w', (now / top).toFixed(4));
+      barOurs.style.setProperty('--w', (ours / top).toFixed(4));
+    }
+    calc.addEventListener('input', compute);
+    calc.addEventListener('submit', function (e) { e.preventDefault(); });
+    pairsEl.addEventListener('blur', function () {
+      var n = parseInt(pairsEl.value.replace(/[^\d]/g, ''), 10);
+      if (n) pairsEl.value = n.toLocaleString('en-GB');
+    });
+    compute();
+  })();
+
+  /* ------------------------------------------------------------------------
+     5. THE SAMPLE FORM  (colophon)
+     Six answers, then "We will be in touch."
+
+     The answers are POSTed as JSON to SAMPLE_ENDPOINT, a Cloudflare Pages
+     Function (/functions/api/sample-request.js) that emails them to the
+     studio; same-origin, because the CSP is connect-src 'self'. A 2xx shows
+     the confirmation. If the request fails - the function is not configured
+     yet, the reader is offline, or this is a plain static server with no
+     functions at all - the answers are handed to the reader's own email app
+     instead, addressed, subjected and filled in, and the confirmation says
+     to press send. Nothing is ever reported as sent that was not.
+
+     `website` is the honeypot: a field no person can see or tab to, which
+     the function treats as proof of a script if it arrives filled.
+
+     Validation is the browser's own (required, type=email), asked for on
+     submit: `novalidate` is on the form only so the first complaint can be
+     put in the page's voice beside the button rather than in a native bubble
+     that looks different in every browser.
+     ---------------------------------------------------------------------- */
+  /* EMPTY ON PURPOSE, for now: the studio is keeping the email handoff rather
+     than setting up a sending service. Empty means submit goes straight to
+     the reader's email app with no request made first. The function is
+     written and waiting - set this to '/api/sample-request' once it has
+     something to send through. */
+  var SAMPLE_ENDPOINT = '';
+  var SAMPLE_TO = 'info@studiorowan.co.uk';
+  var form = document.getElementById('sample-form');
+  var done = document.getElementById('sample-done');
+  if (form && done) (function () {
+    var err = form.querySelector('.sample__err');
+    var btn = form.querySelector('button[type="submit"]');
+    var note = done.querySelector('.sample__done-note');
+    var LABELS = { name: 'Name', email: 'Email', company: 'Company', quantity: 'Estimated order quantity',
+                   needed_by: 'Needed by', comments: 'Comments' };
+
+    function values() {
+      var out = {};
+      Object.keys(LABELS).forEach(function (k) { out[k] = (form.elements[k].value || '').trim(); });
+      return out;
+    }
+    function say(msg) { err.textContent = msg; err.hidden = !msg; }
+    function finish(msg) {
+      note.textContent = msg;
+      form.hidden = true; done.hidden = false;
+      done.focus({ preventScroll: true });
+      /* The confirmation is a fraction of the form's height, so everything
+         under it moves up. The engine caches act geometry; tell it. */
+      sc.layout();
+    }
+    function byEmail(v) {
+      var body = Object.keys(LABELS).map(function (k) { return LABELS[k] + ': ' + (v[k] || '-'); }).join('\n');
+      location.href = 'mailto:' + SAMPLE_TO
+        + '?subject=' + encodeURIComponent('Sample box request - ' + v.company)
+        + '&body=' + encodeURIComponent(body);
+      finish('Your email app should have opened with your answers filled in. Press send and we will take it from there.');
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      form.classList.add('is-tried');
+      if (!form.checkValidity()) {
+        var bad = form.querySelector(':invalid');
+        say(bad && bad.type === 'email' && bad.value ? 'That email address does not look right.'
+                                                     : 'Please fill in the fields marked above.');
+        if (bad) bad.focus();
+        return;
+      }
+      say('');
+      var v = values();
+      var trap = form.elements.website;
+      if (!SAMPLE_ENDPOINT) { byEmail(v); return; }
+      btn.disabled = true;
+      fetch(SAMPLE_ENDPOINT, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ website: trap ? trap.value : '' }, v))
+      }).then(function (r) {
+        if (!r.ok) throw new Error(String(r.status));
+        finish('Thank you, ' + v.name.split(' ')[0] + '. We have your request and will reply to ' + v.email + '.');
+      }).catch(function () { btn.disabled = false; byEmail(v); });
+    });
+  })();
 
   /* ------------------------------------------------------------------------ */
   /* buildStack() ran before mount; see the note above the stage-fit guard. */
