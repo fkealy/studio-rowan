@@ -980,10 +980,16 @@
     }
     function byEmail(v) {
       var body = Object.keys(LABELS).map(function (k) { return LABELS[k] + ': ' + (v[k] || '-'); }).join('\n');
+      var lead = 'Your email app should have opened with your answers filled in. Press send and we will take it from there.';
       location.href = 'mailto:' + SAMPLE_TO
         + '?subject=' + encodeURIComponent('Sample box request - ' + v.company)
         + '&body=' + encodeURIComponent(body);
-      finish('Your email app should have opened with your answers filled in. Press send and we will take it from there.');
+      /* The same gap as the email links (section 6): with no email app the
+         handoff opens nothing. So the answers go on the clipboard as well,
+         and the confirmation says where to send them if they are needed. */
+      var tail = ' If nothing opened, email ' + SAMPLE_TO + ' instead';
+      copy(body).then(function () { finish(lead + tail + ' - your answers are copied, ready to paste.'); },
+                      function () { finish(lead + tail + '.'); });
     }
 
     /* THE FORM OPENS ON REQUEST. Its own button opens it; so does any link to
@@ -1032,6 +1038,44 @@
       }).catch(function () { btn.disabled = false; byEmail(v); });
     });
   })();
+
+  /* ------------------------------------------------------------------------
+     6. THE EMAIL LINKS
+     Every "Get in touch" is a plain mailto: link and stays one. But a mailto
+     only does something on a machine with an email APP set up to take it, and
+     a great many people - anyone who reads their mail in a browser tab - have
+     none: the link is pressed and nothing at all happens, which reads as a
+     broken button. The page cannot detect that. So as well as letting the link
+     do its job, a press copies the address and says so, in a line that is on
+     screen for a few seconds. With an email app the reader gets both; without
+     one they get an address on their clipboard and are told it is there.
+
+     The one thing on this page that is fixed to the viewport, and only while
+     it is speaking. role="status" so it is read out, not just shown.
+     ---------------------------------------------------------------------- */
+  var toast = null, toastTimer = 0;
+  function announce(msg) {
+    if (!toast) {
+      toast = document.createElement('p');
+      toast.className = 'toast'; toast.setAttribute('role', 'status');
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    void toast.offsetWidth; toast.classList.add('is-on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toast.classList.remove('is-on'); }, 5200);
+  }
+  function copy(text) {
+    if (!navigator.clipboard || !navigator.clipboard.writeText) return Promise.reject();
+    return navigator.clipboard.writeText(text);
+  }
+  [].forEach.call(document.querySelectorAll('a[href^="mailto:"]'), function (a) {
+    a.addEventListener('click', function () {
+      var addr = a.getAttribute('href').replace(/^mailto:/, '').split('?')[0];
+      copy(addr).then(function () { announce('Opening your email app. We have copied ' + addr + ' too, in case it does not.'); },
+                      function () { announce('Opening your email app. If nothing happens, write to ' + addr + '.'); });
+    });
+  });
 
   /* ------------------------------------------------------------------------ */
   /* buildStack() ran before mount; see the note above the stage-fit guard. */

@@ -1369,6 +1369,23 @@ a.run {
    needs nothing beyond the rule above - the stack has no min-height to undo, and
    the margin keeps its column - so there is deliberately no rule here. */
 
+/* ------------------------------------------------------------------- toast --
+   The line that answers an email link (page.js, THE EMAIL LINKS). Bottom
+   centre, on screen for a few seconds, and not in the way of anything: it
+   takes no clicks. Onyx on every ground, so it needs no re-inking. */
+.toast {
+  position: fixed; z-index: 300; left: 50%; bottom: clamp(1rem, 4vh, 2rem);
+  width: max-content; max-width: calc(100vw - 2rem);
+  padding: .8rem 1.25rem; border-radius: 999px; pointer-events: none;
+  background: var(--onyx); color: var(--ivory); font-size: var(--sc-t-sm); line-height: 1.35; text-align: center;
+  box-shadow: 0 6px 24px color-mix(in oklab, var(--onyx) 35%, transparent);
+  opacity: 0; visibility: hidden; transform: translate(-50%, 8px);
+  transition: opacity var(--sc-d-base) var(--sc-ease-out), transform var(--sc-d-base) var(--sc-ease-out), visibility 0s linear var(--sc-d-base);
+}
+.toast.is-on { opacity: 1; visibility: visible; transform: translate(-50%, 0); transition-delay: 0s; }
+@media (max-width: 480px) { .toast { border-radius: 1rem; } }
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+
 /* --------------------------------------------------------------- no script -- */
 html:not(.js) [data-sc-cue],
 html:not(.js) [data-sc-in],

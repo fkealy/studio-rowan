@@ -2392,6 +2392,16 @@ The FORM still opens on request: one button in its column, opened by that
 button, by either title-page "Start with a sample box" link on the way down,
 or by a `#sample` address.
 
+### Email links say what they did
+
+"Get in touch" was reported as doing nothing. The links were correct `mailto:`
+links with nothing intercepting them: a mailto only acts on a machine with an
+email app registered for it, and with webmail in a browser tab there is none,
+so the press is silent. A press now also copies the address and says so in a
+short-lived line at the foot of the screen (page.js, THE EMAIL LINKS). The
+form's handoff had the same gap, so it copies the answers and its confirmation
+names the address to send them to.
+
 ### The form's backend
 
 `/functions/api/sample-request.js`, a Cloudflare Pages Function at the REPO
