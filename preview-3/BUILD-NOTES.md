@@ -2402,6 +2402,24 @@ short-lived line at the foot of the screen (page.js, THE EMAIL LINKS). The
 form's handoff had the same gap, so it copies the answers and its confirmation
 names the address to send them to.
 
+### Narrow phones (320px)
+
+Reported from an iPhone at about 320 CSS px: sideways scroll, the field losing
+its shape, the title buttons heavy. One cause under the first two. The
+reprint's cascade reached x = 397 on a 320 screen, and `overflow-x: hidden` on
+body alone does not stop that widening the LAYOUT viewport on a phone, so the
+whole page laid out 397 wide and was shown zoomed to fit. The root is now
+`overflow-x: clip`, `.press` clips its own cascade, and the impressions are
+sized `min(vh, vw)`. Measured after: innerWidth 320, scrollWidth 320.
+
+The field also backs its camera off and shrinks its dots in proportion under
+390px, so a 320 screen shows the 390 composition scaled rather than cropped.
+NOT SEEN RENDERED: the browser pane was hidden while this was done, and a
+hidden page draws no frames. Check the dots on a real phone.
+
+The title-page buttons keep their natural width on small phones and set a step
+smaller, instead of stretching to the full measure.
+
 ### The form's backend
 
 `/functions/api/sample-request.js`, a Cloudflare Pages Function at the REPO

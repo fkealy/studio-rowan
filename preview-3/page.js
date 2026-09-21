@@ -361,7 +361,10 @@
     for (var i = 1; i < IMPRESSIONS; i++) {
       var b = document.createElement('b');
       b.textContent = 'And again.';
-      b.style.fontSize = Math.max(size, 0.85) + 'vh';
+      /* vh capped in vw, the same pair .press__first takes (styles.css): sized
+         off the height alone the first impressions outran a narrow screen. */
+      var fs = Math.max(size, 0.85);
+      b.style.fontSize = 'min(' + fs.toFixed(3) + 'vh, ' + (fs * 17.5 / 9.4).toFixed(3) + 'vw)';
       /* Stepped across the sheet so the stack cascades rather than aligning
          into a column, which would read as a list instead of a print run. */
       b.style.transform = 'translateX(' + (i * 0.9) + 'ch)';
@@ -622,8 +625,17 @@
       pr = Math.min(window.devicePixelRatio || 1, 2);
       cv.width = Math.round(w * pr); cv.height = Math.round(h * pr);
       gl.viewport(0, 0, cv.width, cv.height);
-      camZ = w < 700 ? 20 : 14;
-      gl.uniform1f(U.uPR, pr); gl.uniform1f(U.uCamZ, camZ); gl.uniform1f(U.uAspect, w / h);
+      /* UNDER 390 THE PHONE FRAMING IS SCALED, NOT CROPPED. The camera sat at
+         z = 20 for every width under 700, and dot size is in pixels, so a
+         320px screen showed the middle four fifths of the 390 composition
+         with dots a fifth larger against it: the shaped cloud became an even
+         speckle, edge to edge. The camera now backs off in proportion (the
+         same cloud, the same shape, smaller) and the dots shrink with it. The
+         shader sizes dots as if from z = 20 whatever uCamZ is, so the two
+         have to be scaled together, here. */
+      var narrow = Math.min(1, Math.max(w, 280) / 390);
+      camZ = w < 700 ? 20 / narrow : 14;
+      gl.uniform1f(U.uPR, pr * (w < 700 ? narrow : 1)); gl.uniform1f(U.uCamZ, camZ); gl.uniform1f(U.uAspect, w / h);
       if (lite) draw(0);
     }
 

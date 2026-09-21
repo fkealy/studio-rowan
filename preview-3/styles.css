@@ -48,7 +48,14 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { -webkit-text-size-adjust: 100%; }
+/* overflow-x: clip, on the ROOT. `overflow-x: hidden` on body alone is not
+   enough on a phone: anything wider than the screen still widens the LAYOUT
+   viewport, so the whole page lays out at that width and is then shown
+   zoomed-to-fit with a sideways scroll. Measured at 320px: the reprint's
+   cascade reached 397, and every section on the page was laid out 397 wide.
+   `clip` and not `hidden` because hidden makes a scroll container, and a
+   scroll container between a sticky stage and the viewport unsticks it. */
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
 
 body {
   background: var(--ivory); color: var(--onyx);
@@ -130,7 +137,13 @@ a { color: inherit; }
    at 375px the two do not fit one line, and a full-width pair of buttons is
    the phone's own idiom anyway. */
 .asks { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: clamp(1.75rem, 4.5vh, 2.75rem); }
-@media (max-width: 480px) { .asks .btn { flex: 1 1 100%; } }
+/* On a small phone the pair keeps its natural width and sets a step smaller.
+   Stretched to the full measure at 3rem tall they were the two heaviest
+   objects on the title page, wider than the wordmark they sit under. */
+@media (max-width: 480px) {
+  .asks { gap: .6rem; }
+  .asks .btn { min-height: 2.75rem; padding: .6rem 1.2rem; }
+}
 
 /* ------------------------------------------------------------------- type -- */
 .d {
@@ -925,10 +938,16 @@ a { color: inherit; }
 /* Impression one. Sized and tracked exactly like the generated impressions so
    the cascade below reads as a continuation of it, not a second start. */
 .press__first {
-  font-family: var(--display); font-weight: 300; font-size: 9.4vh;
+  /* vh, capped in vw: sized off the height alone, a narrow screen set the first
+     impressions wider than itself. page.js writes the same pair per impression. */
+  font-family: var(--display); font-weight: 300; font-size: min(9.4vh, 17.5vw);
   letter-spacing: var(--sc-track-tight); line-height: .96;
   white-space: nowrap; color: var(--onyx);
 }
+/* The cascade steps right as it goes and is allowed to run off the edge of
+   its column; it is not allowed to widen the page. Clipped at the section,
+   which is full bleed, so nothing is cut that the screen would have shown. */
+.press { overflow-x: clip; }
 .press__stack { grid-column: 1; display: block; position: relative; }
 /* The stack carries data-sc-in only because that is the engine's handle for
    the observer. It must not reveal ITSELF: the engine's flow-reveal rule would
