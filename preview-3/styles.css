@@ -1056,7 +1056,7 @@ a { color: inherit; }
   font-family: var(--display); font-weight: 300; font-size: var(--sc-t-xl);
   letter-spacing: var(--sc-track-tight); line-height: 1.1; text-wrap: pretty; max-width: 24ch;
 }
-.dial__read { display: flex; align-items: baseline; flex-wrap: wrap; gap: .1rem .7rem; margin-top: clamp(.35rem, 1vh, .6rem); }
+.dial__read { display: flex; align-items: baseline; flex-wrap: nowrap; gap: .1rem .7rem; margin-top: clamp(.35rem, 1vh, .6rem); }
 .dial__read output {
   font-family: var(--display); font-weight: 300; font-size: var(--sc-t-2xl);
   letter-spacing: -.03em; font-variant-numeric: tabular-nums; line-height: 1;
@@ -1071,6 +1071,9 @@ a { color: inherit; }
   --fill: 50%;
   width: 100%; height: 2.75rem; margin: 0 0 -.6rem;
   appearance: none; -webkit-appearance: none; background: transparent; cursor: grab;
+  /* A sideways drag is the slider's, an up-down one is still the page's. Left
+     to guess, a phone would start scrolling half way through a drag. */
+  touch-action: pan-y;
 }
 .dial input[type="range"]:active { cursor: grabbing; }
 .dial input[type="range"]::-webkit-slider-runnable-track {
@@ -1124,8 +1127,16 @@ a { color: inherit; }
    of them. Rows cannot collide, read top to bottom as a sum, and are the same
    layout on a phone as on a desk. */
 .calc__stats { display: grid; border-top: 1px solid color-mix(in oklab, var(--ivory) 30%, transparent); margin-top: .25rem; }
+/* A GRID WITH A FIXED VALUE COLUMN, not a wrapping flex row. Wrapping, a long
+   value dropped under its label and a short one sat beside it - so dragging
+   the slider from 70,000 to 500,000 changed the height of the sheet (726 to
+   750px at 320 wide) while a thumb was on it. On a phone that is worse than
+   untidy: the page has scroll snapping, and iOS re-snaps whenever layout
+   moves under it. The value column is as wide as the widest value there can
+   be, so the label wraps or does not once, per screen width, and never
+   again. */
 .calc__stats > div {
-  display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: .25rem 1.5rem;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 0 1.25rem;
   padding: clamp(.6rem, 1.4vh, .85rem) 0;
   border-bottom: 1px solid color-mix(in oklab, var(--ivory) 30%, transparent);
 }
@@ -1137,12 +1148,11 @@ a { color: inherit; }
    Inside dd, the footnote's width was the value's width, and "70,000 pairs out
    of landfill" pushed "3.5 tonnes" off the label's line on a phone. */
 .calc__stats dd { display: contents; }
-.calc__stats b { margin-left: auto; }
+.calc__stats b { min-width: 8.4ch; text-align: right; }
 .calc__stats b {
   display: block; font-family: var(--display); font-weight: 300; font-size: var(--sc-t-xl);
   letter-spacing: -.02em; font-variant-numeric: tabular-nums; white-space: nowrap; line-height: 1.05;
 }
-.calc__stats dd > span { flex: 1 1 100%; text-align: right; font-size: var(--sc-t-sm); color: var(--sc-ink-soft); }
 .calc__how { font-size: var(--sc-t-base); color: var(--sc-ink-soft); max-width: 52ch; }
 .calc__how summary {
   display: inline-flex; align-items: center; gap: .5rem; cursor: pointer; list-style: none;
@@ -1156,6 +1166,20 @@ a { color: inherit; }
   .calc { grid-template-columns: minmax(0, 1fr); }
   .calc__result { margin-top: clamp(1rem, 3vh, 1.75rem); }
   .calc__out { max-width: none; }
+}
+/* Small phones, down to 320. The calculator's gaps are set in vh and rem tuned
+   on a desk, and at 320x660 they bottomed out together: question on reading,
+   slider on the price line, the saving hard under it. */
+@media (max-width: 480px) {
+  .dial { gap: .6rem; }
+  .dial__q { line-height: 1.15; }
+  .dial__read { margin-top: .5rem; }
+  .dial input[type="range"] { margin-top: .35rem; }
+  .calc__ask { gap: 1.4rem; }
+  .price { line-height: 1.5; }
+  .calc__result { margin-top: 2.75rem; gap: 1rem; }
+  .calc__out { margin-top: 1.25rem; gap: 1.25rem; }
+  .calc__stats > div { padding: .85rem 0; }
 }
 
 /* --------------------------------------------------------------- colophon --
@@ -1348,6 +1372,11 @@ a.run {
      NEXT chapter, and proximity snapping will finish the gesture for you and
      cut the hold short. Snapping is for the sections that do not hold. */
   .page:not([data-sc-act="pin"]):not([data-sc-act="scrub"]) { scroll-snap-align: start; }
+  /* Not the colophon. It holds the page's only controls, and a snap point on a
+     section being dragged and typed in is a page that moves under the hand:
+     any layout change inside it - a row rewrapping, the price opening, the
+     form opening - re-snaps the scroller on iOS. */
+  .page--colophon { scroll-snap-align: none !important; }
 
   /* The doubled join that used to live here is gone with the thing that needed
      it. It gave the section after chapter two the whole join on its own,

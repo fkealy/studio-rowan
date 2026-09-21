@@ -2444,6 +2444,16 @@ saving, breakdown. The question is the section's h2 now and "You could save"
 is a line of display type, not a heading. 546px at 1440x900, 697 at 375 - the
 whole calculator is inside one phone screen.
 
+**The slider was glitchy on a real phone.** Not reproducible in a desktop
+preview, because the cause needs a touch scroller. The breakdown rows were
+wrapping flex rows, so a long value dropped under its label: dragging 70,000
+to 500,000 changed the sheet's height (726 to 750px at 320 wide) under the
+thumb, and with scroll snapping on, iOS re-snaps whenever layout moves. Rows
+are now a grid with a fixed-width value column (height constant across the
+whole range: 801 at 375, 830 at 320), the colophon is no longer a snap point,
+the reading never wraps, and the ranges are `touch-action: pan-y`. Gaps inside
+the calculator were loosened under 480px.
+
 The FORM still opens on request: one button in its column, opened by that
 button, by either title-page "Start with a sample box" link on the way down,
 or by a `#sample` address.
