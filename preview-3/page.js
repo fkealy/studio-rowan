@@ -842,57 +842,89 @@
 
   /* ------------------------------------------------------------------------
      THE SAVING  (the calculator above the form)
-     Two numbers in, three out. What they spend now is pairs x price; what they
-     would spend is pairs x OURS_PER_STAY, one pair of disposables being one
-     guest stay; the saving is the difference. OURS_PER_STAY is the studio's
-     all-in estimate and is the same figure the footnote quotes.
+     Two sliders in, one large number out. What they spend now is pairs x
+     price; what they would spend is pairs x OURS_PER_STAY, one pair of
+     disposables being one guest stay; the saving is the difference.
+     OURS_PER_STAY is the studio's all-in estimate, and the same figure the
+     "How we work this out" note quotes.
 
-     Computed on every keystroke, from whatever digits are in the field - the
-     inputs are text, not type=number, so "70,000" and "1,50" are both things a
-     person may type and both are read. Blank or nonsense reads as zero, never
-     NaN. The pairs field is re-grouped with commas on blur, not while typing,
-     because rewriting a field under the caret moves the caret.
+     THE PAIRS SLIDER IS NOT LINEAR, because hotels are not: a guesthouse gets
+     through a thousand pairs a year and a resort half a million, and on a
+     linear track everything under 50,000 would live in the first tenth of it.
+     The track is a position from 0 to 1000 and the value is 1,000 x 500^t,
+     rounded to two significant figures - so every stop is a number a person
+     would say, and equal movements are equal RATIOS wherever the thumb is.
+     684 is the page's own 70,000.
+
+     THE REVEAL IS THE COUNT-UP. The figure is zeroed and counts to its value
+     the first time it comes into view - the same ease the 70,000 at the top
+     of the page lands on. After that it follows the sliders with nothing in
+     between: a number that animates behind a drag always feels late.
      ---------------------------------------------------------------------- */
   var OURS_PER_STAY = 0.25;
-  /* Grams in one pair of disposables, for the waste figure. The footnote quotes
+  /* Grams in one pair of disposables, for the waste figure. The note quotes
      it; change both together. */
   var WASTE_G_PER_PAIR = 50;
   var calc = document.getElementById('calc');
   if (calc) (function () {
     var pairsEl = document.getElementById('c-pairs'), costEl = document.getElementById('c-cost');
-    var out = { save: 'calc-save', now: 'calc-now', ours: 'calc-ours', pairs: 'calc-pairs', waste: 'calc-waste' };
+    var out = { save: 'calc-save', now: 'calc-now', ours: 'calc-ours', pairs: 'calc-pairs', waste: 'calc-waste',
+                pairsOut: 'c-pairs-out', costOut: 'c-cost-out' };
     Object.keys(out).forEach(function (k) { out[k] = document.getElementById(out[k]); });
-    var barOurs = document.getElementById('bar-ours');
     var label = document.querySelector('.calc__label');
     var gbp = function (v) { return '\u00A3' + Math.round(v).toLocaleString('en-GB'); };
+    var counting = false, saveText = '';
 
+    function pairsAt(pos) {
+      var v = 1000 * Math.pow(500, pos / 1000);
+      var mag = Math.pow(10, Math.floor(Math.log10(v)) - 1);
+      return Math.round(v / mag) * mag;
+    }
+    function fill(el) {
+      var min = +el.min, max = +el.max;
+      el.style.setProperty('--fill', ((+el.value - min) / (max - min) * 100).toFixed(2) + '%');
+    }
     function compute() {
-      var per = +(calc.querySelector('input[name="per"]:checked') || {}).value || 1;
-      var pairs = (parseInt(pairsEl.value.replace(/[^\d]/g, ''), 10) || 0) * per;
-      var cost = parseFloat(costEl.value.replace(',', '.').replace(/[^\d.]/g, '')) || 0;
+      var pairs = pairsAt(+pairsEl.value), cost = +costEl.value;
       var now = pairs * cost, ours = pairs * OURS_PER_STAY, save = now - ours;
-      /* Someone already paying less than we cost per stay is told so plainly;
-         the waste line under it is still true for them. */
-      label.textContent = save >= 0 ? 'You could save' : 'On cost alone, you would pay';
-      out.save.textContent = gbp(Math.abs(save)) + (save < 0 ? ' more' : '');
+      /* The cost slider stops at 30p, so ours is never the dearer of the two
+         and the saving is never negative; Math.max is the belt to that. */
+      saveText = gbp(Math.max(save, 0));
+      if (!counting) out.save.textContent = saveText;
       out.now.textContent = gbp(now); out.ours.textContent = gbp(ours);
       out.pairs.textContent = pairs.toLocaleString('en-GB');
+      out.pairsOut.textContent = pairs.toLocaleString('en-GB');
+      out.costOut.textContent = '\u00A3' + cost.toFixed(2);
+      pairsEl.setAttribute('aria-valuetext', pairs.toLocaleString('en-GB') + ' pairs a year');
+      costEl.setAttribute('aria-valuetext', '\u00A3' + cost.toFixed(2) + ' a pair');
       /* Kilograms until there is a tonne of it, then tonnes to one decimal:
          "3,500 kg" is a number, "3.5 tonnes" is a skip full of slippers. */
       var kg = pairs * WASTE_G_PER_PAIR / 1000;
       out.waste.textContent = kg < 1000 ? Math.round(kg).toLocaleString('en-GB') + ' kg'
         : (Math.round(kg / 100) / 10).toLocaleString('en-GB') + (kg < 1050 ? ' tonne' : ' tonnes');
-      var top = Math.max(now, ours) || 1;
-      document.getElementById('bar-now').style.setProperty('--w', (now / top).toFixed(4));
-      barOurs.style.setProperty('--w', (ours / top).toFixed(4));
+      fill(pairsEl); fill(costEl);
     }
-    calc.addEventListener('input', compute);
+    calc.addEventListener('input', function () { counting = false; compute(); });
     calc.addEventListener('submit', function (e) { e.preventDefault(); });
-    pairsEl.addEventListener('blur', function () {
-      var n = parseInt(pairsEl.value.replace(/[^\d]/g, ''), 10);
-      if (n) pairsEl.value = n.toLocaleString('en-GB');
-    });
     compute();
+
+    if (!reduce && 'IntersectionObserver' in window) {
+      counting = true; out.save.textContent = '\u00A30';
+      var cio = new IntersectionObserver(function (en) {
+        if (!en[0].isIntersecting) return;
+        cio.disconnect();
+        var t0 = null;
+        requestAnimationFrame(function frame(now) {
+          if (t0 === null) t0 = now;
+          var t = Math.min((now - t0) / 1600, 1);
+          if (t >= 1 || !counting) { counting = false; out.save.textContent = saveText; return; }
+          var to = parseInt(saveText.replace(/[^\d]/g, ''), 10) || 0;
+          out.save.textContent = gbp(to * (1 - Math.pow(1 - t, 3)));
+          requestAnimationFrame(frame);
+        });
+      }, { rootMargin: '0px 0px -12% 0px', threshold: 0.6 });
+      cio.observe(out.save);
+    }
   })();
 
   /* ------------------------------------------------------------------------
@@ -952,6 +984,29 @@
         + '?subject=' + encodeURIComponent('Sample box request - ' + v.company)
         + '&body=' + encodeURIComponent(body);
       finish('Your email app should have opened with your answers filled in. Press send and we will take it from there.');
+    }
+
+    /* THE FORM OPENS ON REQUEST. Its own button opens it; so does any link to
+       #sample - the two "Start with a sample box" buttons on the title page -
+       and so does arriving with #sample already in the address. Focus goes to
+       the first field only when the reader is already here: from the top of
+       the page it would cut the scroll short. */
+    var row = document.getElementById('sample'), opener = document.getElementById('sample-open');
+    function openForm(focus) {
+      if (!row.classList.contains('is-waiting')) return;
+      row.classList.remove('is-waiting');
+      form.classList.add('is-opening');
+      opener.setAttribute('aria-expanded', 'true');
+      if (focus) form.elements.name.focus({ preventScroll: true });
+      sc.layout();
+    }
+    if (row && opener) {
+      row.classList.add('is-waiting');
+      opener.addEventListener('click', function () { openForm(true); });
+      [].forEach.call(document.querySelectorAll('a[href="#sample"]'), function (a) {
+        a.addEventListener('click', function () { openForm(false); });
+      });
+      if (location.hash === '#sample') openForm(false);
     }
 
     form.addEventListener('submit', function (e) {

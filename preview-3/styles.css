@@ -999,87 +999,102 @@ a { color: inherit; }
   border-bottom: 1px solid color-mix(in oklab, var(--ivory) 30%, transparent);
   padding-bottom: clamp(2.5rem, 7vh, 4.5rem);
 }
-.calc__ask { display: grid; gap: clamp(1.75rem, 4.5vh, 2.75rem); }
+.calc__ask { display: grid; gap: clamp(2rem, 5vh, 3rem); }
 .calc .chapter { margin-bottom: 0; }
 .calc h2 { max-width: 16ch; }
-.calc__inputs { display: grid; gap: clamp(1.25rem, 3vh, 1.75rem); max-width: 26rem; }
-/* A field with something standing on its rule beside the input: the
-   year/month switch after it, or the currency sign before it. The rule is
-   the wrapper's, so it runs under both. */
-.f__joined {
-  display: flex; align-items: center; gap: .75rem;
-  border-bottom: 1px solid color-mix(in oklab, var(--sc-ink) 45%, transparent);
-  transition: border-color var(--sc-d-fast) var(--sc-ease-out);
+.calc__inputs { display: grid; gap: clamp(1.5rem, 4vh, 2.25rem); max-width: 30rem; }
+
+/* A DIAL: what it measures on the left, what it reads on the right, the track
+   under both. The reading is set in the display face a step up from the label
+   because it is the thing being changed - the label only says what it is. */
+.dial { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: .5rem 1rem; }
+.dial label {
+  font-size: var(--sc-t-xs); letter-spacing: .07em; text-transform: uppercase; color: var(--sc-ink-soft);
 }
-.f__joined:focus-within { border-bottom-color: var(--apricot); box-shadow: 0 1px 0 var(--apricot); }
-.f__joined input[type="text"] {
-  border-bottom: 0; box-shadow: none !important; flex: 1 1 auto; min-width: 0;
+.dial output {
   font-family: var(--display); font-weight: 300; font-size: var(--sc-t-xl);
-  letter-spacing: var(--sc-track-tight); font-variant-numeric: tabular-nums; padding: .3rem 0;
+  letter-spacing: var(--sc-track-tight); font-variant-numeric: tabular-nums; line-height: 1;
 }
-.f__joined--pre { gap: .35rem; }
-.f__joined--pre > span {
-  font-family: var(--display); font-weight: 300; font-size: var(--sc-t-xl); color: var(--sc-ink-soft);
+/* The range itself. Both engines are styled, and have to be styled apart: a
+   selector list with a pseudo-element one engine does not know is dropped
+   whole. --fill is written by page.js so the track behind the thumb reads as
+   filled in WebKit, which has no ::-moz-range-progress of its own.
+   The thumb is 28px on a 44px-tall input: the target is the input. */
+.dial input[type="range"] {
+  --fill: 50%;
+  grid-column: 1 / -1; width: 100%; height: 2.75rem; margin: -.4rem 0 -.6rem;
+  appearance: none; -webkit-appearance: none; background: transparent; cursor: grab;
 }
-.seg { display: flex; flex: none; border: 1px solid color-mix(in oklab, var(--sc-ink) 40%, transparent); border-radius: 999px; padding: 2px; }
-.f .seg label { letter-spacing: 0; text-transform: none; cursor: pointer; position: relative; }
-.seg input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
-.seg span {
-  display: block; padding: .4rem .85rem; border-radius: 999px; white-space: nowrap;
-  font-size: var(--sc-t-xs); color: var(--sc-ink-soft);
-  transition: background-color var(--sc-d-fast) var(--sc-ease-out), color var(--sc-d-fast) var(--sc-ease-out);
+.dial input[type="range"]:active { cursor: grabbing; }
+.dial input[type="range"]::-webkit-slider-runnable-track {
+  height: 3px; border-radius: 3px;
+  background: linear-gradient(to right, var(--apricot) var(--fill), color-mix(in oklab, var(--ivory) 30%, transparent) var(--fill));
 }
-.seg input:checked + span { background: var(--sc-ink); color: var(--olive); }
-.seg input:focus-visible + span { outline: 2px solid var(--apricot); outline-offset: 2px; }
+.dial input[type="range"]::-moz-range-track {
+  height: 3px; border-radius: 3px; background: color-mix(in oklab, var(--ivory) 30%, transparent);
+}
+.dial input[type="range"]::-moz-range-progress { height: 3px; border-radius: 3px; background: var(--apricot); }
+.dial input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 1.75rem; height: 1.75rem; margin-top: calc(-.875rem + 1.5px);
+  border-radius: 50%; background: var(--ivory); border: 0;
+  box-shadow: 0 0 0 0 color-mix(in oklab, var(--ivory) 25%, transparent);
+  transition: box-shadow var(--sc-d-fast) var(--sc-ease-out);
+}
+.dial input[type="range"]::-moz-range-thumb {
+  width: 1.75rem; height: 1.75rem; border-radius: 50%; background: var(--ivory); border: 0;
+}
+.dial input[type="range"]:hover::-webkit-slider-thumb,
+.dial input[type="range"]:active::-webkit-slider-thumb { box-shadow: 0 0 0 .5rem color-mix(in oklab, var(--ivory) 22%, transparent); }
+.dial input[type="range"]:focus-visible { outline: 0; }
+.dial input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--olive), 0 0 0 5px var(--apricot); }
+.dial input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px var(--olive), 0 0 0 5px var(--apricot); }
 
 .calc__out { display: grid; gap: clamp(1.25rem, 3vh, 1.75rem); }
 .calc__label {
   font-size: var(--sc-t-xs); letter-spacing: .1em; text-transform: uppercase; color: var(--sc-ink-soft);
 }
-/* The answer, at the size the opening 70,000 is set - it is the same kind of
-   number. nowrap + tabular so it does not jitter as the reader types. */
+/* THE number. The largest type in the bottom half of the page, and the only
+   apricot type on this sheet: the accent is spent on the saving and on the
+   two tracks that produce it. nowrap + tabular so it does not jitter while
+   a slider is being dragged. */
 .calc__big {
-  font-family: var(--display); font-weight: 300; color: var(--hemp);
-  font-size: clamp(2.6rem, 6.2vw, 6.4rem); line-height: .95; letter-spacing: -.04em;
-  font-variant-numeric: tabular-nums; white-space: nowrap; margin-top: -.5rem;
+  font-family: var(--display); font-weight: 300; color: var(--apricot);
+  font-size: clamp(3.2rem, 8.4vw, 8.5rem); line-height: .9; letter-spacing: -.045em;
+  font-variant-numeric: tabular-nums; white-space: nowrap; margin-top: -.35rem;
 }
 .calc__big small {
   font-family: var(--sc-font-text); font-size: var(--sc-t-base); letter-spacing: 0;
   color: var(--sc-ink-soft); white-space: nowrap;
 }
-/* Two bars on one scale: what they spend now is always the full measure, and
-   ours is set against it, so the gap between the two IS the saving. Widths
-   are written by page.js through the CSSOM (--w); the defaults here are the
-   worked example's. */
-.bars { display: grid; gap: var(--sc-4); border-top: 1px solid color-mix(in oklab, var(--ivory) 30%, transparent); padding-top: var(--sc-5); }
-.bar dt { font-size: var(--sc-t-sm); color: var(--sc-ink-soft); margin-bottom: .4rem; }
-.bar dd { display: flex; align-items: center; gap: .85rem; }
-.bar__fill {
-  --w: 1; flex: 0 0 auto; height: .9rem; width: calc(var(--w) * (100% - 7.5rem)); min-width: 3px;
-  background: color-mix(in oklab, var(--ivory) 32%, transparent);
-  transition: width 420ms var(--sc-ease-out);
-}
-.bar--ours .bar__fill { --w: .25; background: var(--apricot); }
-.bar b { font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
-/* The second saving, as a pair of figures on a rule: smaller than the money,
-   larger than the prose, so the sheet reads money first and waste second. */
-.calc__waste {
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sc-4) clamp(1.25rem, 3vw, 2.5rem);
+/* What the number is made of, on a rule under it. Three columns while there
+   is room; they are facts of equal weight, so they share one size. */
+.calc__stats {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sc-5) clamp(1rem, 2.5vw, 2rem);
   border-top: 1px solid color-mix(in oklab, var(--ivory) 30%, transparent); padding-top: var(--sc-5);
 }
-.calc__waste dt {
-  font-size: var(--sc-t-xs); letter-spacing: .07em; text-transform: uppercase;
-  color: var(--sc-ink-soft); margin-bottom: .35rem;
+/* Two lines of label on every column, used or not, so the three figures sit
+   on one line when the longest label wraps and the others do not. */
+.calc__stats dt { font-size: var(--sc-t-sm); color: var(--sc-ink-soft); margin-bottom: .4rem; line-height: 1.35; min-height: 2.7em; display: flex; align-items: flex-end; }
+.calc__stats b {
+  display: block; font-family: var(--display); font-weight: 300; font-size: var(--sc-t-xl);
+  letter-spacing: var(--sc-track-tight); font-variant-numeric: tabular-nums; white-space: nowrap; line-height: 1.1;
 }
-.calc__waste b {
-  font-family: var(--display); font-weight: 300; font-size: var(--sc-t-xl);
-  letter-spacing: var(--sc-track-tight); font-variant-numeric: tabular-nums; white-space: nowrap;
+.calc__stats dd > span { display: block; margin-top: .3rem; font-size: var(--sc-t-xs); color: var(--sc-ink-soft); }
+.calc__how { font-size: var(--sc-t-sm); color: var(--sc-ink-soft); max-width: 52ch; }
+.calc__how summary {
+  display: inline-flex; align-items: center; gap: .5rem; cursor: pointer; list-style: none;
+  color: var(--sc-ink); text-decoration: underline; text-underline-offset: .22em; text-decoration-thickness: 1px;
 }
-.calc__waste span { font-size: var(--sc-t-sm); color: var(--sc-ink-soft); white-space: nowrap; }
-@media (max-width: 480px) { .calc__waste { grid-template-columns: minmax(0, 1fr); } }
-.calc__note { font-size: var(--sc-t-xs); color: var(--sc-ink-soft); max-width: 46ch; }
+.calc__how summary::-webkit-details-marker { display: none; }
+.calc__how summary::after { content: "+"; text-decoration: none; display: inline-block; }
+.calc__how[open] summary::after { content: "\2013"; }
+.calc__how p { margin-top: .75rem; font-size: var(--sc-t-xs); line-height: 1.6; }
+@media (max-width: 1100px) { .calc__stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 860px) { .calc { grid-template-columns: minmax(0, 1fr); } }
-@media (prefers-reduced-motion: reduce) { .bar__fill { transition: none; } }
+@media (max-width: 480px) {
+  .calc__stats { grid-template-columns: minmax(0, 1fr); }
+  .calc__stats dt { min-height: 0; }
+}
 
 /* --------------------------------------------------------------- colophon --
    The ask, and it is a form now: the proposition on the left, the form on the
@@ -1157,6 +1172,15 @@ a.run {
   -webkit-text-fill-color: var(--ivory); caret-color: var(--ivory);
   box-shadow: 0 0 0 100px var(--olive) inset; transition: background-color 9999s;
 }
+/* The form shut: one button where the fields will be. */
+.sample__open { display: none; }
+.colophon__ask.is-waiting .sample__open { display: grid; gap: .85rem; justify-items: start; }
+.colophon__ask.is-waiting .sample { display: none; }
+.sample__open span { font-size: var(--sc-t-sm); color: var(--sc-ink-soft); }
+/* Opening: the fields rise into the button's place. One short move, once. */
+@keyframes sample-in { from { opacity: 0; transform: translateY(14px); } }
+.sample.is-opening { animation: sample-in 560ms var(--sc-ease-out) both; }
+@media (prefers-reduced-motion: reduce) { .sample.is-opening { animation: none; } }
 .sample__trap { position: absolute; left: -200vw; width: 1px; height: 1px; overflow: hidden; }
 .sample__foot { display: flex; align-items: center; flex-wrap: wrap; gap: .75rem 1.25rem; margin-top: .5rem; }
 .sample__err { font-size: var(--sc-t-sm); color: var(--hemp); }
@@ -1354,7 +1378,7 @@ html:not(.js) [data-sc-stagger] > * { opacity: 1 !important; transform: none !im
 html:not(.js) .sample { display: none; }
 /* The calculator stands as its worked example; inputs that cannot compute
    would be a lie about what the page does. */
-html:not(.js) .calc__inputs { display: none; }
+html:not(.js) .dial input { display: none; }
 /* Without JS the press prints nothing, so the sr-only line carries the beat. */
 html:not(.js) .press__stack::before {
   content: "And again. And again. And again.";

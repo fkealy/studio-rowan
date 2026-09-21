@@ -2376,6 +2376,22 @@ carries the worked example for the page's own hotel, 70,000 pairs at GBP 1.
 Someone already paying under GBP 0.25 is told they would pay more, not shown a
 negative saving.
 
+### The calculator is one number and two sliders
+
+Third shape. It was fields beside a table, then the same fields with the
+answer shut behind a button; both were forms. Now: a very large apricot figure
+that counts up when it comes into view, two sliders that move it live (pairs a
+year on a logarithmic track, 1,000 to 500,000, two significant figures; price
+a pair, 30p to GBP 3), three supporting figures on a rule, and the assumptions
+behind "How we work this out", shut by default. No button, nothing to fill in.
+The cost slider stops at 30p, above the studio's 25p, so the saving is never
+negative. The year/month switch went: one fewer decision, and a year is the
+figure the page has used since its first screen.
+
+The FORM still opens on request: one button in its column, opened by that
+button, by either title-page "Start with a sample box" link on the way down,
+or by a `#sample` address.
+
 ### The form's backend
 
 `/functions/api/sample-request.js`, a Cloudflare Pages Function at the REPO

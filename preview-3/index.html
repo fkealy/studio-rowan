@@ -519,18 +519,30 @@
     <div class="colophon">
       <!-- THE SAVING, then the ask, as ONE section. The calculator stood in a
            section of its own above this one for a round - its own ground, its
-           own display heading, its own "Start with a sample box" button - and
-           the two competed: two headlines the same size and two asks a screen
-           apart, the first of which only pointed at the second. It is the
-           form's reason, not a rival to it, so it is the top half of the same
-           sheet: the question, the reader's own figures, a rule, and then the
-           one ask, set a step smaller than the question it answers.
+           own display heading, its own button - and the two competed. It is
+           the form's reason, not a rival to it, so it is the top half of the
+           same sheet: the question, the reader's own figures, a rule, and
+           then the one ask.
+
+           ONE NUMBER, TWO SLIDERS, NO BUTTON. This has been a table of fields
+           with the answer standing beside it, and then the same fields with
+           the answer shut behind "See what you could save". Both were forms,
+           and a form is the wrong object: the calculators that work - the
+           ones that ask what a host could earn, or what a transfer will cost -
+           are one very large number and a control you drag, with the number
+           moving under your hand. Nothing to submit, nothing to fill in, and
+           a sensible answer on screen before the reader has touched anything.
+
+           The reveal that was asked for is the page's own: the figure counts
+           up when it comes into view, the way the 70,000 at the top does.
 
            The markup carries a true worked example - 70,000 pairs at GBP 1,
            the hotel the page opens on - so with no script this is a finished
-           comparison (the inputs come off; styles.css, NO SCRIPT). page.js
-           (THE SAVING) recomputes it. The studio's own number, GBP 0.25 per
-           stay, lives there as OURS_PER_STAY and is quoted in the footnote. -->
+           comparison (the sliders come off; styles.css, NO SCRIPT). page.js
+           (THE SAVING) recomputes it. The studio's number, GBP 0.25 per stay,
+           lives there as OURS_PER_STAY and is quoted under "How we work this
+           out", which is shut by default: the working is there for whoever
+           wants it and is not the first thing anybody reads. -->
       <div class="calc" id="save" data-sc-in>
         <div class="calc__ask">
           <header class="chapter">
@@ -538,49 +550,31 @@
             <h2 class="d d--md" id="c4">Still paying for thousands of disposable slippers every&nbsp;year?</h2>
           </header>
           <form class="calc__inputs" id="calc" novalidate>
-            <div class="f">
-              <label for="c-pairs">Disposable pairs you get through</label>
-              <div class="f__joined">
-                <input id="c-pairs" type="text" inputmode="numeric" autocomplete="off" value="70,000">
-                <fieldset class="seg">
-                  <legend class="sr-only">Per year or per month</legend>
-                  <label><input type="radio" name="per" value="1" checked><span>a year</span></label>
-                  <label><input type="radio" name="per" value="12"><span>a month</span></label>
-                </fieldset>
-              </div>
-            </div>
-            <div class="f">
+            <p class="dial">
+              <label for="c-pairs">Disposable pairs a year</label>
+              <output for="c-pairs" id="c-pairs-out">70,000</output>
+              <input id="c-pairs" type="range" min="0" max="1000" step="1" value="684" aria-valuetext="70,000 pairs a year">
+            </p>
+            <p class="dial">
               <label for="c-cost">What each pair costs you</label>
-              <div class="f__joined f__joined--pre">
-                <span aria-hidden="true">&pound;</span>
-                <input id="c-cost" type="text" inputmode="decimal" autocomplete="off" value="1.00" aria-describedby="c-cost-h">
-              </div>
-              <small id="c-cost-h">In pounds. Change it to what you pay.</small>
-            </div>
+              <output for="c-cost" id="c-cost-out">&pound;1.00</output>
+              <input id="c-cost" type="range" min="0.3" max="3" step="0.05" value="1" aria-valuetext="1 pound a pair">
+            </p>
           </form>
         </div>
 
         <div class="calc__out" aria-live="polite" aria-atomic="true">
           <p class="calc__label">You could save</p>
           <p class="calc__big"><span id="calc-save">&pound;52,500</span> <small>a year</small></p>
-          <dl class="bars">
-            <div class="bar">
-              <dt>Disposable slippers</dt>
-              <dd><span class="bar__fill" id="bar-now"></span><b id="calc-now">&pound;70,000</b></dd>
-            </div>
-            <div class="bar bar--ours">
-              <dt>The Never-Ending Slipper</dt>
-              <dd><span class="bar__fill" id="bar-ours"></span><b id="calc-ours">&pound;17,500</b></dd>
-            </div>
+          <dl class="calc__stats">
+            <div><dt>You spend now</dt><dd><b id="calc-now">&pound;70,000</b></dd></div>
+            <div><dt>With the Never-Ending Slipper</dt><dd><b id="calc-ours">&pound;17,500</b></dd></div>
+            <div><dt>Waste avoided</dt><dd><b id="calc-waste">3.5 tonnes</b> <span><span id="calc-pairs">70,000</span> pairs out of landfill</span></dd></div>
           </dl>
-          <!-- The other saving. Same inputs, read as waste rather than money:
-             the pairs are the reader's own number back, and the weight is
-             those pairs at WASTE_G_PER_PAIR (page.js). -->
-        <dl class="calc__waste">
-          <div><dt>Kept out of landfill</dt><dd><b id="calc-pairs">70,000</b> <span>pairs a year</span></dd></div>
-          <div><dt>Waste avoided</dt><dd><b id="calc-waste">3.5 tonnes</b> <span>a year</span></dd></div>
-        </dl>
-          <p class="calc__note">Based on conservative assumptions: disposables at around &pound;1 a pair, or the price you enter, and the Never-Ending Slipper at around &pound;0.25 per guest stay. Our testing conservatively puts every pair at 10 washes at 60&deg;C or more. Waste is counted at around 50g per disposable pair. As more hotels come on board our data gets sharper, and so does this calculator.</p>
+          <details class="calc__how">
+            <summary>How we work this out</summary>
+            <p>Based on conservative assumptions: the Never-Ending Slipper at around &pound;0.25 per guest stay, against the price you set for disposables. Our testing conservatively puts every pair at 10 washes at 60&deg;C or more. Waste is counted at around 50g per disposable pair. As more hotels come on board our data gets sharper, and so does this calculator.</p>
+          </details>
         </div>
       </div>
 
@@ -595,6 +589,18 @@
           </div>
           <p class="colophon__tag">Let&rsquo;s leave less behind.</p>
         </div>
+
+        <!-- THE FORM OPENS ON REQUEST, the same way the saving does. At rest
+             this column is one button; pressed - or arrived at from either
+             "Start with a sample box" button at the top of the page, which
+             open it on the way down - the six fields take its place. Six
+             empty fields at the foot of a page is the page asking for
+             paperwork before it has been asked for anything. page.js sets
+             .is-waiting on the row; with no script the mailto line stands. -->
+        <p class="sample__open">
+          <button class="btn btn--key" type="button" id="sample-open" aria-expanded="false" aria-controls="sample-form">Start with a sample box</button>
+          <span>Six quick questions.</span>
+        </p>
 
         <form class="sample" id="sample-form" novalidate>
           <div class="field-row">
