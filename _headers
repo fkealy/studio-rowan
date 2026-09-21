@@ -64,3 +64,17 @@
   Cache-Control: public, max-age=31536000, immutable
 /preview-2/media/*
   Cache-Control: public, max-age=31536000, immutable
+
+# Preview 3: preview 2 forked for the olive title page with the 70,000-dot
+# field. Same build otherwise, so the same rules; the field is a 2D canvas
+# drawn by its own page.js and needs nothing the CSP does not already allow.
+/preview-3/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: public, max-age=0, must-revalidate
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw='; style-src 'self'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; object-src 'none'
+/preview-3/engine/*
+  Cache-Control: public, max-age=31536000, immutable
+/preview-3/spin/*
+  Cache-Control: public, max-age=31536000, immutable
+/preview-3/media/*
+  Cache-Control: public, max-age=31536000, immutable

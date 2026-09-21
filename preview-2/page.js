@@ -5,8 +5,7 @@
 
      1. The reprint  the signature move, in chapter five
      2. The spin     chapter two's media plate, the one scrub this grammar allows
-     3. The loop     a small captioned plate in the peak's margin
-     4. The figures  70,000 and 120,000,000, ticking on entry rather than on scroll
+     3. The figures  70,000 and 120,000,000, ticking on entry rather than on scroll
 
    Assets are local: ./spin and ./media. This build is self-contained and can be
    moved, deployed or deleted without touching /preview/. They were shared with
@@ -70,35 +69,23 @@
      choose the pinned or the flow progress formula. `sc.acts` is published, so
      these flip it there rather than editing the vendored engine.
      ---------------------------------------------------------------------- */
-  /* turn1 and turn2 are the two held beats between chapters one and two, and
-     turn2 is pulled up a viewport to slide over turn1. They carry one line each
-     and fit any stage, so they are never demoted in practice - they are in the
-     list because the list is the page's only answer to "may this be pinned?",
-     and a section that is exempt from it is a section nobody is checking. */
-  /* What is left after the static holds came out. A pinned frame with nothing
-     happening in it is the defect - measured against Apple's own product pages,
-     which pin MORE than this one and for longer (holds up to 3 viewports, 40%
-     of the page) but never hold a still frame: every hold there carries media,
-     staged text or images in motion the whole way through. ch1s and ch3 held
-     nothing once the figures moved to an entry tick and the claims to a single
-     arrival, so they flow. What remains earns its hold: the spin scrubs 87
-     frames across ch2, the peak prints 29 impressions across ch5, and the two
-     turns carry the page's hinge. */
-  var MUTABLE    = ['turn1', 'turn2', 'ch2', 'ch5'];
+  /* The turn is not on this list any more because it is not a section any
+     more: the couplet is an overlay on chapter two, and it lives or dies with
+     whether chapter two is pinned. See THE HINGE in the stylesheet. */
+  var MUTABLE    = ['ch2'];
   /* ch2 is on this list because of a measurement, not a composition. Its spread
      was 11px over a 390x844 stage and stayed pinned on taller phones, so the
      page held in different places on different devices - the cause of the half
      join into chapter three. Reclaiming the folio's 27px of clearance tipped it
      the other way and it began pinning on a 390 phone too. Either way it is the
-     wrong answer: the phone holds on the two turns and nothing else, by rule
-     rather than by whichever way a measurement happens to fall.
+     wrong answer: the phone holds nothing here at all, by rule rather
+     than by whichever way a measurement happens to fall.
 
-     ch1s is here for the same reason and it is the same story: 919px of content
-     clears a 932px stage on a large phone and not a 844px one, so it held on
-     some phones and not others. The list is now every content chapter, which is
-     the rule stated plainly - on a phone, the only things that hold are the two
-     turns, because they are the only two short enough to hold anywhere. */
-  var PHONE_FLOW = ['ch2', 'ch5'];
+     It is the only entry on either list now. Chapter three came off both when
+     the reprint stopped being driven by scroll - a section authored `flow` is
+     not a decision anything makes at runtime - and chapter two is the last
+     section on the page that pins anywhere. */
+  var PHONE_FLOW = ['ch2'];
 
   /* Declared before the first unpin() call, not with the mount below: `var` is
      hoisted as undefined, and unpin() indexes it. */
@@ -130,7 +117,13 @@
     var a = authored[id];
     if (!a || a.device === 'flow') return true;
     if (PHONE_FLOW.indexOf(id) !== -1 && matchMedia('(max-width: 860px)').matches) return false;
-    var inner = a.el.querySelector('[data-sc-stage] > *');
+    /* The SPREAD, explicitly, not the stage's first child. Chapter two's stage
+       now opens with the hinge overlay, which is inset:0 when pinned and
+       therefore always reports exactly one stage of height - it would answer
+       "yes, it fits" for every viewport there is and retire the guard without
+       anyone noticing. What has to fit is the chapter under it. */
+    var inner = a.el.querySelector('[data-sc-stage] .spread')
+             || a.el.querySelector('[data-sc-stage] > *');
     if (!inner) return true;
     return inner.scrollHeight <= stageVh();
   }
@@ -199,7 +192,6 @@
   var IMPRESSIONS = 30;
   var stack = document.getElementById('stack');
   var marks = [];
-  var lastShown = -1;
 
   /* The press builds its impressions here, BEFORE the stage-fit guard below and
      before mount, because both measure this spread and an empty stack is not
@@ -265,8 +257,13 @@
      readable and become texture, which is the argument: one pair, over and
      over, until the repetition is the whole page.
 
-     Impressions are real elements, created once and revealed by scroll. No
-     crossfade anywhere: this grammar cuts.
+     Impressions are real elements, created once here and revealed ON ENTRY by
+     the engine's flow reveal - `data-sc-in` + `data-sc-stagger` on the stack
+     in the markup, which fires once and never reverses. They used to be
+     revealed by SCROLL, which held the peak still for 2.05 viewports and
+     un-printed the stack whenever the reader scrolled back up. Nothing here
+     runs per frame any more; this function just writes the impressions and
+     stops.
      ---------------------------------------------------------------------- */
   function buildStack() {
     if (!stack) return;
@@ -282,7 +279,12 @@
       /* Stepped across the sheet so the stack cascades rather than aligning
          into a column, which would read as a list instead of a print run. */
       b.style.transform = 'translateX(' + (i * 0.9) + 'ch)';
-      b.style.opacity = '0';
+      /* NO inline opacity. The engine's flow-reveal rule owns it now
+         (`[data-sc-stagger] > *` at 0, `> .sc-in` at 1), and an inline 0 here
+         would beat a stylesheet 1 and hold every impression invisible for
+         ever. The inline TRANSFORM is deliberate the other way round: it beats
+         the engine's 14px rise, so these keep their stepped offset across the
+         sheet and gain no vertical travel. */
       b.style.color = i < 3 ? 'var(--onyx)'
                     : 'color-mix(in oklab, var(--onyx) ' + Math.max(38, 100 - i * 2.2) + '%, transparent)';
       b.style.transition = 'opacity 260ms var(--sc-ease-out)';
@@ -293,36 +295,17 @@
     stack.appendChild(frag);
   }
 
-  function printFrame() {
-    if (!marks.length) return;
-    var p = progress('ch5');
-    /* Front-loaded: the run is complete well before the chapter ends, so the
-       tail copy has a settled block to sit against rather than a moving one. */
-    /* marks holds impressions two upward; impression one is .press__first in
-       the markup, which is no longer cued - it arrives with the act, as the
-       setup above it does.
-
-       START was 0.12 to wait for impression one's cue to finish (0.05..0.10).
-       With no cue to wait for, that 0.12 is 281px of a held screen showing one
-       impression and nothing happening, on top of the viewport of entry slide
-       before it. 0.04 starts the run as soon as the pin engages, which is as
-       early as it can be: p is clamped to 0 for the whole entry slide, so no
-       value here can make the cascade begin before the act is pinned. That is
-       what uncueing the first line is for - it is the only part of this screen
-       that CAN arrive during the slide. */
-    var START = 0.04, END = 0.78;
-    var n = Math.round(clamp01((p - START) / (END - START)) * marks.length);
-    if (n === lastShown) return;
-    for (var i = 0; i < marks.length; i++) {
-      marks[i].style.opacity = i < n ? '1' : '0';
-    }
-    lastShown = n;
-  }
+  /* printFrame() lived here and is gone. It recomputed how many impressions
+     should be showing from the act's progress on every frame, which is what
+     made the peak the largest held block on the page AND what made it re-hide
+     on scroll-up. The cascade is `data-sc-in` + `data-sc-stagger` in the
+     markup now; nothing about it runs per frame. */
 
   /* ------------------------------------------------------------------------
      2. THE SPIN  (chapter two)
      ---------------------------------------------------------------------- */
   var COUNT = 87;
+  var SPIN_START = 0.62;
   var TIERS = [720, 1024, 1440];
   var BASE = './spin/';
 
@@ -374,7 +357,17 @@
 
   function drawSpin() {
     if (!spin) return;
-    var idx = clamp(Math.round(progress('ch2') * (COUNT - 1) + spin.drag), 0, COUNT - 1);
+    /* The spin starts where the reveal lands, not where the act does. The first
+       0.62 of chapter two is the hinge: the couplet arriving and the sheet of
+       clay it is printed on travelling off the top of the frame.
+       Mapped from 0 the slipper spent that whole stretch turning behind an
+       opaque sheet - half the rotation spent, unseen, before anyone had been
+       shown the thing - and arrived at the reveal already half way round.
+       Remapped, frame 0 is what the sheet uncovers and the turn is the
+       reader's from there. The window is 0.38 of a 2.5vh hold, which is 0.95
+       viewports of scroll against the 1.2 the whole act gave it before. */
+    var sp = clamp01((progress('ch2') - SPIN_START) / (1 - SPIN_START));
+    var idx = clamp(Math.round(sp * (COUNT - 1) + spin.drag), 0, COUNT - 1);
     if (idx === spin.drawn) return;
     var img = spin.imgs[idx];
     if (!img || !img.complete || !img.naturalWidth) return;
@@ -418,45 +411,8 @@
     }
     drawSpin();
   }
-
   /* ------------------------------------------------------------------------
-     3. THE LOOP
-     A small captioned plate in the peak's margin. It never goes full-bleed:
-     this grammar keeps media in its own column, which is the clearest single
-     difference from preview 1's ending.
-     ---------------------------------------------------------------------- */
-  var loopEl = document.getElementById('loopv');
-  var armed = false, playing = false;
-
-  function loopLive(on) {
-    if (!loopEl || lite) return;
-    if (on && !armed) {
-      armed = true;
-      var webm = document.createElement('source');
-      webm.type = 'video/webm'; webm.src = './media/slide-loop.webm';
-      var mp4 = document.createElement('source');
-      mp4.type = 'video/mp4'; mp4.src = './media/slide-loop.mp4';
-      loopEl.appendChild(webm); loopEl.appendChild(mp4);
-      loopEl.load();
-    }
-    if (!armed) return;
-    if (on && !playing) {
-      playing = true;
-      var q = loopEl.play();
-      if (q && q.catch) q.catch(function () { playing = false; });
-    } else if (!on && playing) { playing = false; loopEl.pause(); }
-  }
-  document.addEventListener('visibilitychange', function () {
-    if (document.hidden && playing) { loopEl.pause(); playing = false; }
-  });
-
-  if (loopEl && !lite && 'IntersectionObserver' in window) {
-    new IntersectionObserver(function (en) { loopLive(en[0].isIntersecting); },
-      { rootMargin: '20% 0px' }).observe(loopEl);
-  }
-
-  /* ------------------------------------------------------------------------
-     4. THE FIGURES
+     3. THE FIGURES
      70,000 and 120,000,000 tick once, on their own, when they come into view.
 
      They used to be the engine's [data-sc-count], scrubbed across a window of
@@ -534,7 +490,8 @@
   /* ------------------------------------------------------------------------ */
   /* buildStack() ran before mount; see the note above the stage-fit guard. */
 
-  function tick() { printFrame(); spinFrame(); requestAnimationFrame(tick); }
+  /* One thing left in the frame loop: the spin, which is a real scrub. */
+  function tick() { spinFrame(); requestAnimationFrame(tick); }
 
   if (frame) {
     if (lite) {

@@ -1,0 +1,1207 @@
+/* ============================================================================
+   Studio Rowan — preview 3 (preview 2, forked for the dot-field title page). The Never-Ending Slipper.
+   Grammar: chaptered editorial (uniqueness.md 2.2). The page is a printed
+   feature. Chapters are the unit, not acts: a full-stop intertitle, then one
+   dense asymmetric spread, then the next intertitle. Hard cuts between
+   grounds, never an interpolation. Media sits in its own column with a
+   caption and never bleeds under type.
+
+   No fixed bar, and now no folio either. The page carries no running label at
+   all: the ground, the headline and the order of the argument are what say
+   where you are. A heading still never carries an eyebrow that can be mistaken
+   for part of the headline.
+
+   Signature move: THE REPRINT (see .press, and page.js).
+   Engine in ./engine/ is vendored and never edited.
+   ========================================================================== */
+
+@font-face {
+  font-family: "Outfit"; font-style: normal; font-weight: 300; font-display: swap;
+  src: url("/fonts/outfit.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter"; font-style: normal; font-weight: 400 500; font-display: swap;
+  src: url("/fonts/inter.woff2") format("woff2");
+}
+
+:root {
+  --white: #FFFFFF; --ivory: #F6F5F2; --hemp: #EBEAD7; --clay: #E0DCD1;
+  --apricot: #FC814A; --ochre: #7A6B11; --olive: #40531B; --onyx: #2C302E;
+
+  --sc-canvas: var(--ivory);
+  --sc-surface: var(--white);
+  --sc-ink: var(--onyx);
+  --sc-ink-soft: #5C605B;
+  --sc-accent: var(--apricot);
+  --sc-accent-ink: var(--onyx);
+
+  --display: "Outfit", system-ui, sans-serif;
+  --sc-font-display: var(--display);
+  --sc-font-text: "Inter", system-ui, -apple-system, sans-serif;
+
+  --hair: color-mix(in oklab, var(--onyx) 15%, transparent);
+  --hair-2: color-mix(in oklab, var(--onyx) 28%, transparent);
+
+  /* One editorial measure, held everywhere. A feature has a column width. */
+  --col: 34rem;
+  --margin: clamp(1.25rem, 5vw, 6rem);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  background: var(--ivory); color: var(--onyx);
+  font-family: var(--sc-font-text); font-size: var(--sc-t-base);
+  line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+img, svg, video { display: block; max-width: 100%; }
+a { color: inherit; }
+
+:focus-visible { outline: 2px solid var(--apricot); outline-offset: 3px; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+.skip {
+  position: absolute; left: var(--margin); top: -4rem; z-index: 200;
+  padding: .6rem 1rem; background: var(--onyx); color: var(--ivory);
+  font-size: var(--sc-t-sm);
+}
+.skip:focus { top: .75rem; }
+
+
+/* --------------------------------------------------------------- top asks --
+   The two CTAs, top right, on the title page and nowhere else. Out of flow, so
+   they do not push the title composition around; the title page is the
+   containing block for them (see .page--title).
+   -------------------------------------------------------------------------- */
+.topcta {
+  position: absolute; z-index: 30;
+  top: clamp(1.25rem, 4vh, 2.75rem); right: var(--margin);
+  display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end;
+  gap: clamp(.9rem, 2.2vw, 2rem);
+  font-size: var(--sc-t-sm);
+}
+.topcta__a {
+  text-decoration: none; color: var(--sc-ink-soft); white-space: nowrap;
+  transition: color var(--sc-d-fast) var(--sc-ease-out);
+}
+/* Prototype 02's ask: an apricot dot and a plain line of type, underlined on
+   hover. It was a hairline pill, which was right on ivory - a quiet outline on
+   paper - and wrong here: over the field the pill's border is one more thin
+   pale shape among 70,000, and its box traps a rectangle of dots behind the
+   label. The dot is the only apricot above the fold, so it carries the ask on
+   its own, and the label sits on the olive like everything else on the page.
+   The prototype underlined an inner span; this draws the same 1px line as a
+   background on the link, grown from zero on hover and inset past the dot, so
+   the markup stays the one the other previews share. */
+.topcta__a--key {
+  display: inline-flex; align-items: center; gap: .55rem;
+  color: var(--sc-ink); padding-block: .5rem;
+  background:
+    linear-gradient(currentColor, currentColor) no-repeat
+    calc(.5rem + .55rem) calc(100% - .35rem) / 0 1px;
+  transition: background-size var(--sc-d-fast) var(--sc-ease-out);
+}
+.topcta__a--key::before {
+  content: ""; flex: none; width: .5rem; height: .5rem; border-radius: 50%;
+  background: var(--apricot);
+}
+@media (hover: hover) and (pointer: fine) {
+  .topcta__a:hover { color: var(--sc-ink); }
+  .topcta__a--key:hover { background-size: calc(100% - 1.05rem) 1px; }
+}
+@media (max-width: 480px) { .topcta { font-size: var(--sc-t-xs); gap: .75rem; } }
+
+/* ------------------------------------------------------------------- type -- */
+.d {
+  font-family: var(--display); font-weight: 300;
+  letter-spacing: var(--sc-track-tight); line-height: 1.02; text-wrap: balance;
+}
+.d--xl { font-size: var(--sc-t-4xl); }
+.d--lg { font-size: var(--sc-t-3xl); }
+.d--md { font-size: var(--sc-t-2xl); }
+@media (max-width: 700px) {
+  .d--xl { font-size: var(--sc-t-2xl); }
+  .d--lg { font-size: var(--sc-t-xl); }
+}
+
+.lede { font-size: var(--sc-t-lg); line-height: 1.42; max-width: 32ch; text-wrap: pretty; }
+.prose { max-width: 44ch; text-wrap: pretty; }
+.prose p + p { margin-top: var(--sc-4); }
+.prose strong { font-weight: 500; }
+
+/* --------------------------------------------------------------- chapters --
+   Each chapter lands on its own ground and stays there. Hard cuts, never a
+   gradient: `drift` is banned by this grammar for exactly that reason.
+   `color` is restated wherever the tokens are, because colour inherits as a
+   computed value and a subtree that only redefines the token keeps the old ink.
+   -------------------------------------------------------------------------- */
+.page { padding: clamp(4rem, 11vh, 9rem) var(--margin); }
+
+/* A pinned section must carry NO vertical padding. Sticky is constrained by
+   its containing block, which is the section's CONTENT box, so padding steals
+   from both ends of the pin: the stage has not stuck yet when the act starts
+   and has already slid away before it finishes, while the engine computes
+   progress against the full height. Measured before this rule: the stage sat
+   at +99 at p=0 and -128 at p=1, so the tail of the spin played while the
+   frame was sliding off screen.
+
+   The breathing room the padding was providing now lives inside the stage,
+   on the spread. Selecting on the attribute means this follows the mobile
+   switch in page.js automatically: a chapter demoted to `flow` there gets
+   its section padding back. */
+[data-sc-act="pin"],
+[data-sc-act="scrub"] { padding-top: 0; padding-bottom: 0; }
+/* Stretch, not centre. The sheet is a three-row composition and has to be as
+   tall as the screen for its rows to have anywhere to go; centring a
+   content-height block was the thing that stranded the imprint. */
+/* Olive, re-inked the way the colophon is: the tokens AND `color`, because
+   colour inherits as a computed value (see the note above .page). The
+   hairlines are re-mixed from ivory too - the onyx ones vanish on olive. */
+.page--title   {
+  background: var(--olive); min-height: 100vh; display: flex; align-items: stretch;
+  isolation: isolate;
+  --sc-ink: var(--ivory); --sc-ink-soft: #C9D2B4;
+  --hair: color-mix(in oklab, var(--ivory) 22%, transparent);
+  --hair-2: color-mix(in oklab, var(--ivory) 40%, transparent);
+  color: var(--sc-ink);
+}
+/* The two grounds prototype 02's opening runs on. Re-inked like the title
+   page and the colophon: tokens and `color` both. */
+.page--olive, .page--onyx {
+  --sc-ink: var(--ivory); --sc-ink-soft: #C9D2B4;
+  --hair: color-mix(in oklab, var(--ivory) 22%, transparent);
+  color: var(--sc-ink);
+}
+.page--olive   { background: var(--olive); }
+.page--onyx    { background: var(--onyx); --sc-ink-soft: #B9BDB6; }
+.page--clay    { background: var(--clay); }
+.page--white   { background: var(--white); }
+.page--ivory   { background: var(--ivory); }
+.page--hemp    { background: var(--hemp); }
+.page--colophon {
+  background: var(--olive);
+  --sc-ink: var(--ivory); --sc-ink-soft: #C9D2B4;
+  color: var(--sc-ink);
+}
+
+/* ---------------------------------------------------- the chapter marker --
+   Each chapter used to open with a pinned intertitle: one line, alone, held
+   still on an otherwise empty screen for a little under half a viewport of
+   scrolling, then a viewport of stage sliding in and another sliding out. Five
+   of them - 9.5 viewports of scroll whose only content was a chapter title, on
+   a page whose densest screens were being trimmed to the pixel to fit.
+
+   That became a ruled head across the top of the spread, which fixed the length
+   and introduced a different problem: a full-width rule with the title over it
+   is a masthead, and a masthead is page furniture the chapter happens to sit
+   under. Five identical bands, one per chapter, each announcing the section
+   rather than belonging to it.
+
+   So there is no band. The marker sits INSIDE the section's own first column,
+   at the head of the same stack as the headline and the copy, on that column's
+   own spacing - the chapter names itself in its own voice and then keeps
+   talking. Label and title still hold one baseline; the rule is gone, and with
+   it the full-width row it needed.
+   -------------------------------------------------------------------------- */
+.chapter {
+  display: grid; justify-items: start;
+  /* Air below the marker, so it groups with itself before it groups with the
+     headline under it. */
+  margin-bottom: clamp(.2rem, 1.2vh, .85rem);
+}
+/* There is no label line on the page any more. It named the job each chapter
+   does in the argument - problem, solution, proof, studio - and that naming has
+   moved into the folio, and has since gone with it: the page no longer names
+   the job anywhere. On the page it was a second, smaller thing above the title
+   that the title then had to be sized around. Gone, the title can simply be
+   the size it wants. The naming itself - problem, solution, proof, studio - is
+   no longer anywhere in the markup either: it lived on in data-ch attributes
+   after the folio went, and those went too once nothing read them. */
+/* Set below the chapter's own headline, deliberately. A marker names; the
+   headline speaks. Sized level with the headline the page would have read as
+   five titles. */
+.chapter__t {
+  font-family: var(--display); font-weight: 300; font-size: var(--sc-t-xl);
+  letter-spacing: var(--sc-track-tight); line-height: 1.08; text-wrap: balance;
+}
+/* The exception, and it is one chapter only. "The Never-Ending Slipper." is the
+   product's name and the page's main hit - the thing the whole argument is
+   built to deliver - and it was set smaller than "Worn for moments, wasted
+   forever.", which is the problem it solves.
+
+   It is also the only marker that can take the size: every other chapter has a
+   headline under it to defer to, and chapter two leads with a lede rather than
+   a statement, so nothing is competing. Set level with the two turn beats, one
+   step above every chapter headline and one below the title page's own line.
+   Sized to its column rather than off the scale, because the name has a shape
+   it has to keep: "Never-Ending" is one word with a hyphen in it, and a hyphen
+   is a legal break, so every size on the scale broke the line THERE - "The
+   Never- / Ending Slipper." at 1440, and three lines between about 1100 and
+   1350. The compound is held together with .nb and the size is bound to the
+   measure, so the name sets as "The Never-Ending / Slipper." and stays that way
+   down the whole range.
+
+   The floor is a chapter headline: whatever else happens, the product's name is
+   never smaller than the problem it solves, which is where this started. The
+   ceiling is just under the 5rem the 3xl step would have given it. */
+.chapter__t--hero {
+  font-size: clamp(var(--sc-t-2xl), 5.6vw, 4.9rem);
+  line-height: 1.02;
+}
+/* No break inside a hyphenated compound. */
+.nb { white-space: nowrap; }
+
+/* ------------------------------------------------------------- title page -- */
+.page--title { position: relative; }
+/* A TITLE PAGE, NOT A CENTRED BLOCK.
+   Three zones: the mark at the head, the title and its lede in the middle,
+   the imprint at the foot. The whole composition used to be one stack
+   centred in the viewport, with every gap inside it clamped to a 7rem
+   ceiling - so it stopped growing at about 513px while the screen kept
+   getting taller, and the surplus was split evenly above and below it. On a
+   1280x1800 window that was 643px of nothing over the mark and 640px under
+   the imprint, which left an imprint - uppercase, letterspaced, ruled above,
+   every signal of a foot-of-page device - floating two thirds down the page
+   with a third of the screen empty beneath it.
+
+   Scaling the gaps could not fix it: filling that screen by opening the
+   clamps would have taken roughly 29vh per gap, which on a laptop is absurd.
+   The stack had to become a composition instead.
+
+   `1fr` in the middle is what does the work: it takes ALL the slack, so the
+   mark sits on the top margin and the imprint on the bottom one at any
+   height, and the title rides the middle. row-gap is the MINIMUM separation,
+   which is what the layout falls back to on a short screen where there is no
+   slack to hand out - the rows collapse to their content and this reads as
+   the ordinary stack it used to be. Nothing here needs a media query. */
+.sheet {
+  width: 100%;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  row-gap: clamp(3rem, 9vh, 7rem);
+}
+/* Centred in the middle row, then pulled fractionally above true centre.
+   Optical centre sits higher than geometric centre: a block set at exactly
+   50% reads as hanging low, and the imprint's rule along the bottom margin
+   weights the foot of the page further still. Percentage translate is of the
+   block's own height, so it scales with the type rather than the screen. */
+.title__block { align-self: center; transform: translateY(-4%); }
+/* The hero. It was a 270px lockup; it is the h1 now and carries the page, so
+   it is sized against the tagline under it rather than against the top
+   margin it used to sit on. The wordmark is 7.44:1, so 46vw of a 1440 window
+   puts it about 89px tall against a ~38px cap height on the tagline - close
+   to the ~2.7 the holding page runs. Width, not font-size: the artwork is an
+   SVG and scales off its own box. */
+/* ONE RULE, NO BREAKPOINT. The width was clamp(240px, 46vw, 680px) with a
+   phone override to the full measure, and the two did not meet: at 700px the
+   mark filled the measure at about 630px, and at 701px it fell to 46vw, which
+   is 322px. Every width from there to roughly 1200 had a smaller wordmark
+   than a phone did - the tablet and the small laptop, exactly where a hero is
+   looked at most. Now: never under 560px unless the measure itself is
+   narrower (then it is the measure), 46vw once that is the larger figure,
+   680px at the top. Continuous the whole way, so no width loses out to its
+   neighbour. */
+.title__mark { display: block; width: min(100%, clamp(560px, 46vw, 680px)); color: var(--hemp); }
+.title__mark svg { display: block; width: 100%; height: auto; }
+/* 15ch used to live on `.page--title h1`, which was this line. The h1 is the
+   mark now and a character measure means nothing on it, so the measure moves
+   here, to the text it was always for. */
+.title__tagline { margin-top: clamp(1.25rem, 3.2vh, 2.5rem); max-width: 15ch; }
+/* ON A PHONE THE HIERARCHY INVERTED. The mark bottomed out at its 240px floor,
+   which is 32px tall, while the tagline's own floor held it at 34.6px - so the
+   line under the hero had letters as tall as the hero and ran wider than it.
+   Two corrections, one at each end: the mark takes the whole measure (the
+   min() on .title__mark - 335px wide, 45px tall at 375), and the tagline
+   drops a step here so the ratio between them is back near 2:1. */
+@media (max-width: 700px) {
+  .title__tagline { font-size: var(--sc-t-xl); }
+}
+.page--title .lede { margin-top: var(--sc-6); }
+/* No margin-top: the sheet's row-gap is the minimum separation now, and the
+   1fr row above supplies everything beyond it. Keeping the old clamp here
+   would have added a second gap on top of the grid's. */
+/* The rule belongs to the foot row now, not to the imprint: it runs under
+   both columns, and the imprint is one of two things standing on it. */
+.title__foot {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: var(--sc-6); flex-wrap: wrap;
+  border-top: 1px solid var(--hair); padding-top: var(--sc-4);
+}
+.imprint {
+  display: flex; gap: var(--sc-6);
+  font-size: var(--sc-t-xs); letter-spacing: .07em; text-transform: uppercase;
+  color: var(--sc-ink-soft);
+}
+.title__note { max-width: 34ch; font-size: var(--sc-t-sm); line-height: 1.45; color: var(--sc-ink-soft); }
+.title__note b { font-weight: 500; color: var(--sc-ink); }
+
+/* THE FIELD. Behind everything on the title page and nothing else. The host
+   is sized by CSS and page.js sizes the canvas to it; `isolation` on the
+   section keeps the negative z-index inside the title page instead of
+   dropping the field behind the body's ivory. */
+.field { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.field canvas { display: block; width: 100%; height: 100%; max-width: none; }
+/* Fades up once the first frame exists. */
+.field canvas { opacity: 0; transition: opacity 1.8s var(--sc-ease-out); }
+.field.is-on canvas { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .field canvas { transition: none; } }
+
+/* ----------------------------------------------------------------- spreads --
+   Asymmetric by rule. Never a centred column, never three equal cards.
+   -------------------------------------------------------------------------- */
+.spread {
+  display: grid;
+  column-gap: clamp(2.5rem, 6vw, 5rem);
+  row-gap: clamp(1.75rem, 4.5vh, 3rem);
+}
+
+.spread__lead { display: grid; gap: var(--sc-5); max-width: 52rem; }
+/* Chapter one, whole. The narrative runs down the lead column and the two
+   figures stand in their own, which is what separates copy that is telling a
+   story from numbers that are stating facts - they used to be interleaved, and
+   the figures were carrying the story's sentences. Even columns rather than
+   the usual lean: "120,000,000" is eleven glyphs set nowrap, and a 1fr column
+   narrower than this cannot hold it. */
+/* The figures column is the wider of the two: it carries three things, and the
+   turn set in display type wants to hold each of its lines whole. The story
+   column only needs its 44ch measure. */
+.spread--story { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); }
+/* The two figures and the turn read down as one column, in that order: the
+   numbers, then the sentence that answers them. They were briefly held at the
+   two ends of the column instead, which read as a movement but put the couplet
+   level with the wrong thing and, on a phone, before the numbers rather than
+   after. */
+.spread--story .spread__figs {
+  grid-template-columns: minmax(0, 1fr);
+  border-top: 0; padding-top: 0; gap: clamp(1.75rem, 5vh, 3rem);
+  align-content: start;
+}
+/* One step down from the 3xl they were set at when they owned a screen of
+   their own. They are the chapter's evidence now, not its headline, and at 3xl
+   the longer number runs out of its column between about 1000px and 1200px
+   wide - measured at 464px of glyph in a 465px column. */
+.spread--story .fig__n { font-size: var(--sc-t-2xl); }
+/* Explicit tracks, not auto-fit. A `count` device grows its number from "0"
+   to "120,000,000" while the reader watches, and with content-sized tracks
+   that growth re-sizes the column, rewraps the prose beside it and changes
+   this section's height mid-scroll. Measured: chapter one went 1131px -> 1102px
+   as the counters ran, which left every pinned act below it 29px away from the
+   geometry the engine had cached. minmax(0, 1fr) makes the tracks independent
+   of their content, so the number can no longer move the page. */
+.spread__figs {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(2rem, 5vw, 4rem); align-items: start;
+  border-top: 1px solid var(--hair); padding-top: clamp(2rem, 5vh, 3.5rem);
+}
+@media (max-width: 860px) { .spread__figs { grid-template-columns: minmax(0, 1fr); } }
+/* minmax(0, 1fr) is load-bearing: without it the implicit column is sized by
+   max-content, so the nowrap counter's final width ("120,000,000" is 438px at
+   this size) widens every sibling paragraph and rewraps them as it counts.
+   Capping the column at the container makes the figure's layout identical
+   whether the number reads "0" or its final value. max-width is set so the
+   finished number still fits inside it rather than spilling. */
+.fig {
+  display: grid; grid-template-columns: minmax(0, 1fr);
+  gap: var(--sc-2); max-width: 40ch;
+}
+.fig__n {
+  font-family: var(--display); font-weight: 300; font-size: var(--sc-t-3xl);
+  line-height: 1; letter-spacing: var(--sc-track-tight); font-variant-numeric: tabular-nums;
+  white-space: nowrap;   /* a wrapped counter changes height as it counts */
+}
+.fig__n--soft { color: var(--ochre); }
+.fig__r {
+  font-size: var(--sc-t-xs); letter-spacing: .07em; text-transform: uppercase;
+  color: var(--sc-ink-soft);
+}
+.fig cite {
+  display: block; font-style: normal; font-size: var(--sc-t-xs);
+  color: var(--sc-ink-soft); margin-top: .4rem;
+}
+/* ------------------------------------------------------- the hinge -------
+   The couplet that turns the argument, and the screen it is printed on
+   leaving, to show the product held behind it.
+
+   THERE IS NO TRANSITION HERE, AND THAT IS THE POINT. The clay is a sheet at
+   the top of chapter two carrying the two lines; it travels straight up and
+   off, AT EXACTLY SCROLL SPEED, and the chapter underneath is pinned. So the
+   reader sees a page of clay scroll away the way any page scrolls away, and
+   the slipper is standing behind it. Nothing is animating. The only unusual
+   thing in the frame is that the chapter does not move with it, and nobody
+   consciously notices that.
+
+   This replaced a diagonal wipe: a leaning edge that swept across the frame
+   right to left with a cutting line on its leading edge. It worked, and it was
+   wrong - a travelling diagonal blade is motion-graphics vocabulary, and this
+   grammar is a printed feature that states plainly (see "chapters", above)
+   that grounds cut hard and never interpolate. The wipe was the one thing on
+   the page arguing with the page.
+
+   1:1 IS LOAD-BEARING AND IT IS ARITHMETIC. The sheet travels one stage height
+   over its window, so that window has to be worth exactly one viewport of
+   scroll: window = 1 / (span - 1). At span 3.5 the hold is 2.5 viewports, so
+   the window is 0.40 of it, which is what --lift is. Any faster and the sheet
+   is being pulled off the screen by something, which is an effect; any slower
+   and it drags. At 1:1 it is just paper moving.
+
+   PRINT FIRST. Without the engine this is a clay block of two sentences above
+   a white chapter, in reading order, with a hard cut between the grounds.
+   Every rule that makes it a sheet is scoped to .sc-ready and to the pinned
+   state, because on a phone this chapter flows.
+   -------------------------------------------------------------------------- */
+
+/* The flowed and no-script state: a clay block, full bleed, above the chapter. */
+.hinge { display: none; }
+.hinge__copy {
+  /* Olive, because the sheet is the ground ABOVE it carried down over the
+     chapter, and the section above is the story on olive (it was onyx while
+     the mission stood between them, and clay in preview 2). Its two lines are
+     inked ivory to match. */
+  background: var(--olive); color: var(--ivory);
+  padding: clamp(4rem, 14vh, 9rem) var(--margin);
+  display: grid; gap: clamp(1.5rem, 4vh, 2.5rem);
+}
+.hinge__q, .hinge__a { max-width: 22ch; }
+
+/* A section carrying a full-bleed sheet cannot take its inset from the section:
+   the stage is inside the section's content box and clips to it, so --margin
+   there would leave a white band down both edges of the clay. The inset moves
+   to the spread, which is the only thing that wanted it. */
+.page--bleed { padding-inline: 0; }
+.page--bleed .spread,
+.page--bleed .hinge__copy { padding-inline: var(--margin); }
+
+/* FLOWED, the block padding has to move too, and for the same reason. A
+   demoted section gets its vertical padding back at its own outer edges - but
+   the hinge is a full-bleed band at the top of it, so that padding lands
+   ABOVE the clay, where it is white space nobody asked for, and the chapter
+   underneath starts hard against the band's edge with nothing between them.
+   Measured on a phone: "The Never-Ending Slipper." set 0px below the clay.
+
+   So the section keeps none of it and the spread takes all of it, which puts
+   the gap where a chapter boundary actually is. The two values mirror the
+   page's own flowed-section padding at each breakpoint; the id carries them
+   past the `[data-sc-act="flow"] .spread` rule that zeroes block padding for
+   every other chapter, which is correct for every other chapter because there
+   the section is still paying it. */
+#ch2[data-sc-act="flow"] { padding-block: 0; }
+#ch2[data-sc-act="flow"] .spread { padding-block: clamp(4rem, 11vh, 9rem); }
+@media (max-width: 860px) {
+  #ch2[data-sc-act="flow"] .spread { padding-block: clamp(5.5rem, 15vh, 9.5rem); }
+}
+
+/* ---------------------------------------------------------------- pinned -- */
+.sc-ready #ch2:not(.is-unpinned) {
+  /* The sheet's own progress. It holds while the couplet assembles, then
+     leaves over --lift, which is one viewport of scroll exactly.
+
+     THE ACT IS 3.2 VIEWPORTS, NOT 3.5, AND THE HOLD IS HALF WHAT IT WAS. The
+     sheet sat for 0.18 of a 2.5-viewport travel - 0.45 of a screen held on
+     two sentences - before it moved, and the product did not show until 1.6
+     screens into the act. Now it holds for 0.10 of a 2.2-viewport travel,
+     0.22 of a screen, which is still long enough for the answer to land
+     under the question. --lift is 1 / 2.2 so the sheet still leaves at
+     exactly scroll speed; every threshold after it has moved up by the same
+     amount, and the spin keeps the 0.8 of a screen it had (SPIN_START in
+     page.js moved with them). */
+  --lift: 0.4545;
+  --t: clamp(0, (var(--sc-p, 0) - 0.10) / var(--lift), 1);
+
+  /* The ground UNDER the stage, which is not the ground IN it. A pinned stage
+     is 100svh and the visual viewport is whatever the browser's chrome leaves,
+     which is larger; so a strip of the SECTION shows below the frame for the
+     whole hold. The sheet leaves upward, so the bottom of the stage turns
+     white the instant it starts moving - and the strip below has to turn with
+     it, or the frame shows white sitting on a band of clay. */
+  --land: clamp(0, (var(--sc-p, 0) - 0.10) / 0.03, 1);
+  background: color-mix(in oklab, var(--white) calc(var(--land) * 100%), var(--clay));
+}
+/* And the STAGE has to carry the chapter's own white. A stage is transparent,
+   so with the section driven to clay the sheet was lifting off the section's
+   ground rather than the chapter's - the slipper stood on the same clay it was
+   supposed to be leaving. */
+.sc-ready #ch2:not(.is-unpinned) [data-sc-stage] { background: var(--white); }
+
+/* The sheet, and the type on it, are one thing and move as one thing. No fade
+   on the copy, no separate travel: it is printed on the page that is leaving,
+   so it leaves with it. A sheet that slides out from under its own words is a
+   layer effect, which is the thing this whole section stopped doing. */
+.sc-ready #ch2:not(.is-unpinned) :is(.hinge, .hinge__copy) {
+  transform: translateY(calc(var(--t) * -100%));
+  will-change: transform;
+}
+.sc-ready #ch2:not(.is-unpinned) .hinge {
+  display: block; position: absolute; inset: 0; z-index: 3;
+  background: var(--olive);
+}
+
+/* The couplet sits in the spread's own left column, on the spread's own
+   vertical centring, so it stands exactly where the chapter's name will stand
+   and the name lands in its place rather than somewhere else on the screen. */
+.sc-ready #ch2:not(.is-unpinned) .hinge__copy {
+  position: absolute; inset: 0; z-index: 4;
+  background: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  column-gap: clamp(2.5rem, 6vw, 5rem);
+  align-content: center;
+  gap: clamp(1.25rem, 3.5vh, 2rem);
+  padding-block: clamp(1rem, 3vh, 2.5rem);
+}
+.sc-ready #ch2:not(.is-unpinned) .hinge__copy > * { grid-column: 1; }
+/* No cap of its own when pinned: the couplet stands in the spread's left
+   column and that column IS the measure - it sets to the same width the
+   chapter's name will set to. */
+.sc-ready #ch2:not(.is-unpinned) :is(.hinge__q, .hinge__a) { max-width: none; }
+
+/* Nothing here is dropped under prefers-reduced-motion. The sheet moving is
+   the sheet SCROLLING, at the speed the reader is scrolling it, and a page
+   that held it still would never show the chapter behind it. */
+
+/* ------------------------------------------------------- the four reveals --
+   The couplet's second line, the chapter's name, and the writing. All four are
+   timed here rather than with `data-sc-cue`, and scoped to the pinned state,
+   for one reason: THEY ONLY MEAN ANYTHING AGAINST THE HINGE.
+
+   A cue is the engine's, and the engine honours it whether the act is pinned
+   or flowed. Below 860px this chapter flows - there is no sheet, no cut and no
+   reveal to stage - and cues written for the pinned timeline held the heading,
+   the lede and the prose at zero opacity, still occupying every pixel of their
+   layout, for the first half of the section's life. The phone opened chapter
+   two on a screen of nothing with the slipper a viewport below it. Flowed, the
+   chapter is now simply a chapter, which is the correct reading of it.
+
+   `--sc-p` and not `--t` on purpose: these are positions in the ACT, not in the
+   lift. Three of them land after the lift has finished, so measuring them
+   against it would put them past 1. Like a cue, they are clamped to zero for
+   the whole of the stage's entry slide, which is what keeps the first line of
+   the couplet - the one thing that must be readable during the slide - uncued
+   and untouched by any of this.
+   -------------------------------------------------------------------------- */
+.sc-ready #ch2:not(.is-unpinned) :is(.hinge__a, .chapter, .plate, .lede, .prose) {
+  opacity: var(--in, 1);
+  transform: translateY(calc((1 - var(--in, 1)) * 1.1rem));
+  will-change: opacity, transform;
+}
+/* Under the question, once the pin has engaged. */
+.sc-ready #ch2:not(.is-unpinned) .hinge__a {
+  --in: clamp(0, (var(--sc-p, 0) - 0.02) / 0.06, 1);
+}
+/* After the sheet has left the frame entirely, taking the couplet that stood
+   here with it: 0.59 is about four hundredths past the end of the lift, so the name
+   lands on white that has had a moment to itself rather than on a crossfade
+   with the sentence it answers. */
+/* THE PLATE SHARES THIS WINDOW. It used to be untimed: the sheet cleared the
+   frame from the bottom, so the slipper was uncovered first and stood alone
+   on white for a few hundredths of the act until its name arrived. The idea
+   was that an object already standing there is a thing being shown. In
+   practice it read as the asset hanging about waiting for its heading. The
+   name and the object are one arrival, so they are on one clock: same start,
+   same length, same rise. */
+.sc-ready #ch2:not(.is-unpinned) :is(.chapter, .plate) {
+  --in: clamp(0, (var(--sc-p, 0) - 0.59) / 0.05, 1);
+}
+/* Later still. Arriving with the name they would put sixty words of prose in
+   the reveal frame beside the product; the reveal is the name and the object,
+   and the writing follows it. */
+.sc-ready #ch2:not(.is-unpinned) :is(.lede, .prose) {
+  --in: clamp(0, (var(--sc-p, 0) - 0.69) / 0.06, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .sc-ready #ch2:not(.is-unpinned) :is(.hinge__a, .chapter, .plate, .lede, .prose) {
+    transform: none;
+  }
+}
+
+/* Media column. Never bleeds under type; always carries a caption. */
+/* The text column is the wider of the two now, where it used to be the
+   narrower. It carries the product's name at display size, and that name wants
+   about 650px at 1440 to set "The Never-Ending" whole; the plate is a 16:10
+   frame that reads perfectly well at 565px. */
+.spread--media {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  align-items: start;
+}
+.spread__text { display: grid; gap: var(--sc-6); }
+.plate { display: grid; gap: var(--sc-3); }
+.plate__frame {
+  position: relative; width: 100%; aspect-ratio: 1440 / 900; overflow: hidden;
+  background: color-mix(in oklab, var(--clay) 40%, var(--white));
+}
+.plate__frame canvas, .plate__frame picture, .plate__frame img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
+.plate__frame canvas { opacity: 0; transition: opacity var(--sc-d-slow) var(--sc-ease-out); }
+.plate__frame.is-live canvas { opacity: 1; }
+.plate__frame.is-live img { opacity: 0; }
+.plate__frame img { transition: opacity var(--sc-d-slow) var(--sc-ease-out); }
+.plate__load {
+  position: absolute; left: 0; bottom: 0; height: 1px; width: 100%;
+  transform: scaleX(var(--decoded, 0)); transform-origin: 0 50%;
+  background: var(--ochre); opacity: .85; transition: opacity var(--sc-d-base) var(--sc-ease-out);
+}
+.plate__frame.is-ready .plate__load { opacity: 0; }
+.plate figcaption {
+  font-size: var(--sc-t-xs); color: var(--sc-ink-soft); max-width: 34ch;
+  padding-top: .3rem; border-top: 1px solid var(--hair);
+}
+@media (hover: hover) and (pointer: fine) { .plate__frame.is-live { cursor: ew-resize; } }
+
+/* ------------------------------------------------------------------ claims -- */
+/* Argument left, photograph right. The claims are a list of assertions about
+   how the thing behaves in a wet, public place; the frame is the evidence for
+   them, so the two sit side by side and the reader can check one against the
+   other. Source order is the reading order here and on a phone, which stacks
+   the columns in it: title -> claims -> photograph -> summary. */
+.spread--claims { grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr); align-items: start; }
+.proof { display: grid; align-content: start; }
+.claims { list-style: none; }
+.claim {
+  display: grid; grid-template-columns: 2.4rem 1fr; gap: var(--sc-4);
+  align-items: start; padding: var(--sc-5) 0; border-top: 1px solid var(--hair);
+}
+.claim:last-child { border-bottom: 1px solid var(--hair); }
+.claim i { display: block; width: 2.4rem; height: 2.4rem; color: var(--olive); }
+.claim i svg { width: 100%; height: 100%; }
+.claim b { display: block; font-weight: 500; font-size: var(--sc-t-lg); }
+.claim span { display: block; color: var(--sc-ink-soft); margin-top: .1rem; }
+
+/* The claims cascade in, one at a time.
+   `data-sc-in` on the <ol> is the trigger and nothing else - the list itself
+   must not fade or lift, or every claim would carry the container's motion on
+   top of its own and the cascade would read as one block sliding with a blur
+   in it. So the generic flow-reveal rule is neutralised on .claims and the
+   entrance is rebuilt on the items below.
+   Specificity note: `.claims[data-sc-in]` (0,2,0) has to out-rank the engine's
+   `[data-sc-in]` (0,1,0), and it does. */
+.claims[data-sc-in] { opacity: 1; transform: none; transition: none; }
+
+/* Each claim: the rule draws across, the line rises into the space under it,
+   the icon follows its own line a beat later. Three things, one gesture -
+   the hairline arriving first is what makes it read as the list being ruled
+   off rather than four boxes fading up.
+   `--d` is the claim's place in the queue. 90ms apart is close enough that the
+   four still read as one list (270ms end to end, under a third of a second)
+   and far enough apart to be a sequence rather than a smear. The 80ms on the
+   first one is head room for the heading: on a tall screen the header and the
+   list cross the observer in the same frame, and without it the h2 and the
+   first claim would arrive together. */
+.claim { --d: 80ms; position: relative; }
+.claim:nth-child(2) { --d: 170ms; }
+.claim:nth-child(3) { --d: 260ms; }
+.claim:nth-child(4) { --d: 350ms; }
+
+/* The rules are drawn by pseudo-elements, not by the borders: a border can
+   only fade, and a fading line has no direction. These wipe from the left,
+   which is the direction the claim is read in. The borders stay in the box
+   model (they hold the spacing) and go transparent until their line arrives. */
+.claim { border-top-color: transparent; }
+.claim:last-child { border-bottom-color: transparent; }
+.claim::before, .claim:last-child::after {
+  content: ""; position: absolute; inset-inline: 0; height: 1px;
+  background: var(--hair); transform: scaleX(0); transform-origin: left center;
+  transition: transform 780ms var(--sc-ease-out); transition-delay: var(--d);
+}
+.claim::before { top: -1px; }
+.claim:last-child::after { bottom: -1px; transition-delay: calc(var(--d) + 90ms); }
+
+.claim > div, .claim > i {
+  opacity: 0; transform: translate3d(0, 14px, 0);
+  transition: opacity 620ms var(--sc-ease-out), transform 620ms var(--sc-ease-out);
+  transition-delay: var(--d);
+}
+/* The icon is the one thing here that is a mark rather than words, so it is
+   allowed a little more: it settles up from 0.92 behind its own line. Held to
+   the same 620ms so it lands with the sentence it belongs to, not after it. */
+.claim > i { transform: translate3d(0, 10px, 0) scale(.92); transform-origin: left center; transition-delay: calc(var(--d) + 110ms); }
+
+.claims.sc-in .claim::before,
+.claims.sc-in .claim:last-child::after { transform: none; }
+.claims.sc-in .claim > div,
+.claims.sc-in .claim > i { opacity: 1; transform: none; }
+/* THE CLAIMS COME IN WITH THE SCROLL (preview 3). The cascade above is one
+   trigger and a clock: the list crosses the observer, and all four run on
+   timers 90ms apart - over in a third of a second whatever the reader's hand
+   is doing, and usually before the third and fourth are even on screen. Here
+   each claim has its OWN progress, `--in`, written by page.js from where that
+   claim sits in the viewport: it starts as the claim's top edge passes 90% of
+   the screen height and completes 22% of a screen later. So they arrive one
+   at a time, in reading order, at the pace the page is being read.
+
+   The same three-part gesture, mapped onto one number: the rule draws across
+   over the first 60%, the line rises over the whole of it, and the icon
+   follows on the last 70%.
+
+   `--in` ONLY EVER GOES UP. page.js keeps the highest value a claim has
+   reached, so scrolling back up does not un-write the list - a reader who
+   goes back to re-read a claim should find it there. And this build's own
+   objection to scrubbed text (it makes the reader perform the animation) is
+   why the window is short: one ordinary wheel notch or thumb flick carries a
+   claim the whole way in, so nobody is left reading at 40% opacity.
+
+   The 140ms linear transition is smoothing, not animation: a mouse wheel
+   moves the page in 100px steps and without it each step is a visible jump.
+
+   All of it hangs off `.is-scrub`, which page.js sets. No script, or reduced
+   motion, and none of these rules apply. */
+.claims.is-scrub .claim::before,
+.claims.is-scrub .claim:last-child::after {
+  transform: scaleX(clamp(0, var(--in, 0) / 0.6, 1));
+  transition: transform 140ms linear; transition-delay: 0s;
+}
+.claims.is-scrub .claim > div,
+.claims.is-scrub .claim > i {
+  opacity: var(--in, 0);
+  transform: translate3d(0, calc((1 - var(--in, 0)) * 14px), 0);
+  transition: opacity 140ms linear, transform 140ms linear; transition-delay: 0s;
+}
+.claims.is-scrub .claim > i {
+  --ic: clamp(0, (var(--in, 0) - 0.3) / 0.7, 1);
+  opacity: var(--ic);
+  transform: translate3d(0, calc((1 - var(--ic)) * 10px), 0) scale(calc(.92 + var(--ic) * .08));
+}
+
+/* The proof plate's caption is the chapter's summary paragraph, so it is set as
+   prose rather than in the small caption voice the other plates use - it is
+   there to be read, not to label. Under the image, never over it: over the
+   water it would be legible at this crop only, and at any narrower one it lands
+   on the slippers, which are the one thing in the frame that has to stay
+   unobstructed. */
+.plate--proof figcaption {
+  font-size: var(--sc-t-base); line-height: 1.6; color: var(--sc-ink);
+  max-width: 48ch; text-wrap: pretty;
+  border-top: 1px solid var(--hair); padding-top: var(--sc-4);
+}
+.plate--proof img { width: 100%; height: auto; }
+
+/* ------------------------------------------------------------------- quiet -- */
+/* A tighter row rhythm than the other spreads, and measured rather than felt.
+   The mission is four blocks in one column - marker, headline, the three
+   "changed" lines, then 121 words of prose - and at the shared 4.5vh row gap
+   that stack came to 931px inside a 900px stage, so the fit guard flowed the
+   longest read on the page for 31 pixels. At 3vh it clears with ~39px to
+   spare and the blocks are still well apart. */
+.spread--quiet {
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: clamp(1.25rem, 3vh, 2rem);
+  max-width: 62rem;
+}
+.spread--quiet h3 { max-width: 20ch; }
+/* ------------------------------------------------- our story, our mission --
+   Prototype 02's opening. Two columns: what is being counted, held sticky on
+   the left, and the telling of it running past on the right. Sticky needs the
+   section NOT to clip and the column to be shorter than its row, which is why
+   .ch__num is align-self:start - stretched, it would be as tall as the row
+   and have nowhere to travel.
+
+   THE TYPE IS ONE STEP DOWN FROM THE PROTOTYPE'S. It was brought across at
+   the prototype's own sizes first - lede-sized prose, 3xl headings, a 7.6rem
+   statement - and every line of it was a step larger than the same kind of
+   line anywhere else on this page, so the opening shouted and the chapters
+   after it seemed to mumble. The prose is the page's body size on the
+   page's measure now, the headings are 2xl like every other chapter's
+   second-level display line, and the statement tops out at 3xl. */
+.ch {
+  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(1.5rem, 5vw, 6rem);
+}
+.ch + .ch { margin-top: clamp(4rem, 12vh, 9rem); }
+/* The mission's row: even columns, because the left one carries a display
+   statement rather than a figure and needs the width to set in four lines.
+   The list's last rule is the gap to the prose. */
+.ch--mission { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: start; }
+.ch--mission .ch__num { top: 18vh; }
+.ch--mission .changed { max-width: 50ch; margin-bottom: clamp(1.75rem, 4vh, 2.75rem); }
+/* TWO COLUMNS ONLY WHERE THE STATEMENT FITS ONE. It is a 16ch line at 3xl,
+   about 610px, and it needs to set in four or five lines to read as a
+   statement. Side by side from 860px up, as every other .ch is, it had a
+   ~370px column at tablet and small-laptop widths and broke into eight lines,
+   two words at a time, beside a right column that was comfortable - the big
+   type cramped and the small type roomy, which is backwards. Below 1200px
+   the statement takes the full measure instead and the list and prose sit
+   under it, in two columns of their own while there is width for that. */
+@media (max-width: 1200px) {
+  .ch--mission { grid-template-columns: minmax(0, 1fr); gap: clamp(2rem, 5vh, 3rem); }
+  .ch--mission .ch__num { position: static; }
+  .ch--mission .mission { max-width: 18ch; }
+}
+@media (min-width: 701px) and (max-width: 1200px) {
+  .ch--mission > div:last-child {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: clamp(1.5rem, 4vw, 3rem); align-items: start;
+  }
+  .ch--mission .changed { margin-bottom: 0; }
+}
+.ch__num { position: sticky; top: 22vh; align-self: start; }
+.ch__label {
+  font-size: var(--sc-t-xs); letter-spacing: .1em; text-transform: uppercase;
+  color: var(--sc-ink-soft); margin-bottom: 1.4rem;
+}
+/* nowrap + tabular for the reason .fig__n gives: a counter that wraps or
+   changes width while it counts moves everything beside it. The size tops
+   out where "120,000,000" still fits the 5fr column. */
+.ch__big {
+  font-family: var(--display); font-weight: 300;
+  font-size: clamp(2.2rem, 4.9vw, 5.6rem); line-height: .95; letter-spacing: -.04em;
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.ch__big--apricot { color: var(--apricot); }
+.ch__cap { margin-top: 1rem; font-size: var(--sc-t-sm); max-width: 30ch; color: var(--sc-ink-soft); line-height: 1.45; }
+
+.display {
+  font-family: var(--display); font-weight: 300; font-size: var(--sc-t-2xl);
+  line-height: 1.04; letter-spacing: -.02em; text-wrap: balance; max-width: 18ch;
+}
+.prose--lg { max-width: 50ch; font-size: var(--sc-t-base); line-height: 1.6; }
+.prose--lg p + p { margin-top: var(--sc-4); }
+.display + .prose { margin-top: clamp(1.25rem, 3vh, 2rem); }
+.prose + .display { margin-top: clamp(2rem, 5vh, 3.5rem); }
+
+.mission {
+  font-family: var(--display); font-weight: 300;
+  font-size: var(--sc-t-3xl); line-height: 1.02; letter-spacing: -.025em;
+  max-width: 16ch; text-wrap: balance;
+}
+.mission .hi { color: var(--apricot); }
+.mission .w { display: inline-block; transition: opacity .25s linear; }
+/* Dimmed only once page.js has split the sentence AND is going to light it:
+   the class is set by the script, so no script means no dimming. */
+.mission.is-scrub .w { opacity: .15; }
+.mission.is-scrub .w.on { opacity: 1; }
+
+.changed { list-style: none; }
+.changed li {
+  font-family: var(--display); font-weight: 300; font-size: var(--sc-t-lg);
+  letter-spacing: -.01em; padding: .55em 0; border-top: 1px solid var(--hair);
+  display: flex; gap: 1.2rem; align-items: baseline;
+}
+.changed li:last-child { border-bottom: 1px solid var(--hair); }
+.changed small { font-family: var(--sc-font-text); font-size: var(--sc-t-xs); opacity: .55; min-width: 1.6rem; }
+.changed li.key { color: var(--apricot); }
+
+@media (max-width: 860px) {
+  .ch { grid-template-columns: minmax(0, 1fr); gap: 1.8rem; }
+  .ch__num { position: static; }
+  .ch__big { font-size: clamp(2.2rem, 11vw, 4rem); }
+}
+
+/* ================================================================== THE PRESS
+   The signature move. The chapter reprints itself: each impression is set
+   smaller and tighter than the last and offset a little, so the repetitions
+   stack down the sheet like proofs coming off a press. By the end the page is
+   made of its own repetition, and the smallest impressions read as texture,
+   which is the rhyme with 70,000.
+
+   Impressions are real elements, written by page.js and revealed ON ENTRY by
+   the engine's flow reveal. Nothing crossfades: this grammar cuts.
+
+   THIS SECTION DOES NOT PIN. It was the largest held block on the page - 2.05
+   viewports of stationary frame - for a cascade that is structurally the same
+   thing as the four claims above it, and those cost a flow section and nothing
+   else. The rule it failed: scrub the scroll only when scroll position
+   genuinely IS the state. Twenty-nine things appearing one after another is a
+   stagger, not a state.
+   ============================================================================ */
+/* The `padding-top/bottom: 0` that used to sit here has gone with the pin. It
+   existed because `.press` would otherwise beat the pinned-section rule on
+   equal specificity by being later in the file; flowed, the section wants its
+   padding back like every other flowed section, and .spread--press stops
+   claiming a stage's height through the [data-sc-act="flow"] rule below. */
+.spread--press {
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4.5rem); align-items: start; align-content: start;
+}
+.press__lead { grid-column: 1; }
+.press__setup {
+  font-size: var(--sc-t-lg); line-height: 1.4; max-width: 30ch;
+  color: var(--sc-ink-soft); margin-bottom: var(--sc-3);
+}
+/* Impression one. Sized and tracked exactly like the generated impressions so
+   the cascade below reads as a continuation of it, not a second start. */
+.press__first {
+  font-family: var(--display); font-weight: 300; font-size: 9.4vh;
+  letter-spacing: var(--sc-track-tight); line-height: .96;
+  white-space: nowrap; color: var(--onyx);
+}
+.press__stack { grid-column: 1; display: block; position: relative; }
+/* The stack carries data-sc-in only because that is the engine's handle for
+   the observer. It must not reveal ITSELF: the engine's flow-reveal rule would
+   otherwise fade and lift the whole block as one object on top of its children
+   doing it one at a time, which is two animations of the same thing at two
+   speeds. Neutralised here; the children are styled by the separate
+   `[data-sc-stagger] > *` rule and are untouched by this. */
+.press__stack[data-sc-in] { opacity: 1; transform: none; transition: none; }
+/* Opacity only, and quick. The engine's default flow reveal is 620ms with a
+   14px rise; an impression is a proof coming off a press, and it either has
+   been printed or it has not. The inline per-impression transform written by
+   page.js beats the engine's rise on specificity, so there is no travel to
+   cancel - only the duration to bring back to the 260ms the scrubbed version
+   used, and the delay is left alone because that is what data-sc-stagger
+   writes. */
+.press__stack > b { transition: opacity 260ms var(--sc-ease-out); }
+/* Scrubbed (page.js, THE PRESS RUNS OFF THE SCROLL AGAIN). The engine's
+   handles are off the stack in this mode, so nothing else is setting these.
+   180ms, shorter than the one-shot's 260: at the bottom of the run several
+   impressions print per wheel step and a long fade smears them into one. */
+.press.is-scrub .press__stack > b { opacity: 0; transition: opacity 180ms var(--sc-ease-out); transition-delay: 0s !important; }
+.press.is-scrub .press__stack > b.on { opacity: 1; }
+.press.is-scrub .press__margin .plate,
+.press.is-scrub .press__tail {
+  opacity: var(--in, 0);
+  transform: translate3d(0, calc((1 - var(--in, 0)) * 14px), 0);
+  transition: opacity 140ms linear, transform 140ms linear;
+}
+.press__stack b {
+  display: block; font-family: var(--display); font-weight: 300;
+  letter-spacing: var(--sc-track-tight); line-height: .96;
+  white-space: nowrap; transform-origin: 0 50%;
+  /* size, offset and ink are all written per impression by page.js */
+}
+.press__margin {
+  grid-column: 2; display: grid; gap: var(--sc-5);
+  border-left: 1px solid var(--hair); padding-left: clamp(1rem, 2.5vw, 2rem);
+}
+/* The plate holds a photograph now, shown whole. The video rule this replaces
+   capped it at 26vh and let `object-fit: cover` crop away whatever did not
+   fit, which is survivable for a loop of an object rotating in place and not
+   for a composed frame - the crop would have taken the toe and the heel off
+   both slippers. The asset is cut square to fit this column instead, so the
+   element needs no cropping of its own. */
+.plate--small img { width: 100%; height: auto; }
+.press__tail {
+  display: grid; gap: var(--sc-4); padding-top: var(--sc-5);
+  border-top: 1px solid var(--hair);
+}
+.press__tail .prose { max-width: none; }
+.betters { display: grid; gap: .3rem; }
+.betters span { display: block; color: var(--sc-ink-soft); }
+.betters .key { color: var(--onyx); font-weight: 500; }
+
+/* --------------------------------------------------------------- colophon --
+   Small type. The ask is a line of running text, not a button island, and
+   there is no magnet: both are this grammar's bans.
+   -------------------------------------------------------------------------- */
+.colophon { display: grid; gap: clamp(2rem, 5vh, 3.5rem); max-width: 64rem; }
+.colophon h2 { max-width: 20ch; }
+.colophon .prose { color: var(--sc-ink-soft); max-width: 46ch; }
+.colophon .prose strong { color: var(--sc-ink); }
+.colophon__tag { color: var(--sc-ink); font-size: var(--sc-t-lg); }
+a.run {
+  color: var(--sc-ink); text-decoration: underline;
+  text-underline-offset: .22em; text-decoration-thickness: 1px;
+  transition: text-decoration-color var(--sc-d-fast) var(--sc-ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  a.run:hover { text-decoration-color: var(--apricot); }
+}
+.colophon :focus-visible { outline-color: var(--hemp); }
+
+.masthead {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: var(--sc-5) clamp(1.5rem, 4vw, 3rem);
+  border-top: 1px solid color-mix(in oklab, var(--ivory) 30%, transparent);
+  padding-top: var(--sc-5); font-size: var(--sc-t-sm);
+}
+.masthead dt {
+  font-size: var(--sc-t-xs); letter-spacing: .07em; text-transform: uppercase;
+  color: var(--sc-ink-soft); margin-bottom: .3rem;
+}
+.masthead dd a { text-decoration: underline; text-underline-offset: .2em; }
+.masthead__foot { font-size: var(--sc-t-xs); color: var(--sc-ink-soft); }
+
+/* ------------------------------------------------------------------ mobile --
+   The grammar already reads one-thing-at-a-time, so the phone needs the
+   spreads to stop being spreads rather than a different composition.
+   -------------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  .spread--media, .spread--claims, .spread--press,
+  .spread--story { grid-template-columns: minmax(0, 1fr); }
+  .spread--press { min-height: 0; }
+  .press__stack, .press__margin, .press__tail { grid-column: 1; }
+  .press__margin { border-left: 0; padding-left: 0; border-top: 1px solid var(--hair); padding-top: var(--sc-5); }
+  /* Flowing on a phone, so the stack sizes to its content. */
+  .press__stack { min-height: 0; }
+  .press__tail { border-top: 1px solid var(--hair); }
+
+
+  /* The breath between chapters. In two columns a spread's own width does the
+     separating: a chapter is a shape, and the next chapter is a different one.
+     Stacked into one column every chapter is the same measure as the one
+     before it, and the ~89px this padding resolved to on a phone was not a
+     long enough pause to say a new chapter had started. Worst at the join from
+     chapter three into the peak, where both grounds are ivory and there is no
+     colour change to carry the break.
+
+     Same air at every join, whether or not the ground changes, so the pause is
+     the page's and not the palette's. Pinned sections are excluded: a beat's
+     stage IS the viewport, and padding on the section would push its one line
+     off the centre it is composed on. */
+  .page:not([data-sc-act="pin"]):not([data-sc-act="scrub"]) {
+    padding-block: clamp(5.5rem, 15vh, 9.5rem);
+  }
+
+  /* THE PHONE'S FULL STOPS ARE MADE BY THE SCROLLER, NOT BY PINNING.
+
+     A pinned act can only hold what fits one stage, and a phone stage is 844px
+     against chapters that need 855 to 1342. That is arithmetic, not tuning: the
+     turn holds because it is two short sentences in opposite corners of one
+     frame, short by construction. Everything else on the page is a whole spread, and a whole
+     spread never fits a phone. Chasing stops by trimming chapters until they
+     clear the stage buys a page that holds in different places on different
+     phones, which is the fault we just spent two rounds removing.
+
+     So the pause comes from somewhere else entirely. The scroller itself is
+     given a rhythm: every chapter is a snap point, and a flick comes to REST at
+     the head of a chapter instead of drifting to a stop wherever momentum ran
+     out. It is a pause made of where the page stops moving rather than of a
+     stage held still, so it costs no viewports of scroll, needs nothing to fit
+     anything, and works the same on every chapter regardless of height.
+
+     It also compounds with the pinned acts rather than fighting them: a snap
+     point at a pinned section's top IS its held composition, so flicking into
+     chapter three now rests exactly on the frame it holds.
+
+     `proximity`, never `mandatory`. Mandatory snapping forces a rest at every
+     point, and on the sections taller than the viewport - the peak at 1521px,
+     the colophon at 1048 - that would take away the reader's ability to stop
+     mid-chapter and read. Proximity only settles a flick that already ended
+     near a chapter head. scroll-snap-stop is left at `normal` on purpose too,
+     so one long flick can still cross several chapters; `always` would ration
+     the page out one chapter per gesture.
+
+     The engine already uses proximity snapping on its horizontal pan rail, so
+     this is the same instrument pointed down the page. Scoped to the phone:
+     on desktop the pinned acts are the rhythm and there is nothing to add. */
+  html { scroll-snap-type: y proximity; }
+  /* Flowed chapters only. A pinned act already IS a pause, and it is much
+     taller than the viewport with its content at the top, so a snap point at
+     its head is one the reader has to be pulled backwards to or forwards past:
+     coming to rest anywhere inside a held beat, the nearest snap point is the
+     NEXT chapter, and proximity snapping will finish the gesture for you and
+     cut the hold short. Snapping is for the sections that do not hold. */
+  .page:not([data-sc-act="pin"]):not([data-sc-act="scrub"]) { scroll-snap-align: start; }
+
+  /* The doubled join that used to live here is gone with the thing that needed
+     it. It gave the section after chapter two the whole join on its own,
+     because a scrub-pinned chapter two contributed no padding to it. Chapter
+     two is on the phone-flow list now and never pins at this width, so both
+     sides of every join are flowed sections paying half each. */
+}
+
+
+/* ------------------------------------------------- pinned stage composition --
+   The engine's stage is exactly one viewport tall and clips. Content dropped
+   into it sits flush against the very top edge, and anything shorter than a
+   viewport leaves the rest of the frame dead. A pinned act HOLDS on that
+   composition for its whole span, so a spread that fills half the stage reads
+   as the page pausing on an unfinished screen.
+
+   These are my own elements, not the mechanism: the stage itself is untouched.
+   -------------------------------------------------------------------------- */
+/* The spread fills the stage again, now that the marker lives inside it rather
+   than in a row above it.
+
+   The block padding is symmetric again. It used to carry an extra ~27px at the
+   foot to clear the folio, which was fixed at the bottom-left of the viewport
+   and which a chapter filling its stage would set its last line straight
+   through - chapter one's closing couplet printed over "THE PROBLEM / THE
+   HOTEL SLIPPER". With the folio gone there is no furniture standing in the
+   frame, so the clearance goes with it: content that is centred in the stage
+   is now actually centred, and the stage budget gets the 27px back, which the
+   two chapters measuring exactly 900/900 can use. */
+.spread--media,
+.spread--claims,
+.spread--story,
+.spread--quiet,
+.spread--press {
+  height: 100%;
+  align-content: center;
+  padding-block: clamp(1rem, 3vh, 2.5rem);
+}
+/* The press carries more in its margin column than the other spreads, so it
+   gets a tighter frame: measured at 922px inside a 900px stage, which put the
+   last 22px behind the stage's `overflow: clip` where nobody could reach it. */
+/* Trimmed by 14px so the peak clears a 900px stage with its impressions built
+   and therefore stays PINNED at 1440x900. Without this the stage-fit guard in
+   page.js measures 910 and flows the signature move at the size the page is
+   composed for, which is far too blunt a fix for 10px.
+   Short laptops are a different problem and not a padding one: 54-76px of the
+   closing "better for..." lines sat outside the stage there, revealed and
+   unreachable behind overflow:clip. That is the guard's job, not this rule's. */
+/* The peak keeps its own tighter frame. It never took the folio clearance the
+   other spreads used to take - its impressions cascade to the middle of the
+   sheet, not to the bottom-left corner - and now that the clearance is gone
+   everywhere, this rule is simply the peak asking for less padding than the
+   others: 45px it does not need is 45px that flows the signature move at the
+   size the page is composed for. */
+.spread--press { padding-block: clamp(.35rem, 1vh, 1rem); gap: clamp(1.5rem, 4vw, 3.5rem); }
+.spread--press .press__margin { gap: clamp(.7rem, 1.6vh, 1rem); }
+
+@media (max-width: 860px) {
+  /* Chapters three and five flow on a phone, so there is no stage to fill.
+     So does the mission: its spread is within ~10px of a 390x844 stage and
+     taller than a 375x667 one, and a pinned stage clips what will not fit.
+     Chapter one's story stays pinned on a phone - it is 0.55 viewports tall,
+     with room to spare on the shortest screen we check.
+
+     Chapter three was briefly taken off the phone-flow list so it could hold
+     here, with the poolside plate moved out of its stage to make it fit. That
+     is reverted: the snap rule above gives the phone its pause without needing
+     anything to fit a stage, which is the better trade. */
+  .spread--claims, .spread--press, .spread--quiet { height: auto; align-content: start; }
+
+}
+/* A section that flows - demoted by the phone list or the measured guard, both
+   of which go through unpin(), or authored that way in the first place, which
+   is what the [data-sc-act="flow"] half covers - gets its section padding back
+   and must stop
+   claiming a stage's height, because there is no longer a stage. The attribute
+   rule above un-applies on its own; .press does not, which is why it is written
+   as :not(.is-unpinned) rather than left to specificity. */
+.is-unpinned .spread,
+[data-sc-act="flow"] .spread { height: auto; align-content: start; padding-block: 0; }
+/* The peak flowed on a wide screen is the one case the phone rules never had to
+   cover: they are scoped to max-width 860px, and a short laptop is neither. It
+   needs nothing beyond the rule above - the stack has no min-height to undo, and
+   the margin keeps its column - so there is deliberately no rule here. */
+
+/* --------------------------------------------------------------- no script -- */
+html:not(.js) [data-sc-cue],
+html:not(.js) [data-sc-in],
+html:not(.js) [data-sc-stagger] > * { opacity: 1 !important; transform: none !important; }
+/* Without JS the press prints nothing, so the sr-only line carries the beat. */
+html:not(.js) .press__stack::before {
+  content: "And again. And again. And again.";
+  display: block; font-family: var(--display); font-weight: 300;
+  font-size: var(--sc-t-2xl); line-height: 1.05;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plate__frame canvas { display: none; }
+  .plate__frame img { opacity: 1 !important; }
+  .plate__load { display: none; }
+
+  /* The claims cascade, gentler - the engine's rule for flow reveals does not
+     reach these selectors, so it is restated here on the same terms: opacity
+     still carries the arrival, every position change is dropped, and the queue
+     collapses. A 350ms stagger is a sequence the reader has to wait through,
+     which is the thing this mode is asking us not to do. */
+  .claim > div, .claim > i {
+    transform: none; transition-duration: 220ms; transition-delay: 0ms;
+  }
+  .claim { border-top-color: var(--hair); }
+
+  /* The reprint, on the same terms and for the same reason. data-sc-stagger
+     writes its delay INLINE, so collapsing the queue needs !important - the
+     only one in this block, and it is buying the thing this mode exists for.
+     29 impressions at 55ms is a 1.8-second sequence; here they print together.
+     Nothing else changes: the stack still arrives, and the argument the peak
+     makes is the repetition on the sheet, not the order it landed in. */
+  .press__stack > b { transition-delay: 0ms !important; }
+  .claim:last-child { border-bottom-color: var(--hair); }
+  .claim::before, .claim:last-child::after { display: none; }
+}

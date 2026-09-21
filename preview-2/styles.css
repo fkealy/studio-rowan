@@ -92,14 +92,14 @@ a { color: inherit; }
    of accent here would be the loudest thing above the fold, louder than the
    headline it sits beside. */
 .topcta__a--key {
-  color: var(--onyx); border: 1px solid var(--hair-2); border-radius: 999px;
+  color: var(--sc-ink); border: 1px solid var(--hair-2); border-radius: 999px;
   padding: .5rem clamp(.9rem, 1.6vw, 1.15rem);
   transition: border-color var(--sc-d-fast) var(--sc-ease-out),
               color var(--sc-d-fast) var(--sc-ease-out);
 }
 @media (hover: hover) and (pointer: fine) {
-  .topcta__a:hover { color: var(--onyx); }
-  .topcta__a--key:hover { border-color: var(--apricot); color: var(--onyx); }
+  .topcta__a:hover { color: var(--sc-ink); }
+  .topcta__a--key:hover { border-color: var(--apricot); color: var(--sc-ink); }
 }
 @media (max-width: 480px) { .topcta { font-size: var(--sc-t-xs); gap: .75rem; } }
 
@@ -143,7 +143,10 @@ a { color: inherit; }
    its section padding back. */
 [data-sc-act="pin"],
 [data-sc-act="scrub"] { padding-top: 0; padding-bottom: 0; }
-.page--title   { background: var(--ivory); min-height: 100vh; display: flex; align-items: center; }
+/* Stretch, not centre. The sheet is a three-row composition and has to be as
+   tall as the screen for its rows to have anywhere to go; centring a
+   content-height block was the thing that stranded the imprint. */
+.page--title   { background: var(--ivory); min-height: 100vh; display: flex; align-items: stretch; }
 .page--clay    { background: var(--clay); }
 .page--white   { background: var(--white); }
 .page--ivory   { background: var(--ivory); }
@@ -223,13 +226,75 @@ a { color: inherit; }
 
 /* ------------------------------------------------------------- title page -- */
 .page--title { position: relative; }
-.sheet { width: 100%; }
-.title__mark { width: clamp(150px, 20vw, 270px); color: var(--onyx); margin-bottom: clamp(3rem, 9vh, 7rem); }
-.title__mark svg { width: 100%; height: auto; }
-.page--title h1 { max-width: 15ch; }
+/* A TITLE PAGE, NOT A CENTRED BLOCK.
+   Three zones: the mark at the head, the title and its lede in the middle,
+   the imprint at the foot. The whole composition used to be one stack
+   centred in the viewport, with every gap inside it clamped to a 7rem
+   ceiling - so it stopped growing at about 513px while the screen kept
+   getting taller, and the surplus was split evenly above and below it. On a
+   1280x1800 window that was 643px of nothing over the mark and 640px under
+   the imprint, which left an imprint - uppercase, letterspaced, ruled above,
+   every signal of a foot-of-page device - floating two thirds down the page
+   with a third of the screen empty beneath it.
+
+   Scaling the gaps could not fix it: filling that screen by opening the
+   clamps would have taken roughly 29vh per gap, which on a laptop is absurd.
+   The stack had to become a composition instead.
+
+   `1fr` in the middle is what does the work: it takes ALL the slack, so the
+   mark sits on the top margin and the imprint on the bottom one at any
+   height, and the title rides the middle. row-gap is the MINIMUM separation,
+   which is what the layout falls back to on a short screen where there is no
+   slack to hand out - the rows collapse to their content and this reads as
+   the ordinary stack it used to be. Nothing here needs a media query. */
+.sheet {
+  width: 100%;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  row-gap: clamp(3rem, 9vh, 7rem);
+}
+/* Centred in the middle row, then pulled fractionally above true centre.
+   Optical centre sits higher than geometric centre: a block set at exactly
+   50% reads as hanging low, and the imprint's rule along the bottom margin
+   weights the foot of the page further still. Percentage translate is of the
+   block's own height, so it scales with the type rather than the screen. */
+.title__block { align-self: center; transform: translateY(-4%); }
+/* The hero. It was a 270px lockup; it is the h1 now and carries the page, so
+   it is sized against the tagline under it rather than against the top
+   margin it used to sit on. The wordmark is 7.44:1, so 46vw of a 1440 window
+   puts it about 89px tall against a ~38px cap height on the tagline - close
+   to the ~2.7 the holding page runs. Width, not font-size: the artwork is an
+   SVG and scales off its own box. */
+/* ONE RULE, NO BREAKPOINT. The width was clamp(240px, 46vw, 680px) with a
+   phone override to the full measure, and the two did not meet: at 700px the
+   mark filled the measure at about 630px, and at 701px it fell to 46vw, which
+   is 322px. Every width from there to roughly 1200 had a smaller wordmark
+   than a phone did - the tablet and the small laptop, exactly where a hero is
+   looked at most. Now: never under 560px unless the measure itself is
+   narrower (then it is the measure), 46vw once that is the larger figure,
+   680px at the top. Continuous the whole way, so no width loses out to its
+   neighbour. */
+.title__mark { display: block; width: min(100%, clamp(560px, 46vw, 680px)); color: var(--onyx); }
+.title__mark svg { display: block; width: 100%; height: auto; }
+/* 15ch used to live on `.page--title h1`, which was this line. The h1 is the
+   mark now and a character measure means nothing on it, so the measure moves
+   here, to the text it was always for. */
+.title__tagline { margin-top: clamp(1.25rem, 3.2vh, 2.5rem); max-width: 15ch; }
+/* ON A PHONE THE HIERARCHY INVERTED. The mark bottomed out at its 240px floor,
+   which is 32px tall, while the tagline's own floor held it at 34.6px - so the
+   line under the hero had letters as tall as the hero and ran wider than it.
+   Two corrections, one at each end: the mark takes the whole measure (the
+   min() on .title__mark - 335px wide, 45px tall at 375), and the tagline
+   drops a step here so the ratio between them is back near 2:1. */
+@media (max-width: 700px) {
+  .title__tagline { font-size: var(--sc-t-xl); }
+}
 .page--title .lede { margin-top: var(--sc-6); }
+/* No margin-top: the sheet's row-gap is the minimum separation now, and the
+   1fr row above supplies everything beyond it. Keeping the old clamp here
+   would have added a second gap on top of the grid's. */
 .imprint {
-  margin-top: clamp(3rem, 9vh, 7rem); display: flex; gap: var(--sc-6);
+  display: flex; gap: var(--sc-6);
   font-size: var(--sc-t-xs); letter-spacing: .07em; text-transform: uppercase;
   color: var(--sc-ink-soft); border-top: 1px solid var(--hair); padding-top: var(--sc-4);
 }
@@ -306,55 +371,178 @@ a { color: inherit; }
   display: block; font-style: normal; font-size: var(--sc-t-xs);
   color: var(--sc-ink-soft); margin-top: .4rem;
 }
-/* ------------------------------------------------------------- the turn --
-   Two full stops, one line each, between chapter one and chapter two. The
-   device is the old intertitle - a short pinned act holding one statement dead
-   still for about half a viewport of scrolling - taken off the chapter titles,
-   where it was spending 9.5 viewports naming things the folio already names,
-   and spent on the hinge the page actually pivots on.
+/* ------------------------------------------------------- the hinge -------
+   The couplet that turns the argument, and the screen it is printed on
+   leaving, to show the product held behind it.
 
-   The line sits centred in the frame, and that is measured rather than chosen:
-   biasing it to the upper third changes the length of the surrounding voids by
-   exactly nothing, because what the reader crosses is the STAGE sliding in and
-   out, not the line inside it. */
-.beat__stage { display: flex; align-items: center; padding-inline: var(--margin); }
-.beat p { max-width: 18ch; }
-.beat--clay  { background: var(--clay); }
-.beat--white { background: var(--white); }
+   THERE IS NO TRANSITION HERE, AND THAT IS THE POINT. The clay is a sheet at
+   the top of chapter two carrying the two lines; it travels straight up and
+   off, AT EXACTLY SCROLL SPEED, and the chapter underneath is pinned. So the
+   reader sees a page of clay scroll away the way any page scrolls away, and
+   the slipper is standing behind it. Nothing is animating. The only unusual
+   thing in the frame is that the chapter does not move with it, and nobody
+   consciously notices that.
 
-/* THE TURN: the second beat slides up over the first.
-   turn2 is pulled up a full viewport, so while turn1 is still stuck its stage
-   climbs the frame from the bottom - the answer arriving over the question, on
-   its own ground and carrying its own line. No plane, no duplicated copy: this
-   is the real section, moving the only way a section can, at scroll speed.
+   This replaced a diagonal wipe: a leaning edge that swept across the frame
+   right to left with a cutting line on its leading edge. It worked, and it was
+   wrong - a travelling diagonal blade is motion-graphics vocabulary, and this
+   grammar is a printed feature that states plainly (see "chapters", above)
+   that grounds cut hard and never interpolate. The wipe was the one thing on
+   the page arguing with the page.
 
-   -100svh, matching the unit the engine gives the stage its height in. A
-   `margin-top` shifts the section's position in the document, and the engine
-   measures act tops at layout, so it reads the shifted position and computes
-   progress against it. Nothing is desynced by this; the geometry simply is what
-   it now is.
+   1:1 IS LOAD-BEARING AND IT IS ARITHMETIC. The sheet travels one stage height
+   over its window, so that window has to be worth exactly one viewport of
+   scroll: window = 1 / (span - 1). At span 3.5 the hold is 2.5 viewports, so
+   the window is 0.40 of it, which is what --lift is. Any faster and the sheet
+   is being pulled off the screen by something, which is an effect; any slower
+   and it drags. At 1:1 it is just paper moving.
 
-   The z-index is the one thing that is not automatic. Both stages carry the
-   engine's --sc-z-stage, and at equal z-index the later element in the document
-   paints on top - which is what we want. Stating it here anyway, because the
-   whole effect is one element covering another and leaving that to source order
-   is leaving it to something nobody will think to check. ------------------- */
-.beat--over { margin-top: -100svh; position: relative; z-index: 1; }
+   PRINT FIRST. Without the engine this is a clay block of two sentences above
+   a white chapter, in reading order, with a hard cut between the grounds.
+   Every rule that makes it a sheet is scoped to .sc-ready and to the pinned
+   state, because on a phone this chapter flows.
+   -------------------------------------------------------------------------- */
 
-/* The outgoing line rides the incoming edge up rather than waiting to be
-   covered: the clay screen has to go somewhere. turn1's hold is 1080px and the
-   slide occupies its last 900px, so the push runs from p 0.167 to 1 and moves
-   the line exactly as far as turn2 climbs - 1:1, the same speed, so the line
-   sits on turn2's leading edge the whole way up. The window and the span are
-   one number in two places: 0.167 is 180/1080, the still part of the hold. */
-.beat__out {
-  transform: translateY(calc(clamp(0, (var(--sc-p, 0) - 0.167) / 0.833, 1) * -100svh));
+/* The flowed and no-script state: a clay block, full bleed, above the chapter. */
+.hinge { display: none; }
+.hinge__copy {
+  background: var(--clay);
+  padding: clamp(4rem, 14vh, 9rem) var(--margin);
+  display: grid; gap: clamp(1.5rem, 4vh, 2.5rem);
+}
+.hinge__q, .hinge__a { max-width: 22ch; }
+
+/* A section carrying a full-bleed sheet cannot take its inset from the section:
+   the stage is inside the section's content box and clips to it, so --margin
+   there would leave a white band down both edges of the clay. The inset moves
+   to the spread, which is the only thing that wanted it. */
+.page--bleed { padding-inline: 0; }
+.page--bleed .spread,
+.page--bleed .hinge__copy { padding-inline: var(--margin); }
+
+/* FLOWED, the block padding has to move too, and for the same reason. A
+   demoted section gets its vertical padding back at its own outer edges - but
+   the hinge is a full-bleed band at the top of it, so that padding lands
+   ABOVE the clay, where it is white space nobody asked for, and the chapter
+   underneath starts hard against the band's edge with nothing between them.
+   Measured on a phone: "The Never-Ending Slipper." set 0px below the clay.
+
+   So the section keeps none of it and the spread takes all of it, which puts
+   the gap where a chapter boundary actually is. The two values mirror the
+   page's own flowed-section padding at each breakpoint; the id carries them
+   past the `[data-sc-act="flow"] .spread` rule that zeroes block padding for
+   every other chapter, which is correct for every other chapter because there
+   the section is still paying it. */
+#ch2[data-sc-act="flow"] { padding-block: 0; }
+#ch2[data-sc-act="flow"] .spread { padding-block: clamp(4rem, 11vh, 9rem); }
+@media (max-width: 860px) {
+  #ch2[data-sc-act="flow"] .spread { padding-block: clamp(5.5rem, 15vh, 9.5rem); }
+}
+
+/* ---------------------------------------------------------------- pinned -- */
+.sc-ready #ch2:not(.is-unpinned) {
+  /* The sheet's own progress. It holds while the couplet assembles, then
+     leaves over --lift, which is one viewport of scroll exactly. */
+  --lift: 0.4;
+  --t: clamp(0, (var(--sc-p, 0) - 0.18) / var(--lift), 1);
+
+  /* The ground UNDER the stage, which is not the ground IN it. A pinned stage
+     is 100svh and the visual viewport is whatever the browser's chrome leaves,
+     which is larger; so a strip of the SECTION shows below the frame for the
+     whole hold. The sheet leaves upward, so the bottom of the stage turns
+     white the instant it starts moving - and the strip below has to turn with
+     it, or the frame shows white sitting on a band of clay. */
+  --land: clamp(0, (var(--sc-p, 0) - 0.18) / 0.03, 1);
+  background: color-mix(in oklab, var(--white) calc(var(--land) * 100%), var(--clay));
+}
+/* And the STAGE has to carry the chapter's own white. A stage is transparent,
+   so with the section driven to clay the sheet was lifting off the section's
+   ground rather than the chapter's - the slipper stood on the same clay it was
+   supposed to be leaving. */
+.sc-ready #ch2:not(.is-unpinned) [data-sc-stage] { background: var(--white); }
+
+/* The sheet, and the type on it, are one thing and move as one thing. No fade
+   on the copy, no separate travel: it is printed on the page that is leaving,
+   so it leaves with it. A sheet that slides out from under its own words is a
+   layer effect, which is the thing this whole section stopped doing. */
+.sc-ready #ch2:not(.is-unpinned) :is(.hinge, .hinge__copy) {
+  transform: translateY(calc(var(--t) * -100%));
   will-change: transform;
 }
+.sc-ready #ch2:not(.is-unpinned) .hinge {
+  display: block; position: absolute; inset: 0; z-index: 3;
+  background: var(--clay);
+}
+
+/* The couplet sits in the spread's own left column, on the spread's own
+   vertical centring, so it stands exactly where the chapter's name will stand
+   and the name lands in its place rather than somewhere else on the screen. */
+.sc-ready #ch2:not(.is-unpinned) .hinge__copy {
+  position: absolute; inset: 0; z-index: 4;
+  background: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  column-gap: clamp(2.5rem, 6vw, 5rem);
+  align-content: center;
+  gap: clamp(1.25rem, 3.5vh, 2rem);
+  padding-block: clamp(1rem, 3vh, 2.5rem);
+}
+.sc-ready #ch2:not(.is-unpinned) .hinge__copy > * { grid-column: 1; }
+/* No cap of its own when pinned: the couplet stands in the spread's left
+   column and that column IS the measure - it sets to the same width the
+   chapter's name will set to. */
+.sc-ready #ch2:not(.is-unpinned) :is(.hinge__q, .hinge__a) { max-width: none; }
+
+/* Nothing here is dropped under prefers-reduced-motion. The sheet moving is
+   the sheet SCROLLING, at the speed the reader is scrolling it, and a page
+   that held it still would never show the chapter behind it. */
+
+/* ------------------------------------------------------- the four reveals --
+   The couplet's second line, the chapter's name, and the writing. All four are
+   timed here rather than with `data-sc-cue`, and scoped to the pinned state,
+   for one reason: THEY ONLY MEAN ANYTHING AGAINST THE HINGE.
+
+   A cue is the engine's, and the engine honours it whether the act is pinned
+   or flowed. Below 860px this chapter flows - there is no sheet, no cut and no
+   reveal to stage - and cues written for the pinned timeline held the heading,
+   the lede and the prose at zero opacity, still occupying every pixel of their
+   layout, for the first half of the section's life. The phone opened chapter
+   two on a screen of nothing with the slipper a viewport below it. Flowed, the
+   chapter is now simply a chapter, which is the correct reading of it.
+
+   `--sc-p` and not `--t` on purpose: these are positions in the ACT, not in the
+   lift. Three of them land after the lift has finished, so measuring them
+   against it would put them past 1. Like a cue, they are clamped to zero for
+   the whole of the stage's entry slide, which is what keeps the first line of
+   the couplet - the one thing that must be readable during the slide - uncued
+   and untouched by any of this.
+   -------------------------------------------------------------------------- */
+.sc-ready #ch2:not(.is-unpinned) :is(.hinge__a, .chapter, .lede, .prose) {
+  opacity: var(--in, 1);
+  transform: translateY(calc((1 - var(--in, 1)) * 1.1rem));
+  will-change: opacity, transform;
+}
+/* Under the question, once the pin has engaged. */
+.sc-ready #ch2:not(.is-unpinned) .hinge__a {
+  --in: clamp(0, (var(--sc-p, 0) - 0.04) / 0.1, 1);
+}
+/* After the sheet has left the frame entirely, taking the couplet that stood
+   here with it: 0.63 is five hundredths past the end of the lift, so the name
+   lands on white that has had a moment to itself rather than on a crossfade
+   with the sentence it answers. */
+.sc-ready #ch2:not(.is-unpinned) .chapter {
+  --in: clamp(0, (var(--sc-p, 0) - 0.63) / 0.05, 1);
+}
+/* Later still. Arriving with the name they would put sixty words of prose in
+   the reveal frame beside the product; the reveal is the name and the object,
+   and the writing follows it. */
+.sc-ready #ch2:not(.is-unpinned) :is(.lede, .prose) {
+  --in: clamp(0, (var(--sc-p, 0) - 0.73) / 0.06, 1);
+}
 @media (prefers-reduced-motion: reduce) {
-  /* The overlap itself is scroll, not animation, and stays. Only the line's
-     travel is ours to drop. */
-  .beat__out { transform: none; }
+  .sc-ready #ch2:not(.is-unpinned) :is(.hinge__a, .chapter, .lede, .prose) {
+    transform: none;
+  }
 }
 
 /* Media column. Never bleeds under type; always carries a caption. */
@@ -500,13 +688,21 @@ a { color: inherit; }
    made of its own repetition, and the smallest impressions read as texture,
    which is the rhyme with 70,000.
 
-   Impressions are real elements, written by page.js and driven off --sc-p.
-   Nothing crossfades: this grammar cuts.
+   Impressions are real elements, written by page.js and revealed ON ENTRY by
+   the engine's flow reveal. Nothing crossfades: this grammar cuts.
+
+   THIS SECTION DOES NOT PIN. It was the largest held block on the page - 2.05
+   viewports of stationary frame - for a cascade that is structurally the same
+   thing as the four claims above it, and those cost a flow section and nothing
+   else. The rule it failed: scrub the scroll only when scroll position
+   genuinely IS the state. Twenty-nine things appearing one after another is a
+   stagger, not a state.
    ============================================================================ */
-/* No vertical padding here either: .press would otherwise win over the
-   pinned-section rule above on equal specificity, being later in the file.
-   The breathing room lives on .spread--press instead. */
-.press:not(.is-unpinned) { padding-top: 0; padding-bottom: 0; }
+/* The `padding-top/bottom: 0` that used to sit here has gone with the pin. It
+   existed because `.press` would otherwise beat the pinned-section rule on
+   equal specificity by being later in the file; flowed, the section wants its
+   padding back like every other flowed section, and .spread--press stops
+   claiming a stage's height through the [data-sc-act="flow"] rule below. */
 .spread--press {
   grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
   gap: clamp(2rem, 5vw, 4.5rem); align-items: start; align-content: start;
@@ -524,6 +720,21 @@ a { color: inherit; }
   white-space: nowrap; color: var(--onyx);
 }
 .press__stack { grid-column: 1; display: block; position: relative; }
+/* The stack carries data-sc-in only because that is the engine's handle for
+   the observer. It must not reveal ITSELF: the engine's flow-reveal rule would
+   otherwise fade and lift the whole block as one object on top of its children
+   doing it one at a time, which is two animations of the same thing at two
+   speeds. Neutralised here; the children are styled by the separate
+   `[data-sc-stagger] > *` rule and are untouched by this. */
+.press__stack[data-sc-in] { opacity: 1; transform: none; transition: none; }
+/* Opacity only, and quick. The engine's default flow reveal is 620ms with a
+   14px rise; an impression is a proof coming off a press, and it either has
+   been printed or it has not. The inline per-impression transform written by
+   page.js beats the engine's rise on specificity, so there is no travel to
+   cancel - only the duration to bring back to the 260ms the scrubbed version
+   used, and the delay is left alone because that is what data-sc-stagger
+   writes. */
+.press__stack > b { transition: opacity 260ms var(--sc-ease-out); }
 .press__stack b {
   display: block; font-family: var(--display); font-weight: 300;
   letter-spacing: var(--sc-track-tight); line-height: .96;
@@ -534,7 +745,13 @@ a { color: inherit; }
   grid-column: 2; display: grid; gap: var(--sc-5);
   border-left: 1px solid var(--hair); padding-left: clamp(1rem, 2.5vw, 2rem);
 }
-.plate--small video { width: 100%; height: auto; max-height: 26vh; object-fit: cover; }
+/* The plate holds a photograph now, shown whole. The video rule this replaces
+   capped it at 26vh and let `object-fit: cover` crop away whatever did not
+   fit, which is survivable for a loop of an object rotating in place and not
+   for a composed frame - the crop would have taken the toe and the heel off
+   both slippers. The asset is cut square to fit this column instead, so the
+   element needs no cropping of its own. */
+.plate--small img { width: 100%; height: auto; }
 .press__tail {
   display: grid; gap: var(--sc-4); padding-top: var(--sc-5);
   border-top: 1px solid var(--hair);
@@ -611,8 +828,8 @@ a.run {
 
      A pinned act can only hold what fits one stage, and a phone stage is 844px
      against chapters that need 855 to 1342. That is arithmetic, not tuning: the
-     two turns hold because they are 57px and 30px of content, short by
-     construction. Everything else on the page is a whole spread, and a whole
+     turn holds because it is two short sentences in opposite corners of one
+     frame, short by construction. Everything else on the page is a whole spread, and a whole
      spread never fits a phone. Chasing stops by trimming chapters until they
      clear the stage buys a page that holds in different places on different
      phones, which is the fault we just spent two rounds removing.
@@ -757,6 +974,14 @@ html:not(.js) .press__stack::before {
     transform: none; transition-duration: 220ms; transition-delay: 0ms;
   }
   .claim { border-top-color: var(--hair); }
+
+  /* The reprint, on the same terms and for the same reason. data-sc-stagger
+     writes its delay INLINE, so collapsing the queue needs !important - the
+     only one in this block, and it is buying the thing this mode exists for.
+     29 impressions at 55ms is a 1.8-second sequence; here they print together.
+     Nothing else changes: the stack still arrives, and the argument the peak
+     makes is the repetition on the sheet, not the order it landed in. */
+  .press__stack > b { transition-delay: 0ms !important; }
   .claim:last-child { border-bottom-color: var(--hair); }
   .claim::before, .claim:last-child::after { display: none; }
 }
