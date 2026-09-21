@@ -880,10 +880,9 @@
   var calc = document.getElementById('calc');
   if (calc) (function () {
     var pairsEl = document.getElementById('c-pairs'), costEl = document.getElementById('c-cost');
-    var out = { save: 'calc-save', now: 'calc-now', ours: 'calc-ours', pairs: 'calc-pairs', waste: 'calc-waste',
+    var out = { save: 'calc-save', now: 'calc-now', ours: 'calc-ours', waste: 'calc-waste',
                 pairsOut: 'c-pairs-out', costOut: 'c-cost-out' };
     Object.keys(out).forEach(function (k) { out[k] = document.getElementById(out[k]); });
-    var label = document.querySelector('.calc__label');
     var gbp = function (v) { return '\u00A3' + Math.round(v).toLocaleString('en-GB'); };
     var counting = false, saveText = '';
 
@@ -904,7 +903,6 @@
       saveText = gbp(Math.max(save, 0));
       if (!counting) out.save.textContent = saveText;
       out.now.textContent = gbp(now); out.ours.textContent = gbp(ours);
-      out.pairs.textContent = pairs.toLocaleString('en-GB');
       out.pairsOut.textContent = pairs.toLocaleString('en-GB');
       out.costOut.textContent = '\u00A3' + cost.toFixed(2);
       pairsEl.setAttribute('aria-valuetext', pairs.toLocaleString('en-GB') + ' pairs a year');

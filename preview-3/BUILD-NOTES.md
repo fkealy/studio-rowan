@@ -2388,6 +2388,62 @@ The cost slider stops at 30p, above the studio's 25p, so the saving is never
 negative. The year/month switch went: one fewer decision, and a year is the
 figure the page has used since its first screen.
 
+**Then the question became the heading.** Feedback: the copy round the total
+was too small and easily missed, and the weight should be on the question. So
+the h2 is "How many disposable slippers are you using at the moment?", its
+answer stands under it at display size with the slider beneath, and the price
+is a second, smaller question. "You could save" and "every year" are display
+type, the three supporting figures are 2xl with body-size labels in full ink.
+"Still paying for thousands of disposable slippers every year?" is off the
+page. "See how much you could save." went from a micro-caps label to the
+section's h2, across both columns, with the question an h3 under it.
+
+**Then the hierarchy was rebuilt on one scale.** Successive "make that bigger"
+notes had left six display sizes on one screen (80, 54, 92, 121, 36, 54) with
+the two questions and their readings set at different sizes from each other.
+Now five steps, one job each, at 1440: 120 the saving; 54 the title and both
+readings; 36 both questions and the three row values; 24 "You could save",
+"every year" and the units; 18 row labels and the working. Both dials are
+built identically, and the result stands on a 7% ivory tone panel so the sheet
+reads as two objects: what you tell it, what it tells you.
+
+**Then it was tightened.** 931px tall at 1440x900, more than the screen; now
+about 660. Most of it was one bug: `.colophon h2 { max-width: 16ch }` and
+`.colophon h3 { max-width: 14ch }` were written for the ask's heading and also
+caught the calculator's title and both questions, setting each on three lines.
+Scoped to `.colophon__pitch`. The rest: tighter gaps and panel padding, a
+slightly smaller hero, and the "70,000 pairs out of landfill" sub-line gone -
+it only repeated the number on the slider beside it.
+
+**Then it was recomposed, and the title became the question.** "See how much
+you could save." stood over the first dial's question: two display sentences
+stacked, a size and a half apart - close enough to argue, too close to rank,
+and worst in one column, where that is all the screen shows. The title is now
+"How much could you save?" and the figure stands DIRECTLY under it as its
+answer ("You could save" went; the title says it). Desktop: question and
+answer in the left column with the breakdown under them, both dials in the
+right - the story section's shape, 70,000 left and the telling right. One
+column: title, figure, dials, breakdown, so the title is never followed by
+another question and the figure stays on screen while either slider is
+dragged. The tone panel went: alone in its column the answer needs no box.
+610px tall at 1440x900, 885 at 375.
+
+**Then one question, and the price stopped being asked.** Title, dial and dial
+were three questions in a row, which is a quiz. The title is now the statement
+the figure finishes - "You could save / GBP 52,500 / every year" - and the one
+question left is the one only the reader can answer: how many. The price is an
+assumption, not an input: "Based on GBP 1.00 a pair. Change", a `<details>`
+that opens to the slider. Most readers do not know their unit price to the
+penny, and a hotel paying 40p can still correct it. 555px at 1440x900, about
+700 at 375 with the price shut.
+
+**Then ask, then tell.** The saving moved to AFTER the slider and the price
+line: question and slider on the left, "You could save / GBP 52,500 / every
+year" and the breakdown on the right; in one column, question, slider, price,
+saving, breakdown. The question is the section's h2 now and "You could save"
+is a line of display type, not a heading. 546px at 1440x900, 697 at 375 - the
+whole calculator is inside one phone screen.
+
 The FORM still opens on request: one button in its column, opened by that
 button, by either title-page "Start with a sample box" link on the way down,
 or by a `#sample` address.

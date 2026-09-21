@@ -1014,26 +1014,54 @@ a { color: inherit; }
    -------------------------------------------------------------------------- */
 .calc {
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-  gap: clamp(2rem, 6vw, 6rem); align-items: start;
+  gap: clamp(1.75rem, 4vh, 2.5rem) clamp(2rem, 6vw, 6rem); align-items: start;
   border-bottom: 1px solid color-mix(in oklab, var(--ivory) 30%, transparent);
   padding-bottom: clamp(2.5rem, 7vh, 4.5rem);
 }
-.calc__ask { display: grid; gap: clamp(2rem, 5vh, 3rem); }
-.calc .chapter { margin-bottom: 0; }
-.calc h2 { max-width: 16ch; }
-.calc__inputs { display: grid; gap: clamp(1.5rem, 4vh, 2.25rem); max-width: 30rem; }
+/* ONE SCALE, FIVE STEPS, EACH USED ONCE FOR ONE JOB. A round of "make that
+   bigger" had left this sheet with six display sizes inside one screen - 80,
+   54, 92, 121, 36 and 54 again - and the two questions, which are the same
+   kind of thing, set at different sizes with readings at different sizes
+   under them. Everything was loud, so nothing led. Now, at a 1440 window:
 
-/* A DIAL: what it measures on the left, what it reads on the right, the track
-   under both. The reading is set in the display face a step up from the label
-   because it is the thing being changed - the label only says what it is. */
-.dial { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: .5rem 1rem; }
-.dial label {
-  font-size: var(--sc-t-xs); letter-spacing: .07em; text-transform: uppercase; color: var(--sc-ink-soft);
-}
-.dial output {
+     120  the saving            the one hero, and the only apricot type
+      54  the title, and the two readings (words / numerals, so they do not
+          compete: one is read, the others are glanced at)
+      36  the two questions, and the three values under the saving
+      24  "You could save", "every year", the units beside the readings
+      18  row labels and the working
+
+   Both dials are built identically. The result stands on a panel of its own
+   so the sheet reads as two objects - what you tell it, what it tells you -
+   rather than as one field of type. */
+/* One line wherever it fits. Balanced onto two it cost 60px to say five words. */
+.calc__result { display: grid; gap: clamp(.75rem, 2vh, 1.25rem); align-content: start; min-width: 0; }
+.calc__title { margin: 0; }
+.calc__out { margin-top: clamp(.5rem, 2vh, 1.25rem); }
+.calc__ask { display: grid; gap: clamp(1rem, 2.5vh, 1.5rem); align-content: start; }
+/* The price: a sentence that opens to a slider. Text size, soft ink - it is an
+   assumption being disclosed, not a control being offered - with the one word
+   that acts set in full ink and underlined like every other link on the page. */
+.price { max-width: 32rem; font-size: var(--sc-t-base); color: var(--sc-ink-soft); }
+.price summary { cursor: pointer; list-style: none; display: inline-flex; flex-wrap: wrap; gap: .1rem .5rem; align-items: baseline; }
+.price summary::-webkit-details-marker { display: none; }
+.price summary output { color: var(--sc-ink); font-variant-numeric: tabular-nums; }
+.price summary u { color: var(--sc-ink); text-underline-offset: .22em; text-decoration-thickness: 1px; }
+.price[open] summary u { display: none; }
+.price .dial--sub { margin-top: .9rem; gap: 0; }
+.price .dial--sub label { font-size: var(--sc-t-xs); letter-spacing: .07em; text-transform: uppercase; }
+
+.dial { display: grid; gap: .35rem; max-width: 32rem; }
+.dial__q {
   font-family: var(--display); font-weight: 300; font-size: var(--sc-t-xl);
-  letter-spacing: var(--sc-track-tight); font-variant-numeric: tabular-nums; line-height: 1;
+  letter-spacing: var(--sc-track-tight); line-height: 1.1; text-wrap: pretty; max-width: 24ch;
 }
+.dial__read { display: flex; align-items: baseline; flex-wrap: wrap; gap: .1rem .7rem; margin-top: clamp(.35rem, 1vh, .6rem); }
+.dial__read output {
+  font-family: var(--display); font-weight: 300; font-size: var(--sc-t-2xl);
+  letter-spacing: -.03em; font-variant-numeric: tabular-nums; line-height: 1;
+}
+.dial__read span { font-size: var(--sc-t-lg); color: var(--sc-ink-soft); white-space: nowrap; }
 /* The range itself. Both engines are styled, and have to be styled apart: a
    selector list with a pseudo-element one engine does not know is dropped
    whole. --fill is written by page.js so the track behind the thumb reads as
@@ -1041,7 +1069,7 @@ a { color: inherit; }
    The thumb is 28px on a 44px-tall input: the target is the input. */
 .dial input[type="range"] {
   --fill: 50%;
-  grid-column: 1 / -1; width: 100%; height: 2.75rem; margin: -.4rem 0 -.6rem;
+  width: 100%; height: 2.75rem; margin: 0 0 -.6rem;
   appearance: none; -webkit-appearance: none; background: transparent; cursor: grab;
 }
 .dial input[type="range"]:active { cursor: grabbing; }
@@ -1068,38 +1096,54 @@ a { color: inherit; }
 .dial input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--olive), 0 0 0 5px var(--apricot); }
 .dial input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px var(--olive), 0 0 0 5px var(--apricot); }
 
-.calc__out { display: grid; gap: clamp(1.25rem, 3vh, 1.75rem); }
-.calc__label {
-  font-size: var(--sc-t-xs); letter-spacing: .1em; text-transform: uppercase; color: var(--sc-ink-soft);
+/* The answer: the figure directly under the title that asks for it, then what
+   it is made of. No panel - it had one while it shared a column edge with the
+   dials; alone in its column the column is the separation. */
+.calc__out {
+  display: grid; gap: clamp(.9rem, 2vh, 1.25rem); min-width: 0; max-width: 30rem;
 }
-/* THE number. The largest type in the bottom half of the page, and the only
-   apricot type on this sheet: the accent is spent on the saving and on the
-   two tracks that produce it. nowrap + tabular so it does not jitter while
-   a slider is being dragged. */
+/* THE number: the largest type in the bottom half of the page and the only
+   apricot type on this sheet. tabular so it does not jitter under a drag. */
 .calc__big {
   font-family: var(--display); font-weight: 300; color: var(--apricot);
-  font-size: clamp(3.2rem, 8.4vw, 8.5rem); line-height: .9; letter-spacing: -.045em;
-  font-variant-numeric: tabular-nums; white-space: nowrap; margin-top: -.35rem;
+  font-size: clamp(3.2rem, 7.2vw, 6.5rem); line-height: .9; letter-spacing: -.045em;
+  font-variant-numeric: tabular-nums;
 }
+.calc__big > span { white-space: nowrap; }
+/* Always on its own line under the figure. Inline, it fitted beside a small
+   saving and dropped under a large one, so the gap changed as the slider
+   moved. */
 .calc__big small {
-  font-family: var(--sc-font-text); font-size: var(--sc-t-base); letter-spacing: 0;
-  color: var(--sc-ink-soft); white-space: nowrap;
+  display: block; margin-top: .4rem; font-family: var(--sc-font-text); font-size: var(--sc-t-lg);
+  letter-spacing: 0; line-height: 1.2; color: var(--sc-ink-soft);
 }
-/* What the number is made of, on a rule under it. Three columns while there
-   is room; they are facts of equal weight, so they share one size. */
-.calc__stats {
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sc-5) clamp(1rem, 2.5vw, 2rem);
-  border-top: 1px solid color-mix(in oklab, var(--ivory) 30%, transparent); padding-top: var(--sc-5);
+/* What the number is made of: three ruled rows, label left, value right.
+   They were three columns, which was fine at caption size and is not at a
+   size meant to be read - at 2xl "GBP 70,000", "GBP 17,500" and "3.5 tonnes"
+   ran into each other in any column narrower than about 230px, which is most
+   of them. Rows cannot collide, read top to bottom as a sum, and are the same
+   layout on a phone as on a desk. */
+.calc__stats { display: grid; border-top: 1px solid color-mix(in oklab, var(--ivory) 30%, transparent); margin-top: .25rem; }
+.calc__stats > div {
+  display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: .25rem 1.5rem;
+  padding: clamp(.6rem, 1.4vh, .85rem) 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--ivory) 30%, transparent);
 }
-/* Two lines of label on every column, used or not, so the three figures sit
-   on one line when the longest label wraps and the others do not. */
-.calc__stats dt { font-size: var(--sc-t-sm); color: var(--sc-ink-soft); margin-bottom: .4rem; line-height: 1.35; min-height: 2.7em; display: flex; align-items: flex-end; }
+.calc__stats dt { font-size: var(--sc-t-base); color: var(--sc-ink); line-height: 1.3; }
+/* A step up where the column can hold the longest label and its value on one
+   line; below that the larger label only forces the value under it. */
+/* dd dissolves, so the value and its footnote are the ROW's items: the value
+   sits right of its label and the footnote takes a line of its own beneath.
+   Inside dd, the footnote's width was the value's width, and "70,000 pairs out
+   of landfill" pushed "3.5 tonnes" off the label's line on a phone. */
+.calc__stats dd { display: contents; }
+.calc__stats b { margin-left: auto; }
 .calc__stats b {
   display: block; font-family: var(--display); font-weight: 300; font-size: var(--sc-t-xl);
-  letter-spacing: var(--sc-track-tight); font-variant-numeric: tabular-nums; white-space: nowrap; line-height: 1.1;
+  letter-spacing: -.02em; font-variant-numeric: tabular-nums; white-space: nowrap; line-height: 1.05;
 }
-.calc__stats dd > span { display: block; margin-top: .3rem; font-size: var(--sc-t-xs); color: var(--sc-ink-soft); }
-.calc__how { font-size: var(--sc-t-sm); color: var(--sc-ink-soft); max-width: 52ch; }
+.calc__stats dd > span { flex: 1 1 100%; text-align: right; font-size: var(--sc-t-sm); color: var(--sc-ink-soft); }
+.calc__how { font-size: var(--sc-t-base); color: var(--sc-ink-soft); max-width: 52ch; }
 .calc__how summary {
   display: inline-flex; align-items: center; gap: .5rem; cursor: pointer; list-style: none;
   color: var(--sc-ink); text-decoration: underline; text-underline-offset: .22em; text-decoration-thickness: 1px;
@@ -1107,12 +1151,11 @@ a { color: inherit; }
 .calc__how summary::-webkit-details-marker { display: none; }
 .calc__how summary::after { content: "+"; text-decoration: none; display: inline-block; }
 .calc__how[open] summary::after { content: "\2013"; }
-.calc__how p { margin-top: .75rem; font-size: var(--sc-t-xs); line-height: 1.6; }
-@media (max-width: 1100px) { .calc__stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 860px) { .calc { grid-template-columns: minmax(0, 1fr); } }
-@media (max-width: 480px) {
-  .calc__stats { grid-template-columns: minmax(0, 1fr); }
-  .calc__stats dt { min-height: 0; }
+.calc__how p { margin-top: .75rem; font-size: var(--sc-t-sm); line-height: 1.6; }
+@media (max-width: 860px) {
+  .calc { grid-template-columns: minmax(0, 1fr); }
+  .calc__result { margin-top: clamp(1rem, 3vh, 1.75rem); }
+  .calc__out { max-width: none; }
 }
 
 /* --------------------------------------------------------------- colophon --
@@ -1128,8 +1171,10 @@ a { color: inherit; }
 .colophon__mast { display: grid; gap: clamp(1.5rem, 4vh, 2.5rem); }
 .colophon__pitch { display: grid; gap: clamp(1.25rem, 3vh, 2rem); align-content: start; }
 .colophon .chapter { margin-bottom: 0; }
-.colophon h2 { max-width: 16ch; }
-.colophon h3 { max-width: 14ch; }
+/* The ask's own heading only. These were `.colophon h2` and `.colophon h3`,
+   which also caught the calculator's title and both its questions and broke
+   them onto three lines each. */
+.colophon__pitch h3 { max-width: 14ch; }
 .colophon .prose { color: var(--sc-ink-soft); max-width: 42ch; }
 .colophon__tag { color: var(--sc-ink); font-size: var(--sc-t-lg); }
 a.run {

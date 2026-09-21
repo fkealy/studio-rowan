@@ -509,7 +509,7 @@
        switched off until the studio wants a sending service behind it. With no script the form is
        replaced by the mailto line under it (styles.css, NO SCRIPT): the CSP
        is form-action 'none', so a native submit goes nowhere. -->
-  <section class="page page--colophon" data-sc-act="flow" aria-labelledby="c4">
+  <section class="page page--colophon" data-sc-act="flow" aria-labelledby="c4a">
     <!-- THREE ARRIVALS, one per row, none nested. The wrapper used to carry a
          single data-sc-in, which was right while the colophon was one short
          block. With the calculator in it the wrapper is ~1400px: the observer
@@ -544,37 +544,69 @@
            out", which is shut by default: the working is there for whoever
            wants it and is not the first thing anybody reads. -->
       <div class="calc" id="save" data-sc-in>
-        <div class="calc__ask">
-          <header class="chapter">
-            <p class="ch__label">See how much you could save</p>
-            <h2 class="d d--md" id="c4">Still paying for thousands of disposable slippers every&nbsp;year?</h2>
-          </header>
-          <form class="calc__inputs" id="calc" novalidate>
-            <p class="dial">
-              <label for="c-pairs">Disposable pairs a year</label>
-              <output for="c-pairs" id="c-pairs-out">70,000</output>
-              <input id="c-pairs" type="range" min="0" max="1000" step="1" value="684" aria-valuetext="70,000 pairs a year">
-            </p>
-            <p class="dial">
-              <label for="c-cost">What each pair costs you</label>
-              <output for="c-cost" id="c-cost-out">&pound;1.00</output>
-              <input id="c-cost" type="range" min="0.3" max="3" step="0.05" value="1" aria-valuetext="1 pound a pair">
-            </p>
-          </form>
-        </div>
+        <!-- THE QUESTION IS THE HEADING. It was "Still paying for thousands of
+             disposable slippers every year?" over two small labelled
+             sliders, which put the weight on a line of rhetoric and made the
+             thing the reader is actually being asked - how many? - a caption.
+             Now the heading asks it, the answer stands under it at display
+             size, and the slider is how you change the answer. The second
+             question is set a step down: it matters less and most readers
+             will leave it where it is.
 
-        <div class="calc__out" aria-live="polite" aria-atomic="true">
-          <p class="calc__label">You could save</p>
-          <p class="calc__big"><span id="calc-save">&pound;52,500</span> <small>a year</small></p>
+             Each heading is its slider's label (aria-labelledby), so there is
+             one piece of text doing both jobs rather than a heading and a
+             hidden label saying the same thing twice. -->
+        <!-- ONE QUESTION ON THE SHEET, and it is the one only the reader can
+             answer. The title was a question, both dials were questions, and
+             three questions in a row is a quiz. The title is a statement the
+             figure finishes ("You could save / GBP 52,500 / every year"), the
+             dial keeps its question, and the price is not asked at all: it is
+             stated as the assumption it is, with a way to change it.
+
+             THE PRICE IS AN ASSUMPTION, NOT AN INPUT. Most readers know
+             roughly how many pairs they get through; few know their unit
+             price to the penny, and a second slider asked them to guess at
+             it before they could trust the number. So it reads "Based on
+             GBP 1.00 a pair" and opens to its slider for the reader who does
+             know and pays something else - which keeps the figure honest for
+             a hotel paying 40p without putting a second decision in front of
+             everyone else. A <details>, so it works with no script. -->
+        <form class="calc__ask" id="calc" novalidate>
+          <div class="dial">
+            <h2 class="dial__q" id="c4a">How many disposable slippers are you using at the&nbsp;moment?</h2>
+            <p class="dial__read"><output for="c-pairs" id="c-pairs-out">70,000</output> <span>pairs a year</span></p>
+            <input id="c-pairs" type="range" min="0" max="1000" step="1" value="684" aria-labelledby="c4a" aria-valuetext="70,000 pairs a year">
+          </div>
+          <details class="price">
+            <summary><span>Based on a typical disposable slipper at <output for="c-cost" id="c-cost-out">&pound;1.00</output> a pair.</span> <u>Change</u></summary>
+            <div class="dial dial--sub">
+              <label for="c-cost" id="c4b">What each disposable pair costs you</label>
+              <input id="c-cost" type="range" min="0.3" max="3" step="0.05" value="1" aria-valuetext="1 pound a pair">
+            </div>
+          </details>
+        </form>
+
+        <!-- ASK, THEN TELL. The question and its slider come first and the
+             saving follows them: left then right on a wide screen, above
+             then below in one column. It stood the other way round for a
+             round - the figure over the slider - which led with an answer to
+             a question the reader had not been asked yet. The question is
+             the section's h2; "You could save" is the line the figure
+             finishes, not a heading. -->
+        <div class="calc__result">
+          <p class="d d--md calc__title">You could save</p>
+          <p class="calc__big" aria-live="polite" aria-atomic="true"><span id="calc-save">&pound;52,500</span> <small>every year</small></p>
+          <div class="calc__out">
           <dl class="calc__stats">
             <div><dt>You spend now</dt><dd><b id="calc-now">&pound;70,000</b></dd></div>
             <div><dt>With the Never-Ending Slipper</dt><dd><b id="calc-ours">&pound;17,500</b></dd></div>
-            <div><dt>Waste avoided</dt><dd><b id="calc-waste">3.5 tonnes</b> <span><span id="calc-pairs">70,000</span> pairs out of landfill</span></dd></div>
+            <div><dt>Landfill waste avoided</dt><dd><b id="calc-waste">3.5 tonnes</b></dd></div>
           </dl>
           <details class="calc__how">
             <summary>How we work this out</summary>
             <p>Based on conservative assumptions: the Never-Ending Slipper at around &pound;0.25 per guest stay, against the price you set for disposables. Our testing conservatively puts every pair at 10 washes at 60&deg;C or more. Waste is counted at around 50g per disposable pair. As more hotels come on board our data gets sharper, and so does this calculator.</p>
           </details>
+          </div>
         </div>
       </div>
 
