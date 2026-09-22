@@ -84,7 +84,9 @@ a { color: inherit; }
   clip-path: inset(50%); white-space: nowrap;
 }
 /* ------------------------------------------------------------- the hold --
-   The page waits behind this until the slipper's turn has loaded. A reader
+   The page waits behind this until the slipper's turn is usable - the coarse
+   pass of its frames, not all of them (page.js, THE ORDER THE FRAMES COME
+   DOWN IN); the rest keep arriving behind the page. A reader
    who lands and scrolls straight down - which a reader may well do - used to
    reach chapter two with the frames still arriving and watch the turn
    assemble itself; now the whole page is held, once, at the start, and every

@@ -2547,6 +2547,31 @@ every frame by 250ms: curtain up at first paint, line at 10% after two
 seconds, released at 100% around 22s with scrolling restored, chapter two
 pinned and painted.
 
+### The loader was the weight, not the frames
+
+"The loading is too much." Measured before touching anything: a phone
+fetches the 1024 AVIF tier, 800KB in 87 files of 9KB; desktop the 1440 tier,
+1.1MB. (The 2-3.5MB quoted earlier was both formats added together.) That is
+not heavy. What was slow was the loader: one frame at a time, each waiting for
+the last to download and decode, so 87 round trips end to end - on a phone
+9 to 17 seconds of latency for 800KB of pictures - plus a round trip spent
+probing AVIF support by fetching the first frame.
+
+Now six requests are in flight at once (the site is on HTTP/2), the order is
+coarse to fine (every eighth frame and the last, then every fourth, then
+every second, then the rest), AVIF support is asked of an inline 2x2 image
+that resolves in the same frame, and THE HOLD LIFTS AT THE COARSE PASS. Twelve
+frames in and the turn is usable at every scroll position, because the plate
+paints the nearest frame it has and the nearest is never more than four
+away; the remaining 75 keep arriving behind the page and each pass halves
+the gap. The curtain's line reads the coarse pass, so it fills as the wait
+ends.
+
+Measured against the same server adding 250ms a request: coarse pass in at
+0.63s from navigation, page released there; all 87 in at 4.0s, against 22s
+before. All 87 came down as AVIF, so the inline probe answers correctly in
+Chromium; if it is ever wrong the sequence falls back to WebP.
+
 ### The form's backend
 
 `/functions/api/sample-request.js`, a Cloudflare Pages Function at the REPO

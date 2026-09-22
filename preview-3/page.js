@@ -408,6 +408,14 @@
     for (var i = 0; i < TIERS.length; i++) if (TIERS[i] >= want) return TIERS[i];
     return TIERS[TIERS.length - 1];
   }
+  /* AVIF support, asked of a 2x2 AVIF carried inline rather than of the
+     first frame over the network. The old probe fetched f000.avif and waited
+     for it before requesting anything else: one whole round trip, on a phone
+     100-200ms, spent before the sequence had begun. This resolves in the
+     same frame. If the data URI is ever refused (it is img-src data: in the
+     CSP) the answer is false and the sequence comes down as WebP, which is
+     heavier and never wrong. */
+  var AVIF_PROBE = 'data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAIAAAACAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIAAYAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKCBgANogQEAwgMg8f8D///8WfhwB8+ErK42A=';
   function probe(url) {
     return new Promise(function (res) {
       var i = new Image();
@@ -417,12 +425,46 @@
     });
   }
 
+  /* THE ORDER THE FRAMES COME DOWN IN, AND HOW MANY AT ONCE.
+
+     They used to come one at a time, in order, each waiting for the last to
+     download AND decode before the next was asked for: 87 round trips end to
+     end, which on a phone is 9-17 seconds of latency for 800KB of pictures.
+     Measured against a server adding 250ms a request, the sequence took 22s.
+
+     Now LANES requests are in flight together - the site is served over
+     HTTP/2, where parallel requests on one connection cost nothing - and the
+     order is COARSE TO FINE: every eighth frame and the last one first, then
+     every fourth, then every second, then the rest. After the first pass
+     (12 frames) the turn is usable at every scroll position, because
+     drawSpin() paints the nearest frame it has and the nearest is never
+     more than four away; each later pass halves that. The hold (below)
+     lifts at the first pass, not the last, so the page is up in the time
+     twelve small files take rather than eighty-seven.
+
+     LANES is six, not more: the sequence shares the connection with the
+     photographs and the fonts, and eight or more lanes of 10KB files start
+     to queue behind each other in the browser's own scheduler. */
+  var LANES = 6;
+  var COARSE = 8;
+  function loadOrder() {
+    var order = [], seen = {}, coarse = 0;
+    function take(n) { if (n >= 0 && n < COUNT && !seen[n]) { seen[n] = 1; order.push(n); } }
+    for (var step = COARSE; step >= 1; step /= 2) {
+      for (var n = 0; n < COUNT; n += step) take(n);
+      if (step === COARSE) { take(COUNT - 1); coarse = order.length; }
+    }
+    order.coarse = coarse;
+    return order;
+  }
+
   /* THE HOLD. The head script has the page behind the curtain (index.html)
      from before first paint; this is what lets it go. Two things have to be
-     in: every frame of the turn, and the fonts, so the title page arrives
-     set. Releasing is one class off the root, and it is idempotent - the
-     head's own 20s timer removes the same class if this never runs, and
-     both may fire. */
+     in: the COARSE PASS of the turn (see loadOrder above - not the whole
+     sequence, which keeps arriving behind the page), and the fonts, so the
+     title page arrives set. Releasing is one class off the root, and it is
+     idempotent - the head's own 20s timer removes the same class if this
+     never runs, and both may fire. */
   var curtain = document.getElementById('curtain');
   var holdFrames = false, holdFonts = false;
   function release() {
@@ -435,31 +477,45 @@
 
   function startSpin() {
     var tier = pickTier();
-    probe(BASE + tier + '/f000.avif').then(function (avif) {
+    probe(AVIF_PROBE).then(function (avif) {
       var ext = avif ? 'avif' : 'webp';
       var imgs = new Array(COUNT), decoded = 0;
       spin = { imgs: imgs, painted: null, live: false, drag: 0, vel: 0, grabbed: false };
-      var i = 0;
-      (function next() {
-        if (i >= COUNT) { frame.classList.add('is-ready'); holdFrames = true; release(); return; }
-        var n = i++;
+      var order = loadOrder(), coarseLeft = order.coarse, isCoarse = {};
+      for (var c = 0; c < order.coarse; c++) isCoarse[order[c]] = true;
+      var i = 0, inFlight = 0;
+      function load(n) {
         var img = new Image();
         img.decoding = 'async';
         img.src = BASE + tier + '/f' + String(n).padStart(3, '0') + '.' + ext;
         imgs[n] = img;
         var done = function () {
-          decoded++;
+          inFlight--; decoded++;
           frame.style.setProperty('--decoded', (decoded / COUNT).toFixed(3));
-          if (curtain) curtain.style.setProperty('--loaded', (decoded / COUNT).toFixed(3));
-          /* `is-live` is NOT set here any more. It hides the still, and it
-             used to fire on the first decode - before anything had been
-             painted. drawSpin() sets it after its first drawImage(), so the
-             still stays up until there is a frame on the canvas to replace
-             it. See the note there. */
-          next();
+          /* The curtain's line reads the coarse pass, which is what the
+             page is waiting on, so it fills as the wait ends rather than
+             standing at a seventh when the page lets go. Counted per frame
+             and not off `decoded`: with six in flight the frames finish out
+             of order, and a count could reach twelve with one of the twelve
+             still on its way. */
+          if (isCoarse[n]) {
+            coarseLeft--;
+            if (curtain) curtain.style.setProperty('--loaded', (1 - coarseLeft / order.coarse).toFixed(3));
+            if (coarseLeft === 0) { holdFrames = true; release(); }
+          }
+          if (decoded === COUNT) frame.classList.add('is-ready');
+          /* `is-live` is NOT set here. It hides the still, and it used to
+             fire on the first decode - before anything had been painted.
+             drawSpin() sets it after its first drawImage(), so the still
+             stays up until there is a frame on the canvas to replace it. */
+          pump();
         };
         if (img.decode) img.decode().then(done, done); else { img.onload = done; img.onerror = done; }
-      })();
+      }
+      function pump() {
+        while (inFlight < LANES && i < order.length) { inFlight++; load(order[i++]); }
+      }
+      pump();
       bindPointer(); bindKeys();
       if (hint) hint.textContent = matchMedia('(pointer: fine)').matches ? 'drag to turn' : 'scroll to turn';
     });
