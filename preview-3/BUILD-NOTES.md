@@ -2572,6 +2572,31 @@ Measured against the same server adding 250ms a request: coarse pass in at
 before. All 87 came down as AVIF, so the inline probe answers correctly in
 Chromium; if it is ever wrong the sequence falls back to WebP.
 
+### The field is the loading
+
+The curtain is gone. With the coarse pass landing in well under a second it
+was a loading screen shown for half a second, and a loading screen is the one
+thing on a page like this that reads as furniture. The title page is the
+indicator now: it is up from the first paint, type and all, and the field
+draws only as many of its 70,000 dots as the fraction of the sequence that
+has arrived - a thin scatter that fills to the whole field as the frames
+land. The count the page is about, counting up. The draw count eases toward
+the loaded fraction at 8% a frame, so the fill is continuous under
+six-at-a-time arrivals and still reads as a one-second entrance when the
+sequence is cached and lands at once. The scatter is random, so the first n
+dots are an even thinning of the whole rather than a region of it.
+
+The hold itself stays: the scroll is locked until the coarse pass, exactly as
+before, and the head script and its CSP hash are unchanged. What changed is
+that nothing covers the page while it holds. `scrollbar-gutter: stable` goes
+with the root's hidden overflow so a classic-scrollbar desktop does not shift
+the title page by a scrollbar's width at release.
+
+Checked against a server adding a full second a request: at 14% of the
+sequence the field was a sparse scatter behind the finished title, at 35% a
+visibly denser one, at 100% the full field; the hold had lifted at the
+coarse pass; no console errors.
+
 ### The form's backend
 
 `/functions/api/sample-request.js`, a Cloudflare Pages Function at the REPO
