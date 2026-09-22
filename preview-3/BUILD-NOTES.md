@@ -2519,6 +2519,34 @@ over the stand-in when it arrives. Checked against a server that delayed every
 frame by 250ms and returned 404 for frame 40: the plate showed a frame at 12%
 loaded, and the sweep never found an unpainted canvas.
 
+### The page is held until the turn has loaded
+
+Tested on a phone after the two fixes above, the turn still looked glitchy,
+and the studio's call was to hold the whole page rather than let a reader
+who scrolls straight down reach a plate that is still assembling. So the page
+now waits behind a curtain - the title page's own olive, the name, and a
+line that grows as the frames decode - until every frame of the turn and the
+fonts are in, and then lifts. The head script sets `.is-holding` on the root
+before first paint (no flash of the page underneath); page.js takes it off
+when the sequence has decoded; the root's overflow is hidden for the
+duration so the page is released at the top. The turn now loads from the
+first moment rather than when the plate comes within two viewports, because
+there is nothing to defer it behind any more.
+
+Not held under reduced motion, save-data or 2G - the same `lite` test, made
+inline in the head so those readers never see the curtain - and never held
+longer than 20s: the head's own timer lets the page go if the script never
+runs or a connection never finishes, and the plate then shows the nearest
+frame it has. The inline script changed, so its CSP hash in `/_headers` is
+preview 3's own now; recompute it if the script changes again.
+
+Cost, and it is real: every visit waits on the sequence before seeing
+anything - about 1.7MB at the 720 tier, 3.5MB at 1440 - where before the
+title page was up at once. Checked in the pane against a server delaying
+every frame by 250ms: curtain up at first paint, line at 10% after two
+seconds, released at 100% around 22s with scrolling restored, chapter two
+pinned and painted.
+
 ### The form's backend
 
 `/functions/api/sample-request.js`, a Cloudflare Pages Function at the REPO

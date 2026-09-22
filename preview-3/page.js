@@ -417,6 +417,22 @@
     });
   }
 
+  /* THE HOLD. The head script has the page behind the curtain (index.html)
+     from before first paint; this is what lets it go. Two things have to be
+     in: every frame of the turn, and the fonts, so the title page arrives
+     set. Releasing is one class off the root, and it is idempotent - the
+     head's own 20s timer removes the same class if this never runs, and
+     both may fire. */
+  var curtain = document.getElementById('curtain');
+  var holdFrames = false, holdFonts = false;
+  function release() {
+    if (holdFrames && holdFonts) document.documentElement.classList.remove('is-holding');
+  }
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () { holdFonts = true; release(); },
+                              function () { holdFonts = true; release(); });
+  } else { holdFonts = true; }
+
   function startSpin() {
     var tier = pickTier();
     probe(BASE + tier + '/f000.avif').then(function (avif) {
@@ -425,7 +441,7 @@
       spin = { imgs: imgs, painted: null, live: false, drag: 0, vel: 0, grabbed: false };
       var i = 0;
       (function next() {
-        if (i >= COUNT) { frame.classList.add('is-ready'); return; }
+        if (i >= COUNT) { frame.classList.add('is-ready'); holdFrames = true; release(); return; }
         var n = i++;
         var img = new Image();
         img.decoding = 'async';
@@ -434,6 +450,7 @@
         var done = function () {
           decoded++;
           frame.style.setProperty('--decoded', (decoded / COUNT).toFixed(3));
+          if (curtain) curtain.style.setProperty('--loaded', (decoded / COUNT).toFixed(3));
           /* `is-live` is NOT set here any more. It hides the still, and it
              used to fire on the first decode - before anything had been
              painted. drawSpin() sets it after its first drawImage(), so the
@@ -1116,16 +1133,15 @@
   /* One thing left in the frame loop: the spin, which is a real scrub. */
   function tick() { spinFrame(); requestAnimationFrame(tick); }
 
-  if (frame) {
-    if (lite) {
-      frame.removeAttribute('tabindex');
-      if (hint) hint.textContent = 'shown as a still';
-    } else if ('IntersectionObserver' in window) {
-      var io2 = new IntersectionObserver(function (en) {
-        if (en[0].isIntersecting) { io2.disconnect(); startSpin(); }
-      }, { rootMargin: '200% 0px' });
-      io2.observe(frame);
-    } else { startSpin(); }
+  /* The turn loads NOW, not when the plate comes within two viewports: the
+     page is held on it (THE HOLD, above), so there is nothing to defer it
+     behind. Lite (reduced motion, save-data, 2G) shows the still, loads no
+     frames and was never held - the head script makes the same test - so
+     it simply lets the hold go in case it is somehow on. */
+  if (frame && !lite) startSpin();
+  else {
+    if (frame) { frame.removeAttribute('tabindex'); if (hint) hint.textContent = 'shown as a still'; }
+    holdFrames = true; release();
   }
 
   requestAnimationFrame(tick);
