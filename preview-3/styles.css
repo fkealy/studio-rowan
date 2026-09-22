@@ -84,50 +84,27 @@ a { color: inherit; }
   clip-path: inset(50%); white-space: nowrap;
 }
 /* ------------------------------------------------------------- the hold --
-   The page waits behind this until the slipper's turn is usable - the coarse
-   pass of its frames, not all of them (page.js, THE ORDER THE FRAMES COME
-   DOWN IN); the rest keep arriving behind the page. A reader
-   who lands and scrolls straight down - which a reader may well do - used to
-   reach chapter two with the frames still arriving and watch the turn
-   assemble itself; now the whole page is held, once, at the start, and every
-   chapter is complete when it is reached.
+   The scroll is locked on the title page until the slipper's turn is usable
+   (the coarse pass of its frames; page.js, THE ORDER THE FRAMES COME DOWN
+   IN), so a reader who lands and scrolls straight down - which a reader may
+   well do - cannot reach chapter two before the plate can be drawn.
 
-   The sheet is the title page's own olive with the name on it, so lifting it
-   is the title page arriving rather than a loading screen going away. The
-   line under the name is the plate's ochre load line, in hemp on olive, and
-   reads the same variable page.js writes as the frames decode.
+   THERE IS NO LOADING SCREEN. There was: an olive curtain with the name and
+   a line on it, and it was a loading screen, which is the one thing on a
+   page like this that reads as furniture. The title page itself is the
+   indicator now - its field of 70,000 dots is drawn in proportion to how
+   much of the sequence has arrived, so the page opens on a thin scatter
+   that fills to the full field as the frames land (page.js, THE FIELD).
+   Nothing covers anything; the type is there from the first paint.
 
-   Scoped to .is-holding on the ROOT, which the head script sets before first
-   paint (no flash of the page) and page.js removes when the sequence is in.
-   The root's overflow is hidden for the duration so the scroll position is
-   0 when the page is released. Not a scroll container between a sticky stage
-   and the viewport: the root IS the viewport, and the rule goes with the
-   class. Without script the curtain is display:none. */
-.curtain { display: none; }
-.js .curtain {
-  display: grid; position: fixed; inset: 0; z-index: 100;
-  background: var(--olive); color: var(--hemp);
-  place-content: center; justify-items: center; gap: var(--sc-4);
-  padding: var(--margin);
-  touch-action: none; overscroll-behavior: contain;
-  opacity: 0; visibility: hidden; pointer-events: none;
-  transition: opacity var(--sc-d-slow) var(--sc-ease-out), visibility 0s linear var(--sc-d-slow);
-}
-html.is-holding .curtain { opacity: 1; visibility: visible; pointer-events: auto; transition: none; }
-html.is-holding { overflow: hidden; }
-.curtain__name {
-  font-size: var(--sc-t-xs); letter-spacing: .1em; text-transform: uppercase;
-}
-.curtain__load {
-  display: block; position: relative; overflow: hidden;
-  width: min(12rem, 40vw); height: 1px;
-  background: color-mix(in oklab, var(--hemp) 25%, transparent);
-}
-.curtain__load::after {
-  content: ""; position: absolute; inset: 0; background: var(--hemp);
-  transform: scaleX(var(--loaded, 0)); transform-origin: 0 50%;
-  transition: transform var(--sc-d-base) linear;
-}
+   Scoped to .is-holding on the ROOT, set by the head script before first
+   paint and removed by page.js at the coarse pass. Hidden overflow on the
+   root is not a scroll container between a sticky stage and the viewport
+   (the root IS the viewport), and the rule leaves with the class.
+   `scrollbar-gutter: stable` keeps the gutter reserved while the scrollbar
+   is gone, so on a classic-scrollbar desktop the title page does not shift
+   sideways by a scrollbar's width when the page is let go. */
+html.is-holding { overflow: hidden; scrollbar-gutter: stable; }
 
 .skip {
   position: absolute; left: var(--margin); top: -4rem; z-index: 200;

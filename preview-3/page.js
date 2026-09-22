@@ -402,6 +402,11 @@
   var canvas = frame && frame.querySelector('canvas');
   var hint = document.getElementById('spin-hint');
   var spin = null;
+  /* How much of the sequence is in, 0 to 1. Read by THE FIELD below, which
+     draws that fraction of its dots: the title page's own loading shown as
+     the count filling in. Starts at 1 wherever nothing will be loaded - no
+     plate, or lite, where the plate is a still - so the field is whole. */
+  var spinLoaded = (frame && !lite) ? 0 : 1;
 
   function pickTier() {
     var want = frame.clientWidth * Math.min(devicePixelRatio || 1, 2);
@@ -458,14 +463,14 @@
     return order;
   }
 
-  /* THE HOLD. The head script has the page behind the curtain (index.html)
-     from before first paint; this is what lets it go. Two things have to be
-     in: the COARSE PASS of the turn (see loadOrder above - not the whole
-     sequence, which keeps arriving behind the page), and the fonts, so the
-     title page arrives set. Releasing is one class off the root, and it is
-     idempotent - the head's own 20s timer removes the same class if this
-     never runs, and both may fire. */
-  var curtain = document.getElementById('curtain');
+  /* THE HOLD. The head script has the scroll locked on the title page
+     (index.html) from before first paint; this is what lets it go. Two
+     things have to be in: the COARSE PASS of the turn (see loadOrder above -
+     not the whole sequence, which keeps arriving behind the page and fills
+     the field as it does), and the fonts, so the title page arrives set.
+     Releasing is one class off the root, and it is idempotent - the head's
+     own 20s timer removes the same class if this never runs, and both may
+     fire. */
   var holdFrames = false, holdFonts = false;
   function release() {
     if (holdFrames && holdFonts) document.documentElement.classList.remove('is-holding');
@@ -491,16 +496,15 @@
         imgs[n] = img;
         var done = function () {
           inFlight--; decoded++;
-          frame.style.setProperty('--decoded', (decoded / COUNT).toFixed(3));
-          /* The curtain's line reads the coarse pass, which is what the
-             page is waiting on, so it fills as the wait ends rather than
-             standing at a seventh when the page lets go. Counted per frame
-             and not off `decoded`: with six in flight the frames finish out
-             of order, and a count could reach twelve with one of the twelve
-             still on its way. */
+          spinLoaded = decoded / COUNT;
+          frame.style.setProperty('--decoded', spinLoaded.toFixed(3));
+          /* The hold lifts on the coarse pass, counted per frame and not
+             off `decoded`: with six in flight the frames finish out of
+             order, and a count could reach twelve with one of the twelve
+             still on its way. The field keeps filling past this point, off
+             `spinLoaded`, until every frame is in. */
           if (isCoarse[n]) {
             coarseLeft--;
-            if (curtain) curtain.style.setProperty('--loaded', (1 - coarseLeft / order.coarse).toFixed(3));
             if (coarseLeft === 0) { holdFrames = true; release(); }
           }
           if (decoded === COUNT) frame.classList.add('is-ready');
@@ -621,6 +625,18 @@
      With reduced motion, Save-Data or a 2g connection one frame is drawn and
      left still (the prototype drew nothing at all). With no WebGL, or no
      script, the title page is type on flat olive, which is a complete page.
+
+     THE FIELD IS THE LOADING. The page opens with the scroll held while the
+     slipper's turn comes down (THE HOLD, above), and the field shows it:
+     only `spinLoaded` of the 70,000 dots are drawn, so the title page opens
+     on a thin scatter and fills to the full field as the frames arrive -
+     the count the whole page is about, counting up. The draw count eases
+     toward the loaded fraction at 8% a frame rather than tracking it
+     exactly, so the fill is continuous under six-at-a-time arrivals and
+     still reads as an entrance, about a second, when the sequence is
+     cached and lands at once. The scatter is random, so the first n dots
+     are an even thinning of the whole, not a region of it. Under lite
+     nothing is loaded and `spinLoaded` is 1: the one frame drawn is whole.
      ---------------------------------------------------------------------- */
   var fieldHost = document.getElementById('field');
   if (fieldHost) (function () {
@@ -737,12 +753,13 @@
 
     var mx = 0, my = 0, tmx = 0, tmy = 0, scroll = 0, targetScroll = 0;
     var hero = fieldHost.parentNode, t0 = performance.now(), live = true, raf = 0;
+    var shown = spinLoaded * COUNT;
 
     function draw(time) {
       gl.uniform1f(U.uTime, time); gl.uniform1f(U.uScroll, scroll);
       gl.uniform2f(U.uRot, my * 0.08, mx * 0.12);
       gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.drawArrays(gl.POINTS, 0, COUNT);
+      gl.drawArrays(gl.POINTS, 0, Math.round(shown));
     }
     function loop() {
       cancelAnimationFrame(raf);
@@ -750,6 +767,7 @@
         if (!live || document.hidden) { raf = 0; return; }
         scroll += (targetScroll - scroll) * 0.06;
         mx += (tmx - mx) * 0.03; my += (tmy - my) * 0.03;
+        shown += (spinLoaded * COUNT - shown) * 0.08;
         draw((performance.now() - t0) / 1000);
         raf = requestAnimationFrame(frame);
       })();

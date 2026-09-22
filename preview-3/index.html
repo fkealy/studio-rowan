@@ -6,11 +6,13 @@
 <title>Studio Rowan. Leave less behind.</title>
 <meta name="description" content="The Never-Ending Slipper: a reusable, waterproof, recycled EVA hotel slider that replaces the disposables hospitality throws away by the tens of thousands.">
 <meta name="robots" content="noindex, nofollow">
-<!-- Sets .js before first paint, and HOLDS THE PAGE (see .curtain below
-     and THE HOLD in page.js): the whole page waits behind an olive sheet
-     until the slipper's turn is usable - its coarse pass, every eighth
-     frame; see THE ORDER THE FRAMES COME DOWN IN in page.js - so a reader
-     who scrolls straight down never reaches an empty plate.
+<!-- Sets .js before first paint, and HOLDS THE PAGE (THE HOLD in page.js):
+     the scroll is locked on the title page until the slipper's turn is
+     usable - its coarse pass, every eighth frame; see THE ORDER THE FRAMES
+     COME DOWN IN in page.js - so a reader who scrolls straight down never
+     reaches an empty plate. There is no loading screen: the title page is
+     up from the first paint and its field of 70,000 dots fills in as the
+     frames arrive (page.js, THE FIELD), which is the loading, shown.
      Not held under reduced motion, save-data or a 2G connection - the
      same test page.js calls `lite`, where the plate is a still anyway.
      The 20s timer is the safety net for a script that never runs or a
@@ -32,17 +34,6 @@
 <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-
-<!-- THE CURTAIN. Olive, like the ground it lifts off, with the name and a
-     line that grows as the turn's frames arrive. Shown only while the root
-     carries .is-holding, which the head script sets before first paint and
-     page.js clears when the sequence has decoded. Without script it is
-     display:none and the page prints as it always did. -->
-<div class="curtain" id="curtain" role="status" aria-live="polite">
-  <span class="curtain__name">Studio Rowan</span>
-  <span class="curtain__load" aria-hidden="true"></span>
-  <span class="sr-only">Loading</span>
-</div>
 
 <a class="skip" href="#main">Skip to content</a>
 
