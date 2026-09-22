@@ -2486,6 +2486,39 @@ hidden page draws no frames. Check the dots on a real phone.
 The title-page buttons keep their natural width on small phones and set a step
 smaller, instead of stretching to the full measure.
 
+### Chapter two went blank
+
+Reported as "the Never-Ending Slipper section sometimes doesn't load, it's just
+a blank space." Not a loading problem: the narrow-phone fix above broke the
+pin. Putting `overflow-x: clip` on the root ends the hand-up of body's overflow
+to the viewport, so the `overflow-x: hidden` body had carried since the first
+build stopped being harmless and made body a scroll container - one that never
+scrolls, because it is as tall as its content. A sticky stage sticks to its
+nearest scroll container, so chapter two's stage sat at the top of its section
+and the page scrolled on past it: the first viewport of the act looked right,
+then a white screen for the remaining 2.2 viewports, the name and the slipper
+already off the top. "Sometimes" because it only shows where the chapter pins
+(wide screens; a phone flows it) and only once the reader is past the first
+screen of it. Reproduced in the pane at 1061x990: stage top -1240px at p =
+0.55. Body carries no overflow rule now; the root's clip does the job on its
+own. Measured after: stage top 0 at every twentieth of the act, and still no
+sideways scroll at 375 (scrollWidth 375).
+
+Preview 2 has the body rule without the root rule, so it still propagates and
+is not affected.
+
+**While in there: the plate could go blank on a slow connection.** The still
+was hidden the moment frame 0 had decoded, but the canvas was only painted
+once the frame for the reader's CURRENT position had arrived, and the frames
+arrive one at a time from 0. A reader past the reveal on a phone connection
+wanted frame 60 while frame 4 was landing and looked at an empty plate until
+the rest came; a frame that failed outright was a hole the plate fell into
+whenever the scroll parked on it. drawSpin() now paints the nearest frame it
+has, hides the still only after its first paint, and draws the wanted frame
+over the stand-in when it arrives. Checked against a server that delayed every
+frame by 250ms and returned 404 for frame 40: the plate showed a frame at 12%
+loaded, and the sweep never found an unpainted canvas.
+
 ### The form's backend
 
 `/functions/api/sample-request.js`, a Cloudflare Pages Function at the REPO

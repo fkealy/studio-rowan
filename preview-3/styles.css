@@ -54,13 +54,25 @@
    zoomed-to-fit with a sideways scroll. Measured at 320px: the reprint's
    cascade reached 397, and every section on the page was laid out 397 wide.
    `clip` and not `hidden` because hidden makes a scroll container, and a
-   scroll container between a sticky stage and the viewport unsticks it. */
+   scroll container between a sticky stage and the viewport unsticks it.
+
+   AND NOTHING ON BODY. It carried `overflow-x: hidden` from the first build,
+   and that was harmless while the root was `visible`: a body's overflow is
+   handed up to the viewport then, and the body itself stays an ordinary
+   block. The root taking `clip` ended the hand-up, so the same declaration
+   made the body a scroll container of its own - one that never scrolls,
+   because it is as tall as its content - and every sticky stage on the page
+   was now sticking to it. Chapter two's stage sat at the top of its section
+   while the page went on past it: a white screen for the last 2.2 viewports
+   of the act, with the name and the slipper already scrolled off the top.
+   The root's clip already stops the sideways scroll, so the body wants no
+   overflow rule at all. */
 html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
 
 body {
   background: var(--ivory); color: var(--onyx);
   font-family: var(--sc-font-text); font-size: var(--sc-t-base);
-  line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  line-height: 1.6; -webkit-font-smoothing: antialiased;
 }
 img, svg, video { display: block; max-width: 100%; }
 a { color: inherit; }

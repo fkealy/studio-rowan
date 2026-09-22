@@ -422,7 +422,7 @@
     probe(BASE + tier + '/f000.avif').then(function (avif) {
       var ext = avif ? 'avif' : 'webp';
       var imgs = new Array(COUNT), decoded = 0;
-      spin = { imgs: imgs, drawn: -1, drag: 0, vel: 0, grabbed: false };
+      spin = { imgs: imgs, painted: null, live: false, drag: 0, vel: 0, grabbed: false };
       var i = 0;
       (function next() {
         if (i >= COUNT) { frame.classList.add('is-ready'); return; }
@@ -434,7 +434,11 @@
         var done = function () {
           decoded++;
           frame.style.setProperty('--decoded', (decoded / COUNT).toFixed(3));
-          if (decoded === 1) { frame.classList.add('is-live'); spin.drawn = -1; }
+          /* `is-live` is NOT set here any more. It hides the still, and it
+             used to fire on the first decode - before anything had been
+             painted. drawSpin() sets it after its first drawImage(), so the
+             still stays up until there is a frame on the canvas to replace
+             it. See the note there. */
           next();
         };
         if (img.decode) img.decode().then(done, done); else { img.onload = done; img.onerror = done; }
@@ -457,11 +461,30 @@
        viewports of scroll against the 1.2 the whole act gave it before. */
     var sp = clamp01((progress('ch2') - SPIN_START) / (1 - SPIN_START));
     var idx = clamp(Math.round(sp * (COUNT - 1) + spin.drag), 0, COUNT - 1);
-    if (idx === spin.drawn) return;
-    var img = spin.imgs[idx];
-    if (!img || !img.complete || !img.naturalWidth) return;
+    /* THE NEAREST FRAME THAT HAS ARRIVED, not the exact one or nothing. The
+       frames come in one at a time from 0, and the reader is wherever they
+       are: on a phone connection a reader already past the reveal wanted
+       frame 60 while frame 4 was landing, and the plate stood empty - the
+       still hidden, the canvas never painted - for as long as the other 56
+       took. A frame that fails outright (a dropped request, a decode the
+       browser refuses) was a hole the plate fell into for good whenever the
+       scroll parked on it. Now the canvas shows the closest frame it has
+       and the still is only hidden once something has been painted; when
+       the frame it actually wants arrives, it is drawn over the stand-in. */
+    var img = nearestReady(idx);
+    if (!img || img === spin.painted) return;
     canvas.getContext('2d', { alpha: false }).drawImage(img, 0, 0, canvas.width, canvas.height);
-    spin.drawn = idx;
+    spin.painted = img;
+    if (!spin.live) { spin.live = true; frame.classList.add('is-live'); }
+  }
+  function ready(i) {
+    var img = spin.imgs[i];
+    return img && img.complete && img.naturalWidth > 0 ? img : null;
+  }
+  function nearestReady(idx) {
+    var img = ready(idx);
+    for (var d = 1; !img && d < COUNT; d++) img = ready(idx - d) || ready(idx + d);
+    return img;
   }
 
   function bindPointer() {
