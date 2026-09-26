@@ -14,6 +14,6 @@ http.createServer((req,res)=>{
   const f = path.join(ROOT, u);
   if(!f.startsWith(ROOT) || !fs.existsSync(f) || fs.statSync(f).isDirectory()){ res.writeHead(404); return res.end('nope'); }
   const h = {'Content-Type': TYPES[path.extname(f)]||'application/octet-stream'};
-  if(u.startsWith('/preview/')) h['Content-Security-Policy'] = CSP;
+  h['Content-Security-Policy'] = CSP;
   res.writeHead(200,h); fs.createReadStream(f).pipe(res);
 }).listen(4176, ()=>console.log('csp test server on 4176; policy:', CSP.slice(0,60)+'...'));

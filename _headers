@@ -2,11 +2,17 @@
 # Rules are cumulative; where two rules set the same header for the same
 # path, the LAST matching rule in this file wins.
 
+# Nothing external is loaded at runtime: fonts, engine, media and the frame
+# sequence are all same-origin. The sha256 covers the one inline script in
+# index.html's head, which sets the .js class before first paint and holds the
+# page while the spin loads. Recompute it when that script changes: sha256 of
+# the bytes between the script tags, base64.
 /*
   X-Content-Type-Options: nosniff
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-DKgWP5NrtpS+8feqbxiJ7n/OALUYHzkTnpVO4VKapWY='; style-src 'self'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; object-src 'none'
 
 # HTML: always revalidate so updates ship immediately.
 /
@@ -14,7 +20,7 @@
 /*.html
   Cache-Control: public, max-age=0, must-revalidate
 
-# Top-level app code (styles.css, main.js) changes on every deploy but keeps
+# Top-level app code (styles.css, page.js) changes on every deploy but keeps
 # the same filename — always revalidate so visitors get the latest build
 # instead of a stale cached copy.
 /*.css
@@ -22,62 +28,14 @@
 /*.js
   Cache-Control: public, max-age=0, must-revalidate
 
-# Pinned third-party dependencies: these only change when we deliberately
-# replace the vendored file (e.g. bumping the GSAP version), so it's safe
-# to cache them hard. Declared after the rules above so they take
-# precedence for these specific paths.
-/vendor/*
-  Cache-Control: public, max-age=31536000, immutable
+# Long-lived assets: these only change when the file is deliberately replaced.
+# Declared after the rules above so they take precedence for these paths.
 /fonts/*.woff2
   Cache-Control: public, max-age=31536000, immutable
   Access-Control-Allow-Origin: *
-
-# The next site, published alongside the holding page and not yet public.
-/preview/*
-  X-Robots-Tag: noindex, nofollow
-  Cache-Control: public, max-age=0, must-revalidate
-  # Nothing external is loaded at runtime: fonts, engine, media and the frame
-  # sequence are all same-origin. Scoped to /preview/* deliberately, so the
-  # holding page at / is not affected; widen it at promotion, not before.
-  # The sha256 covers the one inline script, which sets the .js class before
-  # first paint so the no-JS fallback does not flash.
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw='; style-src 'self'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; object-src 'none'
-
-# Its long-lived assets. Declared after the rule above so they take precedence
-# for these paths; X-Robots-Tag still applies, because rules are cumulative.
-/preview/spin/*
+/engine/*
   Cache-Control: public, max-age=31536000, immutable
-/preview/media/*
+/spin/*
   Cache-Control: public, max-age=31536000, immutable
-/preview/engine/*
-  Cache-Control: public, max-age=31536000, immutable
-
-# Preview 2: the chaptered-editorial proposal. Self-contained: its spin, media
-# and share image are its own, so it carries the same asset rules preview 1 does.
-/preview-2/*
-  X-Robots-Tag: noindex, nofollow
-  Cache-Control: public, max-age=0, must-revalidate
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw='; style-src 'self'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; object-src 'none'
-/preview-2/engine/*
-  Cache-Control: public, max-age=31536000, immutable
-/preview-2/spin/*
-  Cache-Control: public, max-age=31536000, immutable
-/preview-2/media/*
-  Cache-Control: public, max-age=31536000, immutable
-
-# Preview 3: preview 2 forked for the olive title page with the 70,000-dot
-# field. Same build otherwise, so the same rules; the field is a 2D canvas
-# drawn by its own page.js and needs nothing the CSP does not already allow.
-# Its inline head script differs from the other two previews' - it also holds
-# the page while the spin loads - so its hash is its own. Recompute it when
-# that script changes: sha256 of the bytes between the script tags, base64.
-/preview-3/*
-  X-Robots-Tag: noindex, nofollow
-  Cache-Control: public, max-age=0, must-revalidate
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-DKgWP5NrtpS+8feqbxiJ7n/OALUYHzkTnpVO4VKapWY='; style-src 'self'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; object-src 'none'
-/preview-3/engine/*
-  Cache-Control: public, max-age=31536000, immutable
-/preview-3/spin/*
-  Cache-Control: public, max-age=31536000, immutable
-/preview-3/media/*
+/media/*
   Cache-Control: public, max-age=31536000, immutable
