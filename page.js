@@ -364,8 +364,8 @@
          ever. The inline TRANSFORM is deliberate the other way round: it beats
          the engine's 14px rise, so these keep their stepped offset across the
          sheet and gain no vertical travel. */
-      b.style.color = i < 3 ? 'var(--onyx)'
-                    : 'color-mix(in oklab, var(--onyx) ' + Math.max(38, 100 - i * 2.2) + '%, transparent)';
+      b.style.color = i < 3 ? 'var(--sc-ink)'
+                    : 'color-mix(in oklab, var(--sc-ink) ' + Math.max(38, 100 - i * 2.2) + '%, transparent)';
       b.style.transition = 'opacity 260ms var(--sc-ease-out)';
       frag.appendChild(b);
       marks.push(b);

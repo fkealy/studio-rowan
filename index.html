@@ -112,18 +112,60 @@
     </div>
   </section>
 
+  <!-- ===================================================== OUR MISSION
+       SECOND ON THE PAGE, straight under the title: the lede there says the
+       studio redesigns things that create waste, and this is the argument
+       for it, before the product that makes it real.
+
+       The statement lights a word at a time as it crosses the screen (page.js,
+       THE MISSION). It is scrubbed, which this build otherwise avoids for
+       text - but here the scrub IS the reading: the sentence is two short
+       clauses, it completes well before it leaves the screen, and with no
+       script or with reduced motion every word is simply lit. The accessible
+       text is the sentence itself; the spans page.js adds are inline and
+       change nothing a screen reader hears. -->
+  <section class="page page--ivory" data-sc-act="flow" id="mission" aria-labelledby="s2">
+    <!-- ONE ROW, THE SAME SHAPE AS THE STORY: what is being said held on the
+         left, the telling of it running down the right. The prototype set the
+         statement full width with the list and the prose in a row beneath it.
+         At the prototype's 7.6rem that statement filled the line; at this
+         build's 3xl it is a 16ch block in the left half, so the whole top
+         right of the section stood empty and the prose began two thirds of
+         the way down beside a list with nothing above it. Now the statement
+         has the left column to itself and the right column reads top to
+         bottom: the prose, then the three lines that close it. -->
+    <div class="ch ch--mission">
+      <div class="ch__num">
+        <p class="ch__label" id="s2">Our mission</p>
+        <h2 class="mission" data-words="mission">We don&rsquo;t think the world has a waste problem. We think it has <span class="hi">design</span> problems.</h2>
+      </div>
+      <div>
+        <div class="prose prose--lg">
+          <p data-sc-in>Many of the products and systems we use today were designed decades ago and, at the time, they made sense for the world they existed in.</p>
+          <p data-sc-in>Our mission is to re-examine the outdated products and systems that create unnecessary waste and design better alternatives. Alternatives that aren&rsquo;t just better for the planet, but better for people, business and budgets too.</p>
+          <p data-sc-in>Because we don&rsquo;t want our products to be better for the planet and <em>as good</em> as they were before. We want them to be better for the planet, <strong>and better than they were before.</strong></p>
+        </div>
+        <ul class="changed">
+          <li data-sc-in><small aria-hidden="true">i</small>Because times have changed.</li>
+          <li data-sc-in><small aria-hidden="true">ii</small>The world has changed.</li>
+          <li class="key" data-sc-in><small aria-hidden="true">iii</small>And it&rsquo;s important that we change too.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
   <!-- ================================================= CHAPTER TWO
        SECOND ON THE PAGE, straight under the title. The story and the couplet
        that used to lead into it ("We thought there had to be a better way. /
        So we redesigned them.") moved down beside the mission, so the product
        is the first thing the reader meets after the brand. The olive sheet
        that carried the couplet over this chapter went with them: the title
-       page's olive now cuts hard to this chapter's ivory, and the pinned act
+       page's olive no longer runs into this chapter, and the pinned act
        is the spin and nothing else.
 
        ON A PHONE this chapter flows (its spread is taller than any phone
        stage, see PHONE_FLOW in page.js). -->
-  <section class="page page--ivory" data-sc-act="scrub" data-sc-span="2.2" data-sc-dwell="0.3" id="ch2" aria-labelledby="c2">
+  <section class="page page--onyx" data-sc-act="scrub" data-sc-span="2.2" data-sc-dwell="0.3" id="ch2" aria-labelledby="c2">
     <div data-sc-stage>
 
       <div class="spread spread--media">
@@ -163,7 +205,7 @@
   </section>
 
   <!-- ===================================================== CHAPTER THREE -->
-  <section class="page page--olive" data-sc-act="flow" id="ch3" aria-labelledby="c3">
+  <section class="page page--ivory" data-sc-act="flow" id="ch3" aria-labelledby="c3">
     <div data-sc-stage>
       <!-- The proof spread. The claim list is an argument about how the thing
            behaves in a wet, busy, public place, and it was making that argument
@@ -269,7 +311,7 @@
        The peak is still the peak. It is the longest read, the widest spread
        and the only place on the page where one line is printed thirty times.
        What it no longer is, is the place the page stops moving. -->
-  <section class="page page--ivory press" data-sc-act="flow" id="ch5">
+  <section class="page page--olive press" data-sc-act="flow" id="ch5">
     <div data-sc-stage>
       <div class="spread spread--press">
         <div class="press__lead">
@@ -349,56 +391,12 @@
       </div>
     </div>
   </section>
-  <!-- ===================================================== OUR MISSION
-       AFTER THE PRODUCT, where preview 2 had its mission chapter. It led the
-       page for a while, directly under the story, and that put 2.3 screens
-       of who-we-are between the reader and the thing being sold: the slipper
-       first appeared 4.9 screens down, past 370 words, on a page that had
-       not yet said what Studio Rowan makes. The order is problem, product,
-       proof, and THEN why we exist - the philosophy lands harder on someone
-       who has already seen it made real.
-
-       The statement lights a word at a time as it crosses the screen (page.js,
-       THE MISSION). It is scrubbed, which this build otherwise avoids for
-       text - but here the scrub IS the reading: the sentence is two short
-       clauses, it completes well before it leaves the screen, and with no
-       script or with reduced motion every word is simply lit. The accessible
-       text is the sentence itself; the spans page.js adds are inline and
-       change nothing a screen reader hears. -->
-  <section class="page page--onyx" data-sc-act="flow" id="mission" aria-labelledby="s2">
-    <!-- ONE ROW, THE SAME SHAPE AS THE STORY: what is being said held on the
-         left, the telling of it running down the right. The prototype set the
-         statement full width with the list and the prose in a row beneath it.
-         At the prototype's 7.6rem that statement filled the line; at this
-         build's 3xl it is a 16ch block in the left half, so the whole top
-         right of the section stood empty and the prose began two thirds of
-         the way down beside a list with nothing above it. Now the statement
-         has the left column to itself and the right column reads top to
-         bottom: the prose, then the three lines that close it. -->
-    <div class="ch ch--mission">
-      <div class="ch__num">
-        <p class="ch__label" id="s2">Our mission</p>
-        <h2 class="mission" data-words="mission">We don&rsquo;t think the world has a waste problem. We think it has <span class="hi">design</span> problems.</h2>
-      </div>
-      <div>
-        <div class="prose prose--lg">
-          <p data-sc-in>Many of the products and systems we use today were designed decades ago and, at the time, they made sense for the world they existed in.</p>
-          <p data-sc-in>Our mission is to re-examine the outdated products and systems that create unnecessary waste and design better alternatives. Alternatives that aren&rsquo;t just better for the planet, but better for people, business and budgets too.</p>
-          <p data-sc-in>Because we don&rsquo;t want our products to be better for the planet and <em>as good</em> as they were before. We want them to be better for the planet, <strong>and better than they were before.</strong></p>
-        </div>
-        <ul class="changed">
-          <li data-sc-in><small aria-hidden="true">i</small>Because times have changed.</li>
-          <li data-sc-in><small aria-hidden="true">ii</small>The world has changed.</li>
-          <li class="key" data-sc-in><small aria-hidden="true">iii</small>And it&rsquo;s important that we change too.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
   <!-- ======================================================= OUR STORY
        Part one of prototype 02: its copy, its two-column build with the
        figure held sticky on the left while the story runs past on the right,
-       on ivory, between the mission's onyx and the saving's olive.
+       on ivory. THE GROUNDS: every other section is ivory, and the ones
+       between alternate olive and onyx - olive, ivory, onyx, ivory, and so
+       on down the page.
 
        NEAR THE FOOT NOW, under the mission: the page opens on the product,
        says why the studio exists, then tells how this product began. The
@@ -581,10 +579,10 @@
   </section>
 
   <!-- ===================================================== WORK WITH US
-       Its own section, on onyx, so the grounds keep alternating down the
+       Its own section, on ivory, so the grounds keep alternating down the
        page: the saving on olive above, the ask here, and the masthead at the
        foot of it. Both title-page "Work with us" buttons land on #work. -->
-  <section class="page page--onyx page--ask" data-sc-act="flow" aria-labelledby="c5">
+  <section class="page page--ivory page--ask" data-sc-act="flow" aria-labelledby="c5">
     <div class="colophon">
       <div class="colophon__ask" id="work" data-sc-in>
         <div class="colophon__pitch">

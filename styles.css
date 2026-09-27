@@ -248,7 +248,7 @@ html.is-holding { overflow: hidden; scrollbar-gutter: stable; }
 .page--ivory   { background: var(--ivory); }
 .page--hemp    { background: var(--hemp); }
 .page--colophon {
-  background: var(--olive);
+  background: var(--onyx);
   --sc-ink: var(--ivory); --sc-ink-soft: #C9D2B4;
   color: var(--sc-ink);
 }
@@ -855,7 +855,7 @@ html.is-holding { overflow: hidden; scrollbar-gutter: stable; }
      impressions wider than itself. page.js writes the same pair per impression. */
   font-family: var(--display); font-weight: 300; font-size: min(9.4vh, 17.5vw);
   letter-spacing: var(--sc-track-tight); line-height: .96;
-  white-space: nowrap; color: var(--onyx);
+  white-space: nowrap; color: var(--sc-ink);
 }
 /* The cascade steps right as it goes and is allowed to run off the edge of
    its column; it is not allowed to widen the page. Clipped at the section,
@@ -913,7 +913,7 @@ html.is-holding { overflow: hidden; scrollbar-gutter: stable; }
 .press__tail .prose { max-width: none; }
 .betters { display: grid; gap: .3rem; }
 .betters span { display: block; color: var(--sc-ink-soft); }
-.betters .key { color: var(--onyx); font-weight: 500; }
+.betters .key { color: var(--sc-ink); font-weight: 500; }
 
 /* ------------------------------------------------------------- the saving --
    The calculator: the top half of the colophon. Inputs on the left, the
@@ -1009,8 +1009,8 @@ html.is-holding { overflow: hidden; scrollbar-gutter: stable; }
 .dial input[type="range"]:hover::-webkit-slider-thumb,
 .dial input[type="range"]:active::-webkit-slider-thumb { box-shadow: 0 0 0 .5rem color-mix(in oklab, var(--ivory) 22%, transparent); }
 .dial input[type="range"]:focus-visible { outline: 0; }
-.dial input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--olive), 0 0 0 5px var(--apricot); }
-.dial input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px var(--olive), 0 0 0 5px var(--apricot); }
+.dial input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px var(--onyx), 0 0 0 5px var(--apricot); }
+.dial input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 3px var(--onyx), 0 0 0 5px var(--apricot); }
 
 /* The answer: the figure directly under the title that asks for it, then what
    it is made of. No panel - it had one while it shared a column edge with the
@@ -1133,12 +1133,22 @@ a.run {
 }
 .colophon :focus-visible { outline-color: var(--hemp); }
 
-/* WORK WITH US ON ONYX. The ask has its own section now, on the mission's
-   dark ground. The saving above keeps the olive, and it no longer needs a
-   rule under it: the ground cuts there. */
+/* WORK WITH US ON IVORY. The ask has its own section, and the form and the
+   masthead are set on ivory in onyx ink. The saving above is on onyx, and it
+   no longer needs a rule under it: the ground cuts there. */
 .page--colophon .calc { border-bottom: 0; padding-bottom: 0; }
-.page--ask .btn { --btn-on: var(--onyx); }
-.page--ask .f input:-webkit-autofill { box-shadow: 0 0 0 100px var(--onyx) inset; }
+.page--ask { color: var(--sc-ink); }
+.page--ask .btn { --btn-on: var(--ivory); }
+.page--ask :focus-visible { outline-color: var(--olive); }
+.page--ask .f select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%232C302E' stroke-width='1.4'/%3E%3C/svg%3E");
+}
+.page--ask .f input:-webkit-autofill {
+  -webkit-text-fill-color: var(--onyx); caret-color: var(--onyx);
+  box-shadow: 0 0 0 100px var(--ivory) inset;
+}
+.page--ask .sample__err { color: var(--ochre); }
+.page--ask .masthead { border-top-color: var(--hair-2); }
 
 /* THE FORM. Set like the rest of the page rather than like a web form: fields
    are ruled, not boxed - a label in the masthead's micro-caps over a line to
@@ -1187,7 +1197,7 @@ a.run {
 /* Autofill paints its own pale ground under ivory type. */
 .f input:-webkit-autofill {
   -webkit-text-fill-color: var(--ivory); caret-color: var(--ivory);
-  box-shadow: 0 0 0 100px var(--olive) inset; transition: background-color 9999s;
+  box-shadow: 0 0 0 100px var(--onyx) inset; transition: background-color 9999s;
 }
 /* The form shut: one button where the fields will be. */
 .sample__open { display: none; }
