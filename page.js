@@ -68,9 +68,6 @@
      choose the pinned or the flow progress formula. `sc.acts` is published, so
      these flip it there rather than editing the vendored engine.
      ---------------------------------------------------------------------- */
-  /* The turn is not on this list any more because it is not a section any
-     more: the couplet is an overlay on chapter two, and it lives or dies with
-     whether chapter two is pinned. See THE HINGE in the stylesheet. */
   var MUTABLE    = ['ch2'];
   /* ch2 is on this list because of a measurement, not a composition. Its spread
      was 11px over a 390x844 stage and stayed pinned on taller phones, so the
@@ -116,11 +113,7 @@
     var a = authored[id];
     if (!a || a.device === 'flow') return true;
     if (PHONE_FLOW.indexOf(id) !== -1 && matchMedia('(max-width: 860px)').matches) return false;
-    /* The SPREAD, explicitly, not the stage's first child. Chapter two's stage
-       now opens with the hinge overlay, which is inset:0 when pinned and
-       therefore always reports exactly one stage of height - it would answer
-       "yes, it fits" for every viewport there is and retire the guard without
-       anyone noticing. What has to fit is the chapter under it. */
+    /* The SPREAD, explicitly: what has to fit is the chapter itself. */
     var inner = a.el.querySelector('[data-sc-stage] .spread')
              || a.el.querySelector('[data-sc-stage] > *');
     if (!inner) return true;
@@ -391,7 +384,7 @@
      2. THE SPIN  (chapter two)
      ---------------------------------------------------------------------- */
   var COUNT = 87;
-  var SPIN_START = 0.5;    /* the sheet has cleared the plate by here; see --lift in styles.css */
+  var SPIN_START = 0;      /* the plate is uncovered from the first frame of the pin */
   var TIERS = [720, 1024, 1440];
   var BASE = './spin/';
 
@@ -524,15 +517,9 @@
 
   function drawSpin() {
     if (!spin) return;
-    /* The spin starts where the reveal lands, not where the act does. The first
-       0.58 of chapter two is the hinge: the couplet arriving and the olive
-       sheet it is printed on travelling off the top of the frame.
-       Mapped from 0 the slipper spent that whole stretch turning behind an
-       opaque sheet - half the rotation spent, unseen, before anyone had been
-       shown the thing - and arrived at the reveal already half way round.
-       Remapped, frame 0 is what the sheet uncovers and the turn is the
-       reader's from there. The window is 0.38 of a 2.5vh hold, which is 0.95
-       viewports of scroll against the 1.2 the whole act gave it before. */
+    /* The spin runs the whole act. It started at 0.5 while an olive sheet
+       carrying the couplet lifted off the plate; the couplet has moved down
+       under the story and the plate is in view from the first frame. */
     var sp = clamp01((progress('ch2') - SPIN_START) / (1 - SPIN_START));
     var idx = clamp(Math.round(sp * (COUNT - 1) + spin.drag), 0, COUNT - 1);
     /* THE NEAREST FRAME THAT HAS ARRIVED, not the exact one or nothing. The
@@ -796,7 +783,7 @@
   })();
 
   /* ------------------------------------------------------------------------
-     THE LIT LINES  (the mission statement, and the hinge's answer)
+     THE LIT LINES  (the mission statement, and the couplet's answer)
      A display line lights one word at a time as it comes up the screen. The
      prototype did it with GSAP's ScrollTrigger scrubbing a stagger; this reads
      the line's own rect, because the build carries no GSAP and two sentences
@@ -810,13 +797,9 @@
      statement is static now (styles.css) and this no longer depends on how
      tall the line sets.
 
-     The hinge's answer finishes higher up the window than the mission does,
-     because it has a deadline: the sheet it is printed on slides up into the
-     pin with its top edge around 54% of the screen, and it should be fully lit
-     as it comes to rest, so the hold is spent reading it rather than watching
-     it arrive.
+     Both lines use the same window.
      ---------------------------------------------------------------------- */
-  var LIT = { mission: [0.86, 0.36], hinge: [0.96, 0.60] };
+  var LIT = { mission: [0.86, 0.36] };
   var litEls = reduce ? [] : [].slice.call(document.querySelectorAll('[data-words]'));
   litEls.forEach(function (el) {
     var win = LIT[el.getAttribute('data-words')] || LIT.mission;
@@ -843,12 +826,9 @@
       if (n === lit) return; lit = n;
       for (var i = 0; i < words.length; i++) words[i].classList.toggle('on', i < n);
     }
-    /* Two frames, not none. The hinge's answer rides a sheet the ENGINE moves,
-       and the engine writes that position in its own frame callback - so read
-       straight off the scroll event, the last event of a gesture measured the
-       line where it had been a frame earlier and could leave it a word short
-       for good. The second frame is after the engine's, whichever order the
-       two were registered in. */
+    /* Two frames, not none: the engine writes positions in its own frame
+       callback, and the second frame is after the engine's, whichever order
+       the two were registered in. */
     var queued = false;
     function ask() {
       if (queued) return; queued = true;
@@ -862,7 +842,7 @@
 
   /* ------------------------------------------------------------------------
      THE CLAIMS  (chapter three)
-     Each of the four claims under "Why it holds up." is written in by the
+     Each of the five claims under "Why it holds up." is written in by the
      scroll rather than by a timer: see `.claims.is-scrub` in styles.css for
      what `--in` drives and why it never goes back down.
      ---------------------------------------------------------------------- */
@@ -965,11 +945,19 @@
 
   /* ------------------------------------------------------------------------
      THE SAVING  (the calculator above the form)
-     Two sliders in, one large number out. What they spend now is pairs x
-     price; what they would spend is pairs x OURS_PER_STAY, one pair of
-     disposables being one guest stay; the saving is the difference.
-     OURS_PER_STAY is the studio's all-in estimate, and the same figure the
-     "How we work this out" note quotes.
+     Two sliders in, two equal figures out: the money and the pairs kept
+     out of landfill. One disposable pair is one guest stay. The Reusable
+     Slider costs PAIR_PRICE, is guaranteed for WASHES washes and counted as
+     replaced after them, and every stay costs WASH_COST to wash. So a year
+     needs ceil(stays / WASHES) reusable pairs plus a wash per stay; the saving
+     is what they spend now less that. The pairs kept out of landfill are the
+     disposables no longer bought, less the reusable pairs retired. The
+     numbers are quoted in "How we work this out"; change both together.
+
+     AT A LOW DISPOSABLE PRICE THE MONEY CAN GO THE OTHER WAY - under about
+     88p a pair the reusable costs more per stay. The figure then reads as
+     what it costs extra, not a saving of zero: the landfill figure beside it
+     is the point, and it should not be hidden behind a false GBP 0.
 
      THE PAIRS SLIDER IS NOT LINEAR, because hotels are not: a guesthouse gets
      through a thousand pairs a year and a resort half a million, and on a
@@ -977,25 +965,28 @@
      The track is a position from 0 to 1000 and the value is 1,000 x 500^t,
      rounded to two significant figures - so every stop is a number a person
      would say, and equal movements are equal RATIOS wherever the thumb is.
-     684 is the page's own 70,000.
+     344 is 8,500, the worked example in the markup.
 
      THE REVEAL IS THE COUNT-UP. The figure is zeroed and counts to its value
      the first time it comes into view - the same ease the 70,000 at the top
      of the page lands on. After that it follows the sliders with nothing in
      between: a number that animates behind a drag always feels late.
      ---------------------------------------------------------------------- */
-  var OURS_PER_STAY = 0.25;
+  var PAIR_PRICE = 8;     /* GBP, one pair of Reusable Sliders */
+  var WASHES = 15;        /* guaranteed washes; replaced after the last */
+  var WASH_COST = 0.35;   /* GBP, one wash, one pair */
   /* Grams in one pair of disposables, for the waste figure. The note quotes
      it; change both together. */
   var WASTE_G_PER_PAIR = 50;
   var calc = document.getElementById('calc');
   if (calc) (function () {
     var pairsEl = document.getElementById('c-pairs'), costEl = document.getElementById('c-cost');
-    var out = { save: 'calc-save', now: 'calc-now', ours: 'calc-ours', waste: 'calc-waste',
+    var out = { save: 'calc-save', saveL: 'calc-save-l', kept: 'calc-kept',
+                now: 'calc-now', ours: 'calc-ours', waste: 'calc-waste',
                 pairsOut: 'c-pairs-out', costOut: 'c-cost-out' };
     Object.keys(out).forEach(function (k) { out[k] = document.getElementById(out[k]); });
     var gbp = function (v) { return '\u00A3' + Math.round(v).toLocaleString('en-GB'); };
-    var counting = false, saveText = '';
+    var counting = false, saveText = '', keptText = '';
 
     function pairsAt(pos) {
       var v = 1000 * Math.pow(500, pos / 1000);
@@ -1008,11 +999,12 @@
     }
     function compute() {
       var pairs = pairsAt(+pairsEl.value), cost = +costEl.value;
-      var now = pairs * cost, ours = pairs * OURS_PER_STAY, save = now - ours;
-      /* The cost slider stops at 30p, so ours is never the dearer of the two
-         and the saving is never negative; Math.max is the belt to that. */
-      saveText = gbp(Math.max(save, 0));
-      if (!counting) out.save.textContent = saveText;
+      var ourPairs = Math.ceil(pairs / WASHES);
+      var now = pairs * cost, ours = ourPairs * PAIR_PRICE + pairs * WASH_COST, save = now - ours;
+      saveText = gbp(Math.abs(save));
+      keptText = Math.max(pairs - ourPairs, 0).toLocaleString('en-GB');
+      out.saveL.textContent = save >= 0 ? 'saved on slippers' : 'extra on slippers';
+      if (!counting) { out.save.textContent = saveText; out.kept.textContent = keptText; }
       out.now.textContent = gbp(now); out.ours.textContent = gbp(ours);
       out.pairsOut.textContent = pairs.toLocaleString('en-GB');
       out.costOut.textContent = '\u00A3' + cost.toFixed(2);
@@ -1030,7 +1022,7 @@
     compute();
 
     if (!reduce && 'IntersectionObserver' in window) {
-      counting = true; out.save.textContent = '\u00A30';
+      counting = true; out.save.textContent = '\u00A30'; out.kept.textContent = '0';
       var cio = new IntersectionObserver(function (en) {
         if (!en[0].isIntersecting) return;
         cio.disconnect();
@@ -1038,9 +1030,14 @@
         requestAnimationFrame(function frame(now) {
           if (t0 === null) t0 = now;
           var t = Math.min((now - t0) / 1600, 1);
-          if (t >= 1 || !counting) { counting = false; out.save.textContent = saveText; return; }
+          if (t >= 1 || !counting) {
+            counting = false; out.save.textContent = saveText; out.kept.textContent = keptText; return;
+          }
+          var e = 1 - Math.pow(1 - t, 3);
           var to = parseInt(saveText.replace(/[^\d]/g, ''), 10) || 0;
-          out.save.textContent = gbp(to * (1 - Math.pow(1 - t, 3)));
+          var kt = parseInt(keptText.replace(/[^\d]/g, ''), 10) || 0;
+          out.save.textContent = gbp(to * e);
+          out.kept.textContent = Math.round(kt * e).toLocaleString('en-GB');
           requestAnimationFrame(frame);
         });
       }, { rootMargin: '0px 0px -12% 0px', threshold: 0.6 });
@@ -1113,12 +1110,12 @@
                       function () { finish(lead + tail + '.'); });
     }
 
-    /* THE FORM OPENS ON REQUEST. Its own button opens it; so does any link to
-       #sample - the two "Join the pilot" buttons on the title page -
-       and so does arriving with #sample already in the address. Focus goes to
-       the first field only when the reader is already here: from the top of
-       the page it would cut the scroll short. */
-    var row = document.getElementById('sample'), opener = document.getElementById('sample-open');
+    /* THE FORM OPENS ON REQUEST. Its own button opens it, and so does
+       arriving with #sample in the address (older links to the pilot).
+       "Work with us" at the top goes to #work and leaves both choices
+       showing. Focus goes to the first field only when the reader is already
+       here: from the top of the page it would cut the scroll short. */
+    var row = document.getElementById('work'), opener = document.getElementById('sample-open');
     function openForm(focus) {
       if (!row.classList.contains('is-waiting')) return;
       row.classList.remove('is-waiting');

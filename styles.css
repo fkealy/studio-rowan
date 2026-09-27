@@ -375,7 +375,9 @@ html.is-holding { overflow: hidden; scrollbar-gutter: stable; }
 /* 15ch used to live on `.page--title h1`, which was this line. The h1 is the
    mark now and a character measure means nothing on it, so the measure moves
    here, to the text it was always for. */
-.title__tagline { margin-top: clamp(1.25rem, 3.2vh, 2.5rem); max-width: 15ch; }
+/* A step under the display .d--md it carries: the mark is the hero and the
+   line under it is its tagline, so it reads as a lockup, not a second title. */
+.title__tagline { margin-top: clamp(1rem, 2.6vh, 2rem); max-width: 15ch; font-size: var(--sc-t-xl); }
 /* ON A PHONE THE HIERARCHY INVERTED. The mark bottomed out at its 240px floor,
    which is 32px tall, while the tagline's own floor held it at 34.6px - so the
    line under the hero had letters as tall as the hero and ran wider than it.
@@ -383,7 +385,7 @@ html.is-holding { overflow: hidden; scrollbar-gutter: stable; }
    min() on .title__mark - 335px wide, 45px tall at 375), and the tagline
    drops a step here so the ratio between them is back near 2:1. */
 @media (max-width: 700px) {
-  .title__tagline { font-size: var(--sc-t-xl); }
+  .title__tagline { font-size: var(--sc-t-lg); }
 }
 .page--title .lede { margin-top: var(--sc-6); }
 /* No margin-top: the sheet's row-gap is the minimum separation now, and the
@@ -487,170 +489,15 @@ html.is-holding { overflow: hidden; scrollbar-gutter: stable; }
   display: block; font-style: normal; font-size: var(--sc-t-xs);
   color: var(--sc-ink-soft); margin-top: .4rem;
 }
-/* ------------------------------------------------------- the hinge -------
-   The couplet that turns the argument, and the screen it is printed on
-   leaving, to show the product held behind it.
-
-   THERE IS NO TRANSITION HERE, AND THAT IS THE POINT. The clay is a sheet at
-   the top of chapter two carrying the two lines; it travels straight up and
-   off, AT EXACTLY SCROLL SPEED, and the chapter underneath is pinned. So the
-   reader sees a page of clay scroll away the way any page scrolls away, and
-   the slipper is standing behind it. Nothing is animating. The only unusual
-   thing in the frame is that the chapter does not move with it, and nobody
-   consciously notices that.
-
-   This replaced a diagonal wipe: a leaning edge that swept across the frame
-   right to left with a cutting line on its leading edge. It worked, and it was
-   wrong - a travelling diagonal blade is motion-graphics vocabulary, and this
-   grammar is a printed feature that states plainly (see "chapters", above)
-   that grounds cut hard and never interpolate. The wipe was the one thing on
-   the page arguing with the page.
-
-   1:1 IS LOAD-BEARING AND IT IS ARITHMETIC. The sheet travels one stage height
-   over its window, so that window has to be worth exactly one viewport of
-   scroll: window = 1 / (span - 1). At span 3.5 the hold is 2.5 viewports, so
-   the window is 0.40 of it, which is what --lift is. Any faster and the sheet
-   is being pulled off the screen by something, which is an effect; any slower
-   and it drags. At 1:1 it is just paper moving.
-
-   PRINT FIRST. Without the engine this is a clay block of two sentences above
-   a white chapter, in reading order, with a hard cut between the grounds.
-   Every rule that makes it a sheet is scoped to .sc-ready and to the pinned
-   state, because on a phone this chapter flows.
-   -------------------------------------------------------------------------- */
-
-/* The flowed and no-script state: a clay block, full bleed, above the chapter. */
-.hinge { display: none; }
-.hinge__copy {
-  /* Olive, because the sheet is the ground ABOVE it carried down over the
-     chapter, and the section above is the story on olive (it was onyx while
-     the mission stood between them, and clay in preview 2). Its two lines are
-     inked ivory to match. */
-  background: var(--olive); color: var(--ivory);
-  padding: clamp(4rem, 14vh, 9rem) var(--margin);
-  display: grid; gap: clamp(1.5rem, 4vh, 2.5rem);
-}
-.hinge__q, .hinge__a { max-width: 22ch; }
-
-/* A section carrying a full-bleed sheet cannot take its inset from the section:
-   the stage is inside the section's content box and clips to it, so --margin
-   there would leave a white band down both edges of the clay. The inset moves
-   to the spread, which is the only thing that wanted it. */
-.page--bleed { padding-inline: 0; }
-.page--bleed .spread,
-.page--bleed .hinge__copy { padding-inline: var(--margin); }
-
-/* FLOWED, the block padding has to move too, and for the same reason. A
-   demoted section gets its vertical padding back at its own outer edges - but
-   the hinge is a full-bleed band at the top of it, so that padding lands
-   ABOVE the clay, where it is white space nobody asked for, and the chapter
-   underneath starts hard against the band's edge with nothing between them.
-   Measured on a phone: "The Never-Ending Slipper." set 0px below the clay.
-
-   So the section keeps none of it and the spread takes all of it, which puts
-   the gap where a chapter boundary actually is. The two values mirror the
-   page's own flowed-section padding at each breakpoint; the id carries them
-   past the `[data-sc-act="flow"] .spread` rule that zeroes block padding for
-   every other chapter, which is correct for every other chapter because there
-   the section is still paying it. */
-#ch2[data-sc-act="flow"] { padding-block: 0; }
-#ch2[data-sc-act="flow"] .spread { padding-block: clamp(4rem, 11vh, 9rem); }
-@media (max-width: 860px) {
-  #ch2[data-sc-act="flow"] .spread { padding-block: clamp(5.5rem, 15vh, 9.5rem); }
-}
-
-/* ---------------------------------------------------------------- pinned -- */
-.sc-ready #ch2:not(.is-unpinned) {
-  /* The sheet's own progress. It holds while the couplet assembles, then
-     leaves over --lift, which is one viewport of scroll exactly.
-
-     THE ACT IS 3.2 VIEWPORTS, NOT 3.5, AND THE HOLD IS HALF WHAT IT WAS. The
-     sheet sat for 0.18 of a 2.5-viewport travel - 0.45 of a screen held on
-     two sentences - before it moved, and the product did not show until 1.6
-     screens into the act. Now it holds for 0.10 of a 2.2-viewport travel,
-     0.22 of a screen, which is still long enough for the answer to land
-     under the question. --lift is 1 / 2.2 so the sheet still leaves at
-     exactly scroll speed; every threshold after it has moved up by the same
-     amount, and the spin keeps the 0.8 of a screen it had (SPIN_START in
-     page.js moved with them). */
-  --lift: 0.4545;
-  --t: clamp(0, (var(--sc-p, 0) - 0.10) / var(--lift), 1);
-
-  /* The ground UNDER the stage, which is not the ground IN it. A pinned stage
-     is 100svh and the visual viewport is whatever the browser's chrome leaves,
-     which is larger; so a strip of the SECTION shows below the frame for the
-     whole hold. The sheet leaves upward, so the bottom of the stage turns
-     white the instant it starts moving - and the strip below has to turn with
-     it, or the frame shows white sitting on a band of clay. */
-  --land: clamp(0, (var(--sc-p, 0) - 0.10) / 0.03, 1);
-  background: color-mix(in oklab, var(--white) calc(var(--land) * 100%), var(--clay));
-}
-/* And the STAGE has to carry the chapter's own white. A stage is transparent,
-   so with the section driven to clay the sheet was lifting off the section's
-   ground rather than the chapter's - the slipper stood on the same clay it was
-   supposed to be leaving. */
-.sc-ready #ch2:not(.is-unpinned) [data-sc-stage] { background: var(--white); }
-
-/* The sheet, and the type on it, are one thing and move as one thing. No fade
-   on the copy, no separate travel: it is printed on the page that is leaving,
-   so it leaves with it. A sheet that slides out from under its own words is a
-   layer effect, which is the thing this whole section stopped doing. */
-.sc-ready #ch2:not(.is-unpinned) :is(.hinge, .hinge__copy) {
-  transform: translateY(calc(var(--t) * -100%));
-  will-change: transform;
-}
-.sc-ready #ch2:not(.is-unpinned) .hinge {
-  display: block; position: absolute; inset: 0; z-index: 3;
-  background: var(--olive);
-}
-
-/* The couplet sits in the spread's own left column, on the spread's own
-   vertical centring, so it stands exactly where the chapter's name will stand
-   and the name lands in its place rather than somewhere else on the screen. */
-.sc-ready #ch2:not(.is-unpinned) .hinge__copy {
-  position: absolute; inset: 0; z-index: 4;
-  background: none;
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-  column-gap: clamp(2.5rem, 6vw, 5rem);
-  align-content: center;
-  gap: clamp(1.25rem, 3.5vh, 2rem);
-  padding-block: clamp(1rem, 3vh, 2.5rem);
-}
-.sc-ready #ch2:not(.is-unpinned) .hinge__copy > * { grid-column: 1; }
-/* No cap of its own when pinned: the couplet stands in the spread's left
-   column and that column IS the measure - it sets to the same width the
-   chapter's name will set to. */
-.sc-ready #ch2:not(.is-unpinned) :is(.hinge__q, .hinge__a) { max-width: none; }
-
-/* Nothing here is dropped under prefers-reduced-motion. The sheet moving is
-   the sheet SCROLLING, at the speed the reader is scrolling it, and a page
-   that held it still would never show the chapter behind it. */
-
 /* ------------------------------------------------------------ the reveals --
-   WHAT IS BEHIND THE SHEET IS ALREADY THERE. The chapter's name and the
-   slipper are not timed: they stand on the white from the first frame and the
-   sheet uncovers them as it scrolls off, which is the whole reason for having
-   a sheet. They used to wait until it had cleared the frame (0.59 of the act)
-   and then fade in, so the reader scrolled a full viewport watching an empty
-   white screen grow from the bottom, and only then was shown the product. The
-   sheet leaves upward, so the object is uncovered before its name - the plate
-   is centred in the right column, the name stands at the top of the left.
-
-   The couplet's second line is not timed here either: it lights a word at a
-   time off its own position on the screen (page.js, THE LIT LINES), so it is
-   read on the way in rather than appearing once the pin engages and leaving
-   a moment later.
-
-   That leaves the writing, which IS timed, and scoped to the pinned state for
-   the reason it always was: a timing written against the hinge only means
-   anything where there is a hinge. Below 860px this chapter flows and is
-   simply a chapter. `--sc-p` and not `--t`: a position in the ACT, not in the
-   lift. It starts as the sheet's trailing edge passes the lede, so the
-   reveal frame is still the name and the object, and the writing follows it.
+   The chapter's name and the slipper are not timed: they stand from the first
+   frame of the pin. The lede and the prose follow a beat later, so the frame
+   the reader lands on is the name and the object, and the writing follows
+   it. Scoped to the pinned state: below 860px this chapter flows and is
+   simply a chapter. `--sc-p` is the position in the act.
    -------------------------------------------------------------------------- */
 .sc-ready #ch2:not(.is-unpinned) :is(.lede, .prose) {
-  --in: clamp(0, (var(--sc-p, 0) - 0.36) / 0.06, 1);
+  --in: clamp(0, (var(--sc-p, 0) - 0.02) / 0.08, 1);
   opacity: var(--in, 1);
   transform: translateY(calc((1 - var(--in, 1)) * 1.1rem));
   will-change: opacity, transform;
@@ -708,9 +555,14 @@ html.is-holding { overflow: hidden; scrollbar-gutter: stable; }
 }
 .claim:last-child { border-bottom: 1px solid var(--hair); }
 .claim i { display: block; width: 2.4rem; height: 2.4rem; color: var(--olive); }
+/* Chapter three is on olive now (the grounds alternate olive and ivory down
+   the page), where an olive icon disappears. */
+.page--olive .claim i { color: var(--hemp); }
 .claim i svg { width: 100%; height: 100%; }
 .claim b { display: block; font-weight: 500; font-size: var(--sc-t-lg); }
 .claim span { display: block; color: var(--sc-ink-soft); margin-top: .1rem; }
+.claim__note { color: inherit; text-decoration: none; margin-left: .1em; }
+.claims__foot { margin-top: var(--sc-4); font-size: var(--sc-t-xs); color: var(--sc-ink-soft); }
 
 /* The claims cascade in, one at a time.
    `data-sc-in` on the <ol> is the trigger and nothing else - the list itself
@@ -736,6 +588,7 @@ html.is-holding { overflow: hidden; scrollbar-gutter: stable; }
 .claim:nth-child(2) { --d: 170ms; }
 .claim:nth-child(3) { --d: 260ms; }
 .claim:nth-child(4) { --d: 350ms; }
+.claim:nth-child(5) { --d: 440ms; }
 
 /* The rules are drawn by pseudo-elements, not by the borders: a border can
    only fade, and a fading line has no direction. These wipe from the left,
@@ -863,7 +716,7 @@ html.is-holding { overflow: hidden; scrollbar-gutter: stable; }
    let go. It is a statement, it stands where it is set, and it finishes
    lighting on its way up like any other line. */
 .ch--mission .ch__num { position: static; }
-.ch--mission .changed { max-width: 50ch; margin-bottom: clamp(1.75rem, 4vh, 2.75rem); }
+.ch--mission .changed { max-width: 50ch; margin-top: clamp(1.75rem, 4vh, 2.75rem); }
 /* TWO COLUMNS ONLY WHERE THE STATEMENT FITS ONE. It is a 16ch line at 3xl,
    about 610px, and it needs to set in four or five lines to read as a
    statement. Side by side from 860px up, as every other .ch is, it had a
@@ -879,12 +732,20 @@ html.is-holding { overflow: hidden; scrollbar-gutter: stable; }
 }
 @media (min-width: 701px) and (max-width: 1200px) {
   .ch--mission > div:last-child {
-    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
     gap: clamp(1.5rem, 4vw, 3rem); align-items: start;
   }
-  .ch--mission .changed { margin-bottom: 0; }
+  .ch--mission .changed { margin-top: 0; }
 }
 .ch__num { position: sticky; top: 22vh; align-self: start; }
+/* The couplet closes the story: a rule, then the two lines that turn it
+   into the mission below. */
+.couplet {
+  display: grid; gap: clamp(.75rem, 2vh, 1.25rem);
+  margin-top: clamp(2.5rem, 7vh, 4.5rem); padding-top: clamp(1.5rem, 4vh, 2.5rem);
+  border-top: 1px solid var(--hair);
+}
+.couplet .d { max-width: 18ch; }
 .ch__label {
   font-size: var(--sc-t-xs); letter-spacing: .1em; text-transform: uppercase;
   color: var(--sc-ink-soft); margin-bottom: 1.4rem;
@@ -916,7 +777,7 @@ html.is-holding { overflow: hidden; scrollbar-gutter: stable; }
 }
 .mission .hi { color: var(--apricot); }
 /* THE LIT LINES. A display line that lights a word at a time as it comes up
-   the screen: the mission statement, and the couplet's answer on the hinge.
+   the screen: the mission statement, and the couplet's answer under the story.
    Dimmed only once page.js has split the line AND is going to light it - the
    class is set by the script, so no script means no dimming. */
 [data-words] .w { display: inline-block; transition: opacity .25s linear; }
@@ -951,7 +812,7 @@ html.is-holding { overflow: hidden; scrollbar-gutter: stable; }
 
    THIS SECTION DOES NOT PIN. It was the largest held block on the page - 2.05
    viewports of stationary frame - for a cascade that is structurally the same
-   thing as the four claims above it, and those cost a flow section and nothing
+   thing as the five claims above it, and those cost a flow section and nothing
    else. The rule it failed: scrub the scroll only when scroll position
    genuinely IS the state. Twenty-nine things appearing one after another is a
    stagger, not a state.
@@ -1148,6 +1009,15 @@ html.is-holding { overflow: hidden; scrollbar-gutter: stable; }
   font-variant-numeric: tabular-nums;
 }
 .calc__big > span { white-space: nowrap; }
+/* Two figures side by side at the same size: the money and the landfill are
+   weighted equally. Smaller than the single figure was, so a seven-digit
+   saving still fits its half of the column. The columns come from the
+   container's width, not the numbers, so dragging never re-wraps them. */
+.calc__bigs {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+  gap: clamp(1.25rem, 3vh, 2rem) clamp(1.5rem, 3vw, 2.5rem);
+}
+.calc__bigs .calc__big { font-size: clamp(2.6rem, 4.2vw, 4.25rem); }
 /* Always on its own line under the figure. Inline, it fitted beside a small
    saving and dropped under a large one, so the gap changed as the slider
    moved. */
@@ -1246,6 +1116,13 @@ a.run {
 }
 .colophon :focus-visible { outline-color: var(--hemp); }
 
+/* WORK WITH US ON ONYX. The ask has its own section now, on the mission's
+   dark ground. The saving above keeps the olive, and it no longer needs a
+   rule under it: the ground cuts there. */
+.page--colophon .calc { border-bottom: 0; padding-bottom: 0; }
+.page--ask .btn { --btn-on: var(--onyx); }
+.page--ask .f input:-webkit-autofill { box-shadow: 0 0 0 100px var(--onyx) inset; }
+
 /* THE FORM. Set like the rest of the page rather than like a web form: fields
    are ruled, not boxed - a label in the masthead's micro-caps over a line to
    write on - so the column reads as a printed reply slip. 1rem type in the
@@ -1297,7 +1174,8 @@ a.run {
 }
 /* The form shut: one button where the fields will be. */
 .sample__open { display: none; }
-.colophon__ask.is-waiting .sample__open { display: grid; gap: .85rem; justify-items: start; }
+.colophon__ask.is-waiting .sample__open { display: grid; gap: clamp(1.25rem, 3vh, 1.75rem); align-content: start; }
+.sample__open .choice { display: grid; gap: .85rem; justify-items: start; }
 .colophon__ask.is-waiting .sample { display: none; }
 .sample__open span { font-size: var(--sc-t-sm); color: var(--sc-ink-soft); }
 /* Opening: the fields rise into the button's place. One short move, once. */
@@ -1411,7 +1289,7 @@ a.run {
      section being dragged and typed in is a page that moves under the hand:
      any layout change inside it - a row rewrapping, the price opening, the
      form opening - re-snaps the scroller on iOS. */
-  .page--colophon { scroll-snap-align: none !important; }
+  .page--colophon, .page--ask { scroll-snap-align: none !important; }
 
   /* The doubled join that used to live here is gone with the thing that needed
      it. It gave the section after chapter two the whole join on its own,
