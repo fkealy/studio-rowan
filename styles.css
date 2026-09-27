@@ -799,6 +799,23 @@ html.is-holding { overflow: hidden; scrollbar-gutter: stable; }
   .ch__num { position: static; }
   .ch__big { font-size: clamp(2.2rem, 11vw, 4rem); }
 }
+/* THE STORY IN ONE COLUMN. Stacked in source order the 70,000 stood above
+   the story as a number nobody had been told about yet. On a phone it moves
+   down to where the story arrives at it - after the paragraph that ends on
+   120 million, before the couplet - and the "Our story" label stays at the
+   head. Both columns dissolve (display: contents) so their children can be
+   ordered as one list; the reading order for a screen reader is unchanged. */
+@media (max-width: 860px) {
+  .ch--story { display: flex; flex-direction: column; gap: 0; }
+  .ch--story > .ch__num, .ch--story > div:last-child, .ch--story .prose { display: contents; }
+  .ch--story .ch__label { order: 0; }
+  .ch--story .display   { order: 1; margin-bottom: clamp(1.25rem, 3vh, 2rem); }
+  .ch--story .prose p   { order: 2; }
+  .ch--story .prose p + p { margin-top: var(--sc-4); }
+  .ch--story .ch__big   { order: 3; margin-top: clamp(2.5rem, 7vh, 4rem); }
+  .ch--story .ch__cap   { order: 4; }
+  .ch--story .couplet   { order: 5; }
+}
 
 /* ================================================================== THE PRESS
    The signature move. The chapter reprints itself: each impression is set
